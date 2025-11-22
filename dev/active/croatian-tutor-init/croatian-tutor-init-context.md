@@ -1,11 +1,24 @@
 # Croatian Language Tutor - Project Context
 
 **Last Updated: 2025-11-22**
-**Current Phase**: 6 - Progress & Dashboard (NEXT)
+**Current Phase**: 7 - Polish (NEXT)
 
 ---
 
 ## SESSION PROGRESS
+
+### ✅ Phase 6: Progress & Dashboard (COMPLETED)
+
+Full progress tracking and dashboard implemented:
+- **Progress Service**: `backend/app/services/progress_service.py` - stats aggregation, context summaries
+- **Progress API**: `/api/v1/progress/*` - summary, vocabulary, topics, activity, errors, context
+- **Dashboard UI**: `frontend/src/pages/ProgressPage.tsx` - comprehensive stats display
+  - Summary stat cards (level, streak, words, due, exercises, errors)
+  - Vocabulary mastery ring chart with breakdown by level
+  - Grammar topic progress bars
+  - Activity heatmap (14-day view)
+  - Error patterns and weak areas with suggestions
+  - Quick action buttons
 
 ### ✅ Phase 5: AI Exercises (COMPLETED)
 
@@ -31,11 +44,6 @@ AI-powered features implemented:
 - **Fill-in-Blank**: POST `/api/v1/drills/fill-in-blank` - AI generates contextual sentences
 - **Answer Evaluation**: `evaluate_answer()` method for AI-powered checking
 - **Bulk Import UI**: Modal in Vocabulary page for pasting word lists
-
-**Deferred to Phase 6:**
-- Context Summary Generators (progress_service.py) - depends on exercise/error logs being populated
-- Retry logic for Gemini API - simple addition when needed
-- Sentence caching - premature optimization
 
 ### ✅ Phase 3: Vocabulary System (COMPLETED)
 
@@ -68,52 +76,28 @@ All major design decisions finalized.
 
 ## FILES MODIFIED THIS SESSION
 
-### Backend - New Files
+### Backend - New Files (Phase 6)
 | File | Purpose |
 |------|---------|
-| `backend/app/crud/word.py` | Word CRUD + SM-2 SRS algorithm |
-| `backend/app/crud/grammar_topic.py` | Grammar topic + progress CRUD |
-| `backend/app/services/drill_service.py` | Vocabulary drill management |
-| `backend/app/services/gemini_service.py` | Gemini API wrapper (gemini-2.0-flash) |
-| `backend/app/services/exercise_service.py` | AI exercise generation + evaluation |
-| `backend/app/api/words.py` | Word REST endpoints + bulk import |
-| `backend/app/api/drills.py` | Drill session endpoints + fill-in-blank |
-| `backend/app/api/topics.py` | Grammar topics REST endpoints |
-| `backend/app/api/exercises.py` | AI exercise endpoints |
-| `backend/app/api/router.py` | API router aggregation |
-| `backend/app/schemas/drill.py` | Drill Pydantic schemas |
+| `backend/app/services/progress_service.py` | Progress stats, context summaries |
+| `backend/app/api/progress.py` | Progress REST endpoints |
 
-### Backend - Modified Files
+### Backend - Modified Files (Phase 6)
 | File | Change |
 |------|--------|
-| `backend/app/crud/__init__.py` | Export WordCRUD |
-| `backend/app/services/__init__.py` | Export DrillService, GeminiService |
-| `backend/app/api/__init__.py` | Export api_router |
-| `backend/app/schemas/__init__.py` | Export drill schemas |
-| `backend/app/main.py` | Include API router |
+| `backend/app/api/router.py` | Added progress router |
+| `backend/app/services/__init__.py` | Export ProgressService |
 
-### Frontend - New Files
+### Frontend - New Files (Phase 6)
 | File | Purpose |
 |------|---------|
-| `frontend/src/pages/VocabularyPage.tsx` | Vocabulary CRUD UI + bulk import modal |
-| `frontend/src/pages/exercises/ConversationPage.tsx` | AI tutor chat interface |
-| `frontend/src/pages/exercises/GrammarPage.tsx` | Grammar exercise UI |
-| `frontend/src/pages/exercises/TranslationPage.tsx` | Translation exercise UI |
-| `frontend/src/pages/exercises/SentenceConstructionPage.tsx` | Word arrangement UI |
-| `frontend/src/pages/exercises/ReadingPage.tsx` | Reading comprehension UI |
-| `frontend/src/pages/exercises/DialoguePage.tsx` | Role-play dialogue UI |
-| `frontend/src/services/wordApi.ts` | Word API client |
-| `frontend/src/services/drillApi.ts` | Drill API client |
-| `frontend/src/services/exerciseApi.ts` | Exercise + Topics API client |
+| `frontend/src/services/progressApi.ts` | Progress API client |
 
-### Frontend - Modified Files
+### Frontend - Modified Files (Phase 6)
 | File | Change |
 |------|--------|
-| `frontend/src/types/index.ts` | Added exercise, topic, conversation types |
-| `frontend/src/pages/PracticePage.tsx` | Full drill UI with flashcards |
-| `frontend/src/pages/LearnPage.tsx` | Exercise hub with 6 exercise cards |
-| `frontend/src/components/layout/AppLayout.tsx` | Added Vocabulary nav item |
-| `frontend/src/App.tsx` | Added all exercise routes |
+| `frontend/src/types/index.ts` | Added progress types (ProgressSummary, VocabularyStats, etc.) |
+| `frontend/src/pages/ProgressPage.tsx` | Complete dashboard implementation |
 
 ---
 
@@ -126,7 +110,9 @@ All major design decisions finalized.
 | SM-2 intervals | 1 day → 6 days → EF multiplier | Standard Anki-compatible |
 | Mastery score | 0-10 based on success rate | Simple, visible progress |
 | Fill-in-blank | Generated on-demand | No caching needed yet |
-| Context summaries | Deferred to Phase 6 | Needs exercise/error data |
+| Mastery threshold | score >= 7 = mastered | Clear boundary for stats |
+| Streak calculation | Consecutive days with activity | Standard gamification pattern |
+| Level progression | 10 mastered words at level = advance | Simple, motivating |
 
 ---
 
@@ -169,22 +155,24 @@ All major design decisions finalized.
 - `POST /dialogue/turn` - Continue dialogue
 - `POST /evaluate` - Evaluate any exercise answer
 
+### Progress API (`/api/v1/progress`)
+- `GET /summary` - Overall stats (words, streak, level)
+- `GET /vocabulary` - Vocabulary breakdown by level/mastery
+- `GET /topics` - Grammar topic progress
+- `GET /activity` - Recent activity timeline
+- `GET /errors` - Error patterns and weak areas
+- `GET /context` - Text summary for AI context
+
 ---
 
 ## NEXT STEPS
 
-### Phase 6: Progress & Dashboard (NEXT)
-1. Create `backend/app/services/progress_service.py` with context summaries
-2. Progress API endpoints (`/api/v1/progress/*`)
-3. Dashboard page with stats visualization
-4. Error pattern analysis and weak areas display
-5. Recent activity tracking
-
 ### Phase 7: Polish
 - Error handling improvements
-- UX polish
+- UX polish (loading skeletons, error states)
 - Mobile responsiveness
 - Seed data for grammar topics
+- Export vocabulary to JSON
 
 ---
 
@@ -199,10 +187,8 @@ docker compose up --build
 # Backend API: http://localhost:8000
 # API Docs: http://localhost:8000/docs
 
-# Test bulk import
-curl -X POST http://localhost:8000/api/v1/words/bulk-import \
-  -H "Content-Type: application/json" \
-  -d '{"words": ["sunce", "mjesec", "zvijezda"]}'
+# Test progress endpoint
+curl http://localhost:8000/api/v1/progress/summary
 ```
 
 ---
@@ -210,5 +196,6 @@ curl -X POST http://localhost:8000/api/v1/words/bulk-import \
 ## NOTES
 
 - Gemini API key is configured in `.env` file
-- Test words exist in DB: voda, kruh, sunce, mjesec, zvijezda
+- 622 words in DB (bulk imported)
 - Frontend hot-reloads, backend uses uvicorn --reload in Docker
+- Progress dashboard accessible at /progress

@@ -1,7 +1,7 @@
 # Croatian Language Tutor - Implementation Tasks
 
 **Last Updated: 2025-11-22**
-**Current Phase**: 6 - Progress & Dashboard (NEXT)
+**Current Phase**: 7 - Polish (NEXT)
 
 ---
 
@@ -176,28 +176,29 @@
 ---
 
 ## Phase 6: Progress & Dashboard
-**Status**: BLOCKED by Phase 5
+**Status**: COMPLETED
 **Goal**: Visibility into learning progress
 
 ### 6.1 Progress Endpoints
-- [ ] `GET /api/v1/progress/summary` - Overall stats (S)
-- [ ] `GET /api/v1/progress/vocabulary` - Vocabulary breakdown (S)
-- [ ] `GET /api/v1/progress/topics` - Topic mastery overview (S)
-- [ ] `GET /api/v1/progress/activity` - Recent activity (S)
-- [ ] `GET /api/v1/progress/errors` - Error patterns (S)
+- [x] `GET /api/v1/progress/summary` - Overall stats (S)
+- [x] `GET /api/v1/progress/vocabulary` - Vocabulary breakdown (S)
+- [x] `GET /api/v1/progress/topics` - Topic mastery overview (S)
+- [x] `GET /api/v1/progress/activity` - Recent activity (S)
+- [x] `GET /api/v1/progress/errors` - Error patterns (S)
+- [x] `GET /api/v1/progress/context` - AI context summary (S) - added
 
 ### 6.2 Dashboard UI
-- [ ] Create Dashboard page layout (M)
-- [ ] Display vocabulary stats chart (M)
-- [ ] Display topic progress (M)
-- [ ] Display recent activity (S)
-- [ ] Display error patterns/weak areas (M)
-- [ ] Add "Start Practice" quick actions (S)
+- [x] Create Dashboard page layout (M)
+- [x] Display vocabulary stats chart (M)
+- [x] Display topic progress (M)
+- [x] Display recent activity (S)
+- [x] Display error patterns/weak areas (M)
+- [x] Add "Start Practice" quick actions (S)
 
 ---
 
 ## Phase 7: Polish
-**Status**: BLOCKED by Phase 6
+**Status**: NEXT
 **Goal**: Production-ready UX
 
 ### 7.1 Error Handling
