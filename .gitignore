@@ -1,0 +1,17 @@
+.env
+config.ini
+/logs/*
+/.idea/*
+*.log
+*.csv
+*.xlsx
+NUL
+.env.stage
+/.claude/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
