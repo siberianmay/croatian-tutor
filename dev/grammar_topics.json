@@ -1,0 +1,632 @@
+[
+  {
+    "display_order": 1,
+    "name": "Croatian Alphabet & Pronunciation",
+    "cefr_level": "A1",
+    "prerequisite_ids": null,
+    "rule_description": "## 30 Letters - One Sound Each\n\n| Letter | Sound | Example |\n|--------|-------|--------|\n| **č** | ch (church) | **č**aj (tea) |\n| **ć** | soft ch (tune) | **ć**evapi |\n| **š** | sh (ship) | **š**kola (school) |\n| **ž** | zh (measure) | **ž**ena (woman) |\n| **đ** | soft j (juice) | **đ**ak (student) |\n| **dž** | hard j (jam) | d**ž**ep (pocket) |\n| **lj** | ly (million) | **lj**ubav (love) |\n| **nj** | ny (canyon) | **nj**ega (him) |\n\n**Key Rule:** Every letter = one sound. No silent letters. Stress usually on first syllable."
+  },
+  {
+    "display_order": 2,
+    "name": "Personal Pronouns",
+    "cefr_level": "A1",
+    "prerequisite_ids": [1],
+    "rule_description": "## Personal Pronouns (Nominative)\n\n| Person | Singular | Plural |\n|--------|----------|--------|\n| 1st | **ja** (I) | **mi** (we) |\n| 2nd | **ti** (you) | **vi** (you/formal) |\n| 3rd m. | **on** (he) | **oni** (they m.) |\n| 3rd f. | **ona** (she) | **one** (they f.) |\n| 3rd n. | **ono** (it) | **ona** (they n.) |\n\n**Note:** *Vi* = formal \"you\" (singular) OR plural \"you\""
+  },
+  {
+    "display_order": 3,
+    "name": "Noun Gender Recognition",
+    "cefr_level": "A1",
+    "prerequisite_ids": [1],
+    "rule_description": "## Gender by Ending\n\n| Gender | Typical Ending | Examples |\n|--------|---------------|----------|\n| **Masculine** | consonant | grad, student, prozor |\n| **Feminine** | **-a** | žena, škola, knjiga |\n| **Neuter** | **-o** / **-e** | selo, more, dijete |\n\n### Exceptions to Memorize\n- **-a** but masculine: tata, kolega, sudija\n- Natural gender wins: *žena* (woman) = feminine regardless"
+  },
+  {
+    "display_order": 4,
+    "name": "Nominative Case (Subject)",
+    "cefr_level": "A1",
+    "prerequisite_ids": [2, 3],
+    "rule_description": "## Nominative = Subject (Who/What?)\n\n**Word Order:** Subject + Verb + Object\n\n| Question | Answer |\n|----------|--------|\n| Tko? (Who?) | **Student** čita. |\n| Što? (What?) | **Knjiga** je tu. |\n\n### Basic Pattern\n```\n[SUBJECT-nom] + [VERB] + [rest]\nMarko         radi      svaki dan.\nŽena          kuha      večeru.\n```\n\n**Dictionary form = Nominative**"
+  },
+  {
+    "display_order": 5,
+    "name": "Present Tense: \"Biti\" (To Be)",
+    "cefr_level": "A1",
+    "prerequisite_ids": [2, 4],
+    "rule_description": "## Biti (To Be) - Present Tense\n\n| Person | Full Form | Short Form |\n|--------|-----------|------------|\n| ja | jesam | **sam** |\n| ti | jesi | **si** |\n| on/ona/ono | jest | **je** |\n| mi | jesmo | **smo** |\n| vi | jeste | **ste** |\n| oni/one/ona | jesu | **su** |\n\n### Negation\n| Person | Negative |\n|--------|----------|\n| ja | **nisam** |\n| ti | **nisi** |\n| on/ona | **nije** |\n| mi | **nismo** |\n| vi | **niste** |\n| oni | **nisu** |\n\n**Use short forms in statements, full forms for emphasis/questions**"
+  },
+  {
+    "display_order": 6,
+    "name": "Present Tense: Regular -ati Verbs",
+    "cefr_level": "A1",
+    "prerequisite_ids": [4, 5],
+    "rule_description": "## -ati Verbs → -am Pattern\n\n| Person | Ending | Example: raditi |\n|--------|--------|----------------|\n| ja | **-am** | rad**im** |\n| ti | **-aš** | rad**iš** |\n| on/ona | **-a** | rad**i** |\n| mi | **-amo** | rad**imo** |\n| vi | **-ate** | rad**ite** |\n| oni | **-aju** | rad**e** |\n\n### Common -ati Verbs\n- im**ati** (have) → imam, imaš...\n- pit**ati** (ask) → pitam, pitaš...\n- gled**ati** (watch) → gledam, gledaš...\n- čit**ati** (read) → čitam, čitaš...\n\n**Formula:** Remove -ti, add endings"
+  },
+  {
+    "display_order": 7,
+    "name": "Present Tense: Regular -iti Verbs",
+    "cefr_level": "A1",
+    "prerequisite_ids": [6],
+    "rule_description": "## -iti Verbs → -im Pattern\n\n| Person | Ending | Example: govoriti |\n|--------|--------|------------------|\n| ja | **-im** | govor**im** |\n| ti | **-iš** | govor**iš** |\n| on/ona | **-i** | govor**i** |\n| mi | **-imo** | govor**imo** |\n| vi | **-ite** | govor**ite** |\n| oni | **-e** | govor**e** |\n\n### Common -iti Verbs\n- govor**iti** (speak) → govorim\n- rad**iti** (work) → radim\n- uč**iti** (learn) → učim\n- misliti (think) → mislim\n\n**Note:** 3rd pl. ends in **-e**, not -iju"
+  },
+  {
+    "display_order": 8,
+    "name": "Present Tense: Regular -eti Verbs",
+    "cefr_level": "A1",
+    "prerequisite_ids": [7],
+    "rule_description": "## -eti/-jeti Verbs → -im Pattern\n\n| Person | Ending | Example: vidjeti |\n|--------|--------|------------------|\n| ja | **-im** | vid**im** |\n| ti | **-iš** | vid**iš** |\n| on/ona | **-i** | vid**i** |\n| mi | **-imo** | vid**imo** |\n| vi | **-ite** | vid**ite** |\n| oni | **-e** | vid**e** |\n\n### Common -eti Verbs\n- vidj**eti** (see) → vidim\n- razumj**eti** (understand) → razumijem\n- živj**eti** (live) → živim\n- volj**eti** (love) → volim\n\n**Watch for stem changes:** vidjeti → vid- (drop -je-)"
+  },
+  {
+    "display_order": 9,
+    "name": "Accusative Case (Direct Object)",
+    "cefr_level": "A1",
+    "prerequisite_ids": [4],
+    "rule_description": "## Accusative = Direct Object (Whom/What?)\n\n| Gender | Nom → Acc | Example |\n|--------|-----------|--------|\n| Masc. animate | -ø → **-a** | student → student**a** |\n| Masc. inanimate | **no change** | grad → grad |\n| Feminine | -a → **-u** | žena → žen**u** |\n| Neuter | **no change** | selo → selo |\n\n### Pattern\n```\n[Subject] + [Verb] + [Object-ACC]\nJa         vidim     student-a.    (I see the student)\nOn         čita      knjig-u.      (He reads a book)\nMi         volimo    grad.         (We love the city)\n```\n\n**Key:** Only masculine ANIMATE and feminine change!"
+  },
+  {
+    "display_order": 10,
+    "name": "Basic Questions",
+    "cefr_level": "A1",
+    "prerequisite_ids": [5],
+    "rule_description": "## Question Words\n\n| Croatian | English | Example |\n|----------|---------|--------|\n| **Tko?** | Who? | Tko je to? |\n| **Što?** | What? | Što radiš? |\n| **Gdje?** | Where? | Gdje živiš? |\n| **Kada?** | When? | Kada dolaziš? |\n| **Kako?** | How? | Kako si? |\n| **Zašto?** | Why? | Zašto učiš? |\n| **Koliko?** | How much/many? | Koliko košta? |\n| **Koji?** | Which? | Koji film? |\n\n### Yes/No Questions\n- Add **li** after verb: **Govoriš li** engleski?\n- Or use **Da li**: **Da li** govoriš engleski?\n- Or just intonation: Govoriš engleski?"
+  },
+  {
+    "display_order": 11,
+    "name": "Negation",
+    "cefr_level": "A1",
+    "prerequisite_ids": [5, 6],
+    "rule_description": "## Negation with NE\n\n**ne + verb** (written together for biti)\n\n| Positive | Negative |\n|----------|----------|\n| radim | **ne** radim |\n| govorim | **ne** govorim |\n| jesam | **nisam** |\n| imam | **nemam** |\n\n### Negative Pronouns\n| Positive | Negative |\n|----------|----------|\n| netko (someone) | **nitko** (no one) |\n| nešto (something) | **ništa** (nothing) |\n| negdje (somewhere) | **nigdje** (nowhere) |\n| nekad (sometime) | **nikad** (never) |\n\n**Double negative required:**\n- Nitko **ne** dolazi. (Nobody is coming)\n- **Ne** vidim **ništa**. (I don't see anything)"
+  },
+  {
+    "display_order": 12,
+    "name": "Cardinal Numbers 0-100",
+    "cefr_level": "A1",
+    "prerequisite_ids": [1],
+    "rule_description": "## Numbers 0-20\n\n| # | Croatian | # | Croatian |\n|---|----------|---|----------|\n| 0 | nula | 11 | jedanaest |\n| 1 | jedan | 12 | dvanaest |\n| 2 | dva | 13 | trinaest |\n| 3 | tri | 14 | četrnaest |\n| 4 | četiri | 15 | petnaest |\n| 5 | pet | 16 | šesnaest |\n| 6 | šest | 17 | sedamnaest |\n| 7 | sedam | 18 | osamnaest |\n| 8 | osam | 19 | devetnaest |\n| 9 | devet | 20 | dvadeset |\n| 10 | deset | | |\n\n## Tens & Pattern\n| # | Croatian |\n|---|----------|\n| 30 | trideset |\n| 40 | četrdeset |\n| 50 | pedeset |\n| 100 | sto |\n\n**21-99:** dvadeset **i** jedan (20 and 1)"
+  },
+  {
+    "display_order": 13,
+    "name": "Basic Adjective Agreement",
+    "cefr_level": "A1",
+    "prerequisite_ids": [3, 4],
+    "rule_description": "## Adjective Agrees with Noun\n\n| Gender | Ending | Example |\n|--------|--------|--------|\n| Masculine | -ø / -i | velik**i** grad |\n| Feminine | **-a** | velik**a** kuća |\n| Neuter | **-o** / **-e** | velik**o** selo |\n\n### Definite vs Indefinite\n| Type | Masc. | Fem. | Neut. |\n|------|-------|------|-------|\n| Indefinite | nov | nova | novo |\n| Definite | nov**i** | nov**a** | nov**o** |\n\n**Definite (-i form):** specific/known item\n**Indefinite:** general/unknown\n\n```\nLijep dan. (A nice day - indefinite)\nLijepi dan. (The nice day - definite)\n```"
+  },
+  {
+    "display_order": 14,
+    "name": "Possessive Pronouns",
+    "cefr_level": "A1",
+    "prerequisite_ids": [2],
+    "rule_description": "## Possessive Pronouns\n\n| Owner | Masc. | Fem. | Neut. |\n|-------|-------|------|-------|\n| ja | **moj** | moj**a** | moj**e** |\n| ti | **tvoj** | tvoj**a** | tvoj**e** |\n| on | **njegov** | njegov**a** | njegovo |\n| ona | **njezin** | njezin**a** | njezin**o** |\n| mi | **naš** | naš**a** | naš**e** |\n| vi | **vaš** | vaš**a** | vaš**e** |\n| oni | **njihov** | njihov**a** | njihov**o** |\n\n### Agreement Rule\nMatches the **possessed noun**, NOT the owner:\n- **Njegov**a kuća (His house) - feminine\n- **Njezin** auto (Her car) - masculine"
+  },
+  {
+    "display_order": 15,
+    "name": "Demonstratives",
+    "cefr_level": "A1",
+    "prerequisite_ids": [3],
+    "rule_description": "## Demonstrative Pronouns\n\n| Distance | Masc. | Fem. | Neut. |\n|----------|-------|------|-------|\n| Near (this) | **ovaj** | ov**a** | ov**o** |\n| Medium (that) | **taj** | t**a** | t**o** |\n| Far (that over there) | **onaj** | on**a** | on**o** |\n\n### Usage\n```\novaj čovjek - this man (near me)\ntaj čovjek - that man (near you)\nonaj čovjek - that man (far from both)\n```\n\n**Plural:**\n| Distance | Masc. | Fem. | Neut. |\n|----------|-------|------|-------|\n| Near | ovi | ove | ova |\n| Medium | ti | te | ta |\n| Far | oni | one | ona |"
+  },
+  {
+    "display_order": 16,
+    "name": "Genitive Case (Possession/Negation)",
+    "cefr_level": "A2",
+    "prerequisite_ids": [9],
+    "rule_description": "## Genitive = Possession/Of (Whose? Of what?)\n\n| Gender | Nom → Gen | Example |\n|--------|-----------|--------|\n| Masculine | -ø → **-a** | grad → grad**a** |\n| Feminine | -a → **-e** | žena → žen**e** |\n| Neuter | -o/-e → **-a** | selo → sel**a** |\n\n### Key Uses\n1. **Possession:** kuća mog**a** oca (my father's house)\n2. **After nema:** Nema vremen**a**. (There's no time)\n3. **Quantities:** čaša vod**e** (glass of water)\n4. **After prepositions:** iz grad**a**, do škol**e**, bez novac**a**\n\n### Prepositions + Genitive\n| Prep | Meaning | Example |\n|------|---------|--------|\n| iz | from/out of | iz kuće |\n| do | to/until | do škole |\n| od | from | od prijatelja |\n| bez | without | bez novca |\n| kod | at (someone's) | kod doktora |"
+  },
+  {
+    "display_order": 17,
+    "name": "Dative Case (Indirect Object)",
+    "cefr_level": "A2",
+    "prerequisite_ids": [16],
+    "rule_description": "## Dative = To Whom? For Whom?\n\n| Gender | Nom → Dat | Example |\n|--------|-----------|--------|\n| Masculine | -ø → **-u** | student → student**u** |\n| Feminine | -a → **-i** | žena → žen**i** |\n| Neuter | -o/-e → **-u** | dijete → djetet**u** |\n\n### Key Uses\n1. **Indirect object:** Dajem knjig**u** student**u**. (I give the book to the student)\n2. **Verbs requiring dative:**\n   - pomoći + DAT (help)\n   - reći + DAT (tell)\n   - dati + DAT (give)\n   - trebati + DAT (need)\n\n### Pattern\n```\n[Subj] + [Verb] + [Direct Obj-ACC] + [Indirect Obj-DAT]\nDajem      knjig-u              prijatelj-u.\n```\n\n**Memory:** Dative answers \"to whom/for whom\""
+  },
+  {
+    "display_order": 18,
+    "name": "Locative Case (Location)",
+    "cefr_level": "A2",
+    "prerequisite_ids": [17],
+    "rule_description": "## Locative = Location (Where? About what?)\n\n| Gender | Nom → Loc | Example |\n|--------|-----------|--------|\n| Masculine | -ø → **-u** | grad → grad**u** |\n| Feminine | -a → **-i** | škola → škol**i** |\n| Neuter | -o/-e → **-u** | selo → sel**u** |\n\n### ALWAYS with Preposition\n| Prep | Meaning | Example |\n|------|---------|--------|\n| **u** | in | u grad**u** (in the city) |\n| **na** | on/at | na stol**u** (on the table) |\n| **o** | about | o poslu (about work) |\n| **pri** | near/at | pri ruci (at hand) |\n\n### Loc vs Acc Motion Rule\n| Question | Case | Example |\n|----------|------|--------|\n| Where? (static) | LOC | Živim **u** grad**u**. |\n| Where to? (motion) | ACC | Idem **u** grad. |\n\n**Same endings as Dative!**"
+  },
+  {
+    "display_order": 19,
+    "name": "Instrumental Case (Means/Accompaniment)",
+    "cefr_level": "A2",
+    "prerequisite_ids": [18],
+    "rule_description": "## Instrumental = With What/Whom? By What Means?\n\n| Gender | Nom → Instr | Example |\n|--------|-------------|--------|\n| Masculine | -ø → **-om/-em** | auto → aut**om** |\n| Feminine | -a → **-om** | ruka → ruk**om** |\n| Neuter | -o/-e → **-om/-em** | pero → per**om** |\n\n### Key Uses\n1. **With (accompaniment):** Idem **s** prijatelj**em**. (I go with a friend)\n2. **By means of:** Pišem olovk**om**. (I write with a pencil)\n3. **Transport:** Putujem vlak**om**. (I travel by train)\n\n### S/SA + Instrumental\n- **s** before consonants: s bratom\n- **sa** before s/š/z/ž: sa sestrom\n\n### Common Expressions\n- s vremenom (with time)\n- jednom riječju (in one word)\n- putem (by way of)"
+  },
+  {
+    "display_order": 20,
+    "name": "Vocative Case (Address)",
+    "cefr_level": "A2",
+    "prerequisite_ids": [4],
+    "rule_description": "## Vocative = Direct Address\n\n| Gender | Nom → Voc | Example |\n|--------|-----------|--------|\n| Masc. -ø | → **-e/-u** | Marko → Mark**o**! |\n| Masc. -a | → **-o** | tata → tat**o**! |\n| Feminine | → **-o/-e** | Ana → An**o**! |\n| Neuter | no change | dijete → dijete! |\n\n### Patterns\n| Ending | Vocative | Example |\n|--------|----------|--------|\n| -k, -g, -h | **-u** (+ softening) | drug → druže! |\n| -ac | **-če** | momak → momče! |\n| other cons. | **-e** | student → studente! |\n\n### Usage\n- Calling someone: **Ivane!** Dođi ovamo!\n- Often with exclamation: **Bože moj!** (My God!)\n- Common: **Gospođo!** (Ma'am!), **Gospodine!** (Sir!)"
+  },
+  {
+    "display_order": 21,
+    "name": "Plural Nouns (All Cases)",
+    "cefr_level": "A2",
+    "prerequisite_ids": [16, 17, 18, 19, 20],
+    "rule_description": "## Plural Endings by Case\n\n### Masculine\n| Case | Singular | Plural |\n|------|----------|--------|\n| Nom | grad | grad**ovi** |\n| Gen | grada | grad**ova** |\n| Dat | gradu | grad**ovima** |\n| Acc | grad | grad**ove** |\n| Loc | gradu | grad**ovima** |\n| Ins | gradom | grad**ovima** |\n\n### Feminine (-a)\n| Case | Singular | Plural |\n|------|----------|--------|\n| Nom | žena | žen**e** |\n| Gen | žene | žen**a** |\n| Dat | ženi | žen**ama** |\n| Acc | ženu | žen**e** |\n| Loc | ženi | žen**ama** |\n| Ins | ženom | žen**ama** |\n\n### Neuter\n| Case | Singular | Plural |\n|------|----------|--------|\n| Nom | selo | sel**a** |\n| Gen | sela | sel**a** |\n| Dat/Loc/Ins | selu | sel**ima** |"
+  },
+  {
+    "display_order": 22,
+    "name": "Adjective Declension (All Cases)",
+    "cefr_level": "A2",
+    "prerequisite_ids": [13, 21],
+    "rule_description": "## Adjective Endings (Definite Form)\n\n### Masculine Singular\n| Case | Ending | Example: novi |\n|------|--------|---------------|\n| Nom | -i | nov**i** |\n| Gen | -og(a) | nov**og** |\n| Dat/Loc | -om(u) | nov**om** |\n| Acc (anim) | -og(a) | nov**og** |\n| Acc (inanim) | -i | nov**i** |\n| Ins | -im | nov**im** |\n\n### Feminine Singular\n| Case | Ending | Example: nova |\n|------|--------|---------------|\n| Nom | -a | nov**a** |\n| Gen | -e | nov**e** |\n| Dat/Loc | -oj | nov**oj** |\n| Acc | -u | nov**u** |\n| Ins | -om | nov**om** |\n\n### Neuter: Like masc. except Nom/Acc = **-o/-e**\n\n**Rule:** Adjective matches noun in gender, number, AND case"
+  },
+  {
+    "display_order": 23,
+    "name": "Past Tense (Perfekt)",
+    "cefr_level": "A2",
+    "prerequisite_ids": [6, 7, 8],
+    "rule_description": "## Perfekt = Auxiliary + L-Participle\n\n### Formula\n**sam/si/je/smo/ste/su** + **-o/-la/-lo/-li/-le/-la**\n\n### L-Participle by Gender\n| Gender | Singular | Plural |\n|--------|----------|--------|\n| Masc. | radi**o** | radi**li** |\n| Fem. | radi**la** | radi**le** |\n| Neut. | radi**lo** | radi**la** |\n\n### Full Conjugation: raditi (to work)\n| Person | Form |\n|--------|------|\n| ja (m/f) | **sam** radio / radila |\n| ti (m/f) | **si** radio / radila |\n| on | **je** radio |\n| ona | **je** radila |\n| mi | **smo** radili |\n| vi | **ste** radili |\n| oni | **su** radili |\n\n### Negation\n**nisam/nisi/nije...** + L-participle"
+  },
+  {
+    "display_order": 24,
+    "name": "Future Tense (Simple)",
+    "cefr_level": "A2",
+    "prerequisite_ids": [23],
+    "rule_description": "## Future I = htjeti + Infinitive\n\n### Short Forms of Htjeti\n| Person | Short | Full |\n|--------|-------|------|\n| ja | **ću** | hoću |\n| ti | **ćeš** | hoćeš |\n| on/ona | **će** | hoće |\n| mi | **ćemo** | hoćemo |\n| vi | **ćete** | hoćete |\n| oni | **će** | hoće |\n\n### Two Patterns\n1. **Infinitive + short form:** Raditi **ću**.\n2. **Short form + infinitive:** **Ću** raditi. → **Radit ću** (drop -i)\n\n### Examples\n| Croatian | English |\n|----------|--------|\n| Radit ću. | I will work. |\n| Ići ćemo. | We will go. |\n| Neću raditi. | I won't work. |\n\n### Negation\n**neću/nećeš/neće/nećemo/nećete/neće** + infinitive"
+  },
+  {
+    "display_order": 25,
+    "name": "Reflexive Verbs",
+    "cefr_level": "A2",
+    "prerequisite_ids": [6],
+    "rule_description": "## Reflexive = Verb + SE\n\n### SE Position\nNever first! Usually after first stressed word.\n\n| Correct | Incorrect |\n|---------|----------|\n| Ja **se** zovem Ana. | ~~Se zovem Ana.~~ |\n| Kako **se** zoveš? | |\n| Zovem **se** Ana. | |\n\n### Common Reflexive Verbs\n| Croatian | English |\n|----------|--------|\n| zvati **se** | to be called |\n| osjećati **se** | to feel |\n| bojati **se** | to be afraid |\n| smijati **se** | to laugh |\n| nadati **se** | to hope |\n| sjećati **se** | to remember |\n| truditi **se** | to try |\n\n### Types\n1. **True reflexive:** umivati se (wash oneself)\n2. **Reciprocal:** voljeti se (love each other)\n3. **Inherently reflexive:** bojati se (no non-reflexive form)"
+  },
+  {
+    "display_order": 26,
+    "name": "Aspect: Perfective vs Imperfective",
+    "cefr_level": "A2",
+    "prerequisite_ids": [23, 24],
+    "rule_description": "## Aspect = Completed vs Ongoing\n\n| Aspect | Focus | Example |\n|--------|-------|--------|\n| **Imperfective** | process, duration, repetition | pisati (write - ongoing) |\n| **Perfective** | completion, result, single event | napisati (write - complete) |\n\n### Aspect Pairs\n| Imperfective | Perfective | Meaning |\n|--------------|------------|--------|\n| pisati | **na**pisati | write |\n| čitati | **pro**čitati | read |\n| raditi | **na**raditi | work/make |\n| učiti | **na**učiti | learn |\n| gledati | **po**gledati | look/watch |\n\n### Usage\n| Context | Use | Example |\n|---------|-----|--------|\n| Was doing (process) | Imperf. | Pisao sam pismo. |\n| Did (completed) | Perf. | Napisao sam pismo. |\n| Will do (once) | Perf. | Napisat ću. |\n| Used to do | Imperf. | Pisao sam svaki dan. |"
+  },
+  {
+    "display_order": 27,
+    "name": "Modal Verbs",
+    "cefr_level": "A2",
+    "prerequisite_ids": [5, 24],
+    "rule_description": "## Modal Verbs + Infinitive\n\n### Moći (can/be able)\n| Person | Present |\n|--------|--------|\n| ja | **mogu** |\n| ti | **možeš** |\n| on/ona | **može** |\n| mi | **možemo** |\n| vi | **možete** |\n| oni | **mogu** |\n\n### Other Modals\n| Modal | Meaning | Example |\n|-------|---------|--------|\n| **htjeti** | want | Hoću ići. |\n| **trebati** | need/should | Trebam raditi. |\n| **morati** | must | Moram ići. |\n| **smjeti** | may/be allowed | Smijem ući? |\n| **željeti** | wish | Želim naučiti. |\n\n### Pattern\n**Modal (conjugated)** + **Infinitive**\n- Mogu **govoriti** hrvatski.\n- Moraš **učiti** svaki dan."
+  },
+  {
+    "display_order": 28,
+    "name": "Comparatives",
+    "cefr_level": "A2",
+    "prerequisite_ids": [13],
+    "rule_description": "## Comparative = More...\n\n### Regular Pattern: -iji / -ji\n| Positive | Comparative | Pattern |\n|----------|-------------|--------|\n| star (old) | star**iji** | + iji |\n| mlad (young) | mlađ**i** | + i (softening) |\n| velik (big) | već**i** | + i (softening) |\n| brz (fast) | brž**i** | + i |\n\n### Irregular Comparatives\n| Positive | Comparative |\n|----------|-------------|\n| dobar (good) | **bolji** |\n| loš (bad) | **gori** |\n| velik (big) | **veći** |\n| mali (small) | **manji** |\n\n### Comparison Structure\n**[Subj] + je + [Comp] + od + [Gen]** OR **nego + [Nom]**\n- On je stariji **od** mene.\n- On je stariji **nego** ja.\n\n### Softening Before -i\nk→č, g→ž, h→š: velik → već**i**"
+  },
+  {
+    "display_order": 29,
+    "name": "Superlatives",
+    "cefr_level": "A2",
+    "prerequisite_ids": [28],
+    "rule_description": "## Superlative = NAJ- + Comparative\n\n### Formation\n| Positive | Comparative | Superlative |\n|----------|-------------|-------------|\n| star | stariji | **naj**stariji |\n| mlad | mlađi | **naj**mlađi |\n| velik | veći | **naj**veći |\n| dobar | bolji | **naj**bolji |\n| loš | gori | **naj**gori |\n\n### Examples\n| Croatian | English |\n|----------|--------|\n| najveći grad | the biggest city |\n| najbolji prijatelj | the best friend |\n| najljepša žena | the most beautiful woman |\n\n### Usage\n- On je **najbolji** student.\n- To je **najskuplji** restoran u gradu.\n- Zagreb je **najveći** grad u Hrvatskoj.\n\n**Note:** Superlative declines like any adjective"
+  },
+  {
+    "display_order": 30,
+    "name": "Prepositions with Cases",
+    "cefr_level": "A2",
+    "prerequisite_ids": [16, 17, 18, 19],
+    "rule_description": "## Case Government by Preposition\n\n### Genitive\n| Prep | Meaning |\n|------|--------|\n| iz | from (inside) |\n| s(a) | from (surface) |\n| do | to, until |\n| od | from |\n| bez | without |\n| kod | at (someone's) |\n| ispred/iza | in front/behind |\n\n### Dative\n| Prep | Meaning |\n|------|--------|\n| k(a) | toward |\n| prema | toward |\n| unatoč | despite |\n\n### Accusative\n| Prep | Meaning |\n|------|--------|\n| u | into |\n| na | onto |\n| za | for |\n| kroz | through |\n\n### Locative (ALWAYS needs preposition)\n| Prep | Meaning |\n|------|--------|\n| u | in |\n| na | on |\n| o | about |\n\n### Motion Rule\n| Static (LOC) | Motion (ACC) |\n|--------------|-------------|\n| u gradu (in) | u grad (into) |\n| na stolu (on) | na stol (onto) |"
+  },
+  {
+    "display_order": 31,
+    "name": "Conjunctions",
+    "cefr_level": "A2",
+    "prerequisite_ids": [10],
+    "rule_description": "## Common Conjunctions\n\n### Coordinating\n| Conj | Meaning | Example |\n|------|---------|--------|\n| **i** | and | Ivan i Ana |\n| **a** | and/but (contrast) | On radi, a ja odmaram. |\n| **ali** | but | Dobar, ali skup. |\n| **ili** | or | Kava ili čaj? |\n| **ni...ni** | neither...nor | Ni on ni ona. |\n\n### Subordinating\n| Conj | Meaning | Example |\n|------|---------|--------|\n| **da** | that | Mislim da je dobro. |\n| **jer** | because | Idem jer moram. |\n| **ako** | if | Ako dođeš... |\n| **kad(a)** | when | Kad dođem... |\n| **dok** | while | Dok čekam... |\n| **iako** | although | Iako je kasno... |\n| **zato što** | because | Zato što volim. |\n\n### Word Order\nAfter **da, jer, ako, kad**: normal word order"
+  },
+  {
+    "display_order": 32,
+    "name": "Adverbs Formation",
+    "cefr_level": "A2",
+    "prerequisite_ids": [13],
+    "rule_description": "## Adjective → Adverb\n\n### Pattern: Replace ending with -O\n| Adjective | Adverb | English |\n|-----------|--------|--------|\n| brz (fast) | brz**o** | fast/quickly |\n| dobar (good) | dobr**o** | well |\n| loš (bad) | loš**e** | badly |\n| lijep (nice) | lijep**o** | nicely |\n| tih (quiet) | tih**o** | quietly |\n| polagan (slow) | polagan**o** | slowly |\n\n### Irregular Adverbs\n| Adjective | Adverb |\n|-----------|--------|\n| dobar | **dobro** |\n| loš | **loše** |\n\n### Common Adverbs (not from adjectives)\n| Croatian | English |\n|----------|--------|\n| ovdje/tu/tamo | here/there/there |\n| sada/sad | now |\n| onda | then |\n| još | still/yet |\n| već | already |\n| uvijek | always |\n| nikad | never |"
+  },
+  {
+    "display_order": 33,
+    "name": "Telling Time",
+    "cefr_level": "A2",
+    "prerequisite_ids": [12],
+    "rule_description": "## Koliko je sati? (What time is it?)\n\n### Full Hours\n| Time | Croatian |\n|------|----------|\n| 1:00 | **Jedan** sat. |\n| 2:00 | **Dva** sata. |\n| 5:00 | **Pet** sati. |\n| 12:00 | **Dvanaest** sati. |\n\n### Number + Noun Agreement\n| Number | Form |\n|--------|------|\n| 1 | sat |\n| 2, 3, 4 | sat**a** |\n| 5-20 | sat**i** |\n| 21 | sat |\n| 22-24 | sata |\n\n### Half/Quarter\n| Time | Croatian |\n|------|----------|\n| 2:30 | Pola tri. (half to 3) |\n| 2:15 | Četvrt do tri. |\n| 2:45 | Tri četvrt. |\n\n### Minutes\n- 3:10 = Deset **poslije** tri.\n- 2:50 = Deset **do** tri.\n\n**Note:** Croatian uses \"half to\" not \"half past\""
+  },
+  {
+    "display_order": 34,
+    "name": "Ordinal Numbers",
+    "cefr_level": "A2",
+    "prerequisite_ids": [12],
+    "rule_description": "## Ordinal Numbers (1st-10th)\n\n| # | Masc | Fem | Neut |\n|---|------|-----|------|\n| 1st | prv**i** | prv**a** | prv**o** |\n| 2nd | drug**i** | drug**a** | drug**o** |\n| 3rd | treć**i** | treć**a** | treć**e** |\n| 4th | četvrt**i** | četvrt**a** | četvrt**o** |\n| 5th | pet**i** | pet**a** | pet**o** |\n| 6th | šest**i** | šest**a** | šest**o** |\n| 7th | sedm**i** | sedm**a** | sedm**o** |\n| 8th | osm**i** | osm**a** | osm**o** |\n| 9th | devet**i** | devet**a** | devet**o** |\n| 10th | deset**i** | deset**a** | deset**o** |\n\n### Usage\n- **Prva** lekcija (first lesson - fem)\n- **Drugi** kat (second floor - masc)\n- **Treće** poglavlje (third chapter - neut)\n\n**Ordinals decline like adjectives!**"
+  },
+  {
+    "display_order": 35,
+    "name": "Verb Aspect in Depth",
+    "cefr_level": "B1",
+    "prerequisite_ids": [26],
+    "rule_description": "## Aspect Pair Formation\n\n### Common Prefixes (Imperf → Perf)\n| Prefix | Meaning | Example |\n|--------|---------|--------|\n| **na-** | completion | pisati → **na**pisati |\n| **pro-** | through | čitati → **pro**čitati |\n| **po-** | begin/finish | gledati → **po**gledati |\n| **s-** | together/down | raditi → **s**raditi |\n| **u-** | into | učiti → **na**učiti |\n| **iz-** | out | govoriti → **iz**govoriti |\n\n### Suffix Changes (Perf → Imperf)\n| Pattern | Example |\n|---------|--------|\n| -iti → -ivati | kupiti → kup**ovati** |\n| -ati → -avati | dati → dav**ati** |\n| -nuti → -ati | skinuti → skid**ati** |\n\n### Suppletive Pairs (Different Roots)\n| Imperfective | Perfective |\n|--------------|------------|\n| govoriti | reći |\n| gledati | vidjeti |\n| stavljati | staviti |\n| uzimati | uzeti |"
+  },
+  {
+    "display_order": 36,
+    "name": "Past Tense Aspect Usage",
+    "cefr_level": "B1",
+    "prerequisite_ids": [35, 23],
+    "rule_description": "## Choosing Aspect in Past\n\n### Imperfective Past\n| Use | Example |\n|-----|--------|\n| Ongoing action | Pisao **sam** pismo. (was writing) |\n| Repeated action | Pisao sam svaki dan. (used to write) |\n| Background | Dok sam čitao... (while reading) |\n| No result focus | Čitao sam knjigu. (was reading) |\n\n### Perfective Past\n| Use | Example |\n|-----|--------|\n| Completed action | **Napisao** sam pismo. (wrote/finished) |\n| Single event | Pročitao sam članak. (read it) |\n| Result emphasis | Naučio sam hrvatski. (learned it) |\n| Sequence | Došao je i sjeo. (came and sat) |\n\n### Contrast\n| Imperfective | Perfective |\n|--------------|------------|\n| Pisao sam. (was writing) | Napisao sam. (wrote it) |\n| Čitao sam knjigu. | Pročitao sam knjigu. |\n| Učio sam godinama. | Naučio sam. |"
+  },
+  {
+    "display_order": 37,
+    "name": "Future Tense Aspect Usage",
+    "cefr_level": "B1",
+    "prerequisite_ids": [35, 24],
+    "rule_description": "## Choosing Aspect in Future\n\n### Imperfective Future\n| Use | Example |\n|-----|--------|\n| Ongoing/duration | Radit ću cijeli dan. |\n| Repeated action | Pisati ću svaki dan. |\n| Process focus | Učit ću hrvatski. |\n\n### Perfective Future\n| Use | Example |\n|-----|--------|\n| Single completed | Napisat ću pismo. |\n| Result expected | Naučit ću to. |\n| Promise/intention | Napravit ću to sutra. |\n\n### Common Pairs in Future\n| Imperfective | Perfective |\n|--------------|------------|\n| Ću pisati. (will be writing) | Napisat ću. (will write) |\n| Ću čitati. (will read/be reading) | Pročitat ću. (will have read) |\n| Ću učiti. (will study) | Naučit ću. (will learn) |\n\n**Rule:** Perfective = single complete action; Imperfective = process/duration"
+  },
+  {
+    "display_order": 38,
+    "name": "Aorist & Imperfekt (Recognition)",
+    "cefr_level": "B1",
+    "prerequisite_ids": [23],
+    "rule_description": "## Literary Past Tenses (Passive Recognition)\n\n### Aorist (Perfective Past - Literary)\n| Person | Ending | Example: reći |\n|--------|--------|---------------|\n| ja | -h | rek**oh** |\n| ti | -ø | reč**e** |\n| on | -ø | reč**e** |\n| mi | -smo | rek**osmo** |\n| vi | -ste | rek**oste** |\n| oni | -še | rek**oše** |\n\n### Imperfekt (Imperfective Past - Literary)\n| Person | Ending | Example: govoriti |\n|--------|--------|-------------------|\n| ja | -ah | govor**ah** |\n| ti | -aše | govor**aše** |\n| on | -aše | govor**aše** |\n| mi | -asmo | govor**asmo** |\n| vi | -aste | govor**aste** |\n| oni | -ahu | govor**ahu** |\n\n**Usage:** Found in literature, folk tales, some dialects. Not used in everyday speech."
+  },
+  {
+    "display_order": 39,
+    "name": "Conditional Mood",
+    "cefr_level": "B1",
+    "prerequisite_ids": [23],
+    "rule_description": "## Conditional = bih + L-Participle\n\n### Formation\n| Person | Auxiliary | + L-Participle |\n|--------|-----------|----------------|\n| ja | **bih** | radio/radila |\n| ti | **bi** | radio/radila |\n| on/ona | **bi** | radio/radila |\n| mi | **bismo** | radili |\n| vi | **biste** | radili |\n| oni | **bi** | radili |\n\n### Uses\n| Type | Example |\n|------|--------|\n| Wish | **Htio bih** kavu. (I'd like coffee) |\n| Polite request | **Biste li** mi pomogli? (Would you help?) |\n| Hypothetical | **Kupio bih** to. (I would buy it) |\n| If-clause result | Ako bi došao, **vidio bi**. |\n\n### Negation\n**ne bih / ne bi / ne bismo / ne biste / ne bi**\n\n### Word Order\n- Bih usually in 2nd position\n- **Da** + conditional: Da bih mogao..."
+  },
+  {
+    "display_order": 40,
+    "name": "Imperative Mood",
+    "cefr_level": "B1",
+    "prerequisite_ids": [6, 7, 8],
+    "rule_description": "## Imperative = Commands\n\n### Formation from Present Stem\n| Verb Type | Ti | Vi/Mi |\n|-----------|-----|-------|\n| -am verbs | čitaj | čitaj**te** / čitaj**mo** |\n| -im verbs | govori | govor**ite** / govor**imo** |\n| -em verbs | piši | piš**ite** / piš**imo** |\n\n### Common Imperatives\n| Infinitive | Ti | Vi |\n|------------|-----|-----|\n| ići | **idi** | idite |\n| doći | **dođi** | dođite |\n| reći | **reci** | recite |\n| jesti | **jedi** | jedite |\n| biti | **budi** | budite |\n\n### Negative Imperative\n**nemoj** + infinitive (ti) / **nemojte** + infinitive (vi)\n- **Nemoj** raditi to!\n- **Nemojte** kasniti!\n\nOR: **ne** + imperative (more emphatic)\n- **Ne** radi to!"
+  },
+  {
+    "display_order": 41,
+    "name": "Passive Voice",
+    "cefr_level": "B1",
+    "prerequisite_ids": [23],
+    "rule_description": "## Passive = biti + Passive Participle\n\n### Passive Participle Formation\n| Infinitive | Participle (m/f/n) |\n|------------|--------------------|\n| pisati | pisan / pisana / pisano |\n| raditi | rađen / rađena / rađeno |\n| napraviti | napravljen / -a / -o |\n| vidjeti | viđen / viđena / viđeno |\n\n### Tense Formation\n| Tense | Example |\n|-------|--------|\n| Present | Knjiga **je pisana**. |\n| Past | Knjiga **je bila pisana**. |\n| Future | Knjiga **će biti pisana**. |\n\n### Agent (by whom)\n**od strane** + Genitive (formal)\n- Knjiga je napisana **od strane autora**.\n\nOR omit agent (common)\n- Zgrada je sagrađena 1990.\n\n### Alternative: SE-Passive\n**Tu se govori hrvatski.** (Croatian is spoken here)"
+  },
+  {
+    "display_order": 42,
+    "name": "Relative Clauses",
+    "cefr_level": "B1",
+    "prerequisite_ids": [31],
+    "rule_description": "## Relative Pronouns\n\n### Koji/Koja/Koje (who/which/that)\n| Antecedent | Relative | Example |\n|------------|----------|--------|\n| Masc. | **koji** | Čovjek **koji** radi... |\n| Fem. | **koja** | Žena **koja** govori... |\n| Neut. | **koje** | Dijete **koje** spava... |\n\n### Case Agreement\nRelative pronoun takes case from its role in the clause:\n- Čovjek **kojeg** (ACC) vidim...\n- Žena **kojoj** (DAT) dajem...\n- Kuća u **kojoj** (LOC) živim...\n\n### Other Relatives\n| Word | Usage |\n|------|-------|\n| **što** | that (informal for koji) |\n| **tko** | whoever |\n| **gdje** | where |\n| **kad(a)** | when |\n| **kako** | how |\n\n### Example Sentences\n- To je knjiga **koju** čitam.\n- Grad **u kojem** živim je lijep."
+  },
+  {
+    "display_order": 43,
+    "name": "Indirect Speech",
+    "cefr_level": "B1",
+    "prerequisite_ids": [42],
+    "rule_description": "## Reported Speech\n\n### Structure\n**Main verb** + **da** + **clause**\n\n### Direct → Indirect\n| Direct | Indirect |\n|--------|----------|\n| \"Dolazim.\" | Rekao je **da dolazi**. |\n| \"Došao sam.\" | Rekao je **da je došao**. |\n| \"Doći ću.\" | Rekao je **da će doći**. |\n\n### Pronoun Shifts\n| Direct | Indirect |\n|--------|----------|\n| ja → | on/ona |\n| ti → | ja (if I'm addressed) |\n| moj → | njegov/njezin |\n\n### Tense (Usually NO Shift)\n| Direct | Indirect |\n|--------|----------|\n| Present → | Present |\n| Past → | Past |\n| Future → | Future |\n\n### Questions in Indirect Speech\n- \"Gdje ideš?\" → Pitao me **gdje idem**.\n- \"Ideš li?\" → Pitao me **idem li** / **da li idem**."
+  },
+  {
+    "display_order": 44,
+    "name": "Verbal Nouns (Glagolske imenice)",
+    "cefr_level": "B1",
+    "prerequisite_ids": [6],
+    "rule_description": "## Verbal Noun = -anje / -enje / -je\n\n### Formation\n| Verb Type | Ending | Example |\n|-----------|--------|--------|\n| -ati verbs | **-anje** | čitati → čit**anje** |\n| -iti verbs | **-enje** | učiti → uč**enje** |\n| -eti verbs | **-enje** | vidjeti → vič**enje** |\n| Other | **-je** | piti → pit**je** |\n\n### Common Verbal Nouns\n| Verb | Verbal Noun |\n|------|-------------|\n| pisati | pisanje (writing) |\n| čitati | čitanje (reading) |\n| učiti | učenje (learning) |\n| plivati | plivanje (swimming) |\n| trčati | trčanje (running) |\n\n### Usage\n- **Čitanje** je važno. (Reading is important)\n- Volim **plivanje**. (I love swimming)\n- Hvala na **razumijevanju**. (Thanks for understanding)\n\n**Neuter gender, declines as neuter noun**"
+  },
+  {
+    "display_order": 45,
+    "name": "Participles: Present Active",
+    "cefr_level": "B1",
+    "prerequisite_ids": [6],
+    "rule_description": "## Present Active Participle = -ući / -eći\n\n### Formation (from 3rd pl. present)\n| 3rd Pl. | Participle | Meaning |\n|---------|------------|--------|\n| čitaju → | čitaj**ući** | while reading |\n| govore → | govor**eći** | while speaking |\n| pišu → | piš**ući** | while writing |\n| rade → | rad**eći** | while working |\n\n### Usage\nExpresses simultaneous action (while doing X):\n\n- **Čitajući** novine, pio je kavu.\n  (While reading the paper, he drank coffee)\n- **Hodajući** ulicom, vidio sam ga.\n  (While walking down the street, I saw him)\n\n### Important Notes\n- Subject of participle = subject of main verb\n- Invariable (doesn't decline)\n- More common in written Croatian\n- Equivalent to English \"-ing\" in some contexts"
+  },
+  {
+    "display_order": 46,
+    "name": "Participles: Past Passive",
+    "cefr_level": "B1",
+    "prerequisite_ids": [23],
+    "rule_description": "## Past Passive Participle = -n/-t + gender\n\n### Formation\n| Infinitive | Masc | Fem | Neut |\n|------------|------|-----|------|\n| napisati | napisa**n** | napisana | napisano |\n| pročitati | pročita**n** | pročitana | pročitano |\n| vidjeti | viđe**n** | viđena | viđeno |\n| uzeti | uze**t** | uzeta | uzeto |\n| napraviti | napravlje**n** | -a | -o |\n\n### Uses\n1. **Passive voice:** Pismo je **napisano**.\n2. **Adjective:** **Napisana** knjiga. (written book)\n3. **Result state:** Vrata su **otvorena**. (The door is open)\n\n### Consonant Changes\n| Before -en | Change |\n|------------|--------|\n| d → đ | vidjeti → vi**đ**en |\n| t → ć | platiti → pla**ć**en |\n| s → š | nositi → no**š**en |\n| z → ž | voziti → vo**ž**en |"
+  },
+  {
+    "display_order": 47,
+    "name": "Diminutives & Augmentatives",
+    "cefr_level": "B1",
+    "prerequisite_ids": [3],
+    "rule_description": "## Diminutives (Small/Cute)\n\n### Common Suffixes\n| Suffix | Example |\n|--------|--------|\n| **-ić** (m) | pas → ps**ić** (doggy) |\n| **-ica** (f) | kuća → kuć**ica** (little house) |\n| **-ce** (n) | selo → sel**ce** (little village) |\n| **-ak** (m) | list → list**ak** (leaflet) |\n\n### Examples\n| Base | Diminutive |\n|------|------------|\n| knjiga | knjižica |\n| sestra | sestrica |\n| brat | bratić |\n| grad | gradić |\n| dijete | djetešce |\n\n## Augmentatives (Big/Rough)\n\n| Suffix | Example |\n|--------|--------|\n| **-ina** | kuća → kuć**ina** (big house) |\n| **-etina** | ruka → ruč**etina** (big hand) |\n| **-urina** | pas → ps**urina** (big dog) |\n\n**Note:** Often carries emotional connotation (affection/contempt)"
+  },
+  {
+    "display_order": 48,
+    "name": "Word Formation: Prefixes",
+    "cefr_level": "B1",
+    "prerequisite_ids": [35],
+    "rule_description": "## Verb Prefixes\n\n| Prefix | Meaning | Example |\n|--------|---------|--------|\n| **do-** | to, completion | doći (come to) |\n| **iz-** | out | izaći (go out) |\n| **na-** | on, onto | napisati (write down) |\n| **o-/ob-** | around | obići (go around) |\n| **od-** | away | otići (go away) |\n| **po-** | begin, a bit | početi (begin) |\n| **pre-** | over, across | preći (cross over) |\n| **pri-** | toward, near | prići (approach) |\n| **pro-** | through | proći (pass through) |\n| **raz-** | apart | razumjeti (understand) |\n| **s-** | down, together | sići (go down) |\n| **u-** | in, into | ući (enter) |\n| **za-** | behind, begin | zaći (go behind) |\n\n### Motion Verb Example: IĆI\nići → **do**ći, **iz**aći, **na**ići, **ob**ići, **ot**ići, **po**ći, **pre**ći, **pri**ći, **pro**ći, **s**ići, **u**ći, **za**ći"
+  },
+  {
+    "display_order": 49,
+    "name": "Word Formation: Suffixes",
+    "cefr_level": "B1",
+    "prerequisite_ids": [3],
+    "rule_description": "## Noun-Forming Suffixes\n\n### From Adjectives\n| Suffix | Meaning | Example |\n|--------|---------|--------|\n| **-ost** | abstract quality | lijep → ljepot**a** |\n| **-oća** | quality | čist → čist**oća** |\n| **-ina** | quality/size | visok → vis**ina** |\n\n### From Verbs\n| Suffix | Meaning | Example |\n|--------|---------|--------|\n| **-ač** | agent (m) | voziti → voz**ač** |\n| **-telj** | agent (m) | učiti → uči**telj** |\n| **-ica** | agent (f) | učitelj → učitelj**ica** |\n| **-nje** | action | čitati → čita**nje** |\n\n### Other Common\n| Suffix | Meaning | Example |\n|--------|---------|--------|\n| **-nik** | person | rad → rad**nik** |\n| **-stvo** | state/field | prijatelj → prijatelj**stvo** |\n| **-arna/-onica** | place | knjiga → knjižar**a** |"
+  },
+  {
+    "display_order": 50,
+    "name": "Numerals with Cases",
+    "cefr_level": "B1",
+    "prerequisite_ids": [12, 21],
+    "rule_description": "## Number + Noun Agreement\n\n### Basic Rule\n| Number | Noun Form | Example |\n|--------|-----------|--------|\n| 1 | Nom. Sg. | jedan student |\n| 2, 3, 4 | Gen. Sg. | dva student**a** |\n| 5-20 | Gen. Pl. | pet student**a** |\n| 21 | Nom. Sg. | dvadeset jedan student |\n| 22-24 | Gen. Sg. | dvadeset dva studenta |\n| 25-30 | Gen. Pl. | dvadeset pet studenata |\n\n### Gender of Numbers\n| # | Masc | Fem | Neut |\n|---|------|-----|------|\n| 1 | jedan | jedna | jedno |\n| 2 | dva | dvije | dva |\n| 3 | tri | tri | tri |\n| 4 | četiri | četiri | četiri |\n\n### With Cases (2-4)\n| Case | Example |\n|------|--------|\n| Nom | dva studenta |\n| Gen | dva studenta |\n| Dat | **dvama** studentima |\n| Acc | dva studenta |\n| Ins | **dvama** studentima |"
+  },
+  {
+    "display_order": 51,
+    "name": "Collective Numerals",
+    "cefr_level": "B1",
+    "prerequisite_ids": [50],
+    "rule_description": "## Collective Numerals (Mixed Groups/Children)\n\n### Forms\n| Number | Collective |\n|--------|------------|\n| 2 | **dvoje** |\n| 3 | **troje** |\n| 4 | **četvero** |\n| 5 | **petero** |\n| 6 | **šestero** |\n| 7 | **sedmero** |\n\n### Usage\n1. **Mixed gender groups:**\n   - **Dvoje** djece (two children - mixed)\n   - **Troje** prijatelja (three friends - m+f)\n\n2. **Pluralia tantum nouns:**\n   - **dvoja** vrata (two doors)\n   - **troje** naočale (three glasses)\n\n3. **Abstract counting:**\n   - Nas je **petero**. (There are five of us)\n\n### Noun Form After Collective\n**Collective numeral** + **Genitive Plural**\n- dvoje djec**e** (not djeca)\n- troje studenat**a** (mixed group)"
+  },
+  {
+    "display_order": 52,
+    "name": "Indefinite Pronouns",
+    "cefr_level": "B1",
+    "prerequisite_ids": [2],
+    "rule_description": "## Indefinite Pronouns (ne- series)\n\n### Basic Forms\n| Type | Pronoun | Meaning |\n|------|---------|--------|\n| Person | **netko** | someone |\n| Thing | **nešto** | something |\n| Place | **negdje** | somewhere |\n| Time | **nekad(a)** | sometime |\n| Quality | **nekakav** | some kind of |\n| Quantity | **nekoliko** | some/several |\n\n### Declension of Netko\n| Case | Form |\n|------|------|\n| Nom | netko |\n| Gen | nekog(a) |\n| Dat | nekom(u) |\n| Acc | nekog(a) |\n| Ins | nekim |\n\n### Neki vs Nekakav\n- **neki** = some (specific): neki čovjek\n- **nekakav** = some kind of (vague): nekakav problem\n\n### Declension of Neki (like adjective)\n| Gender | Nom | Gen | Dat |\n|--------|-----|-----|-----|\n| M | neki | nekog | nekom |\n| F | neka | neke | nekoj |\n| N | neko | nekog | nekom |"
+  },
+  {
+    "display_order": 53,
+    "name": "Negative Pronouns",
+    "cefr_level": "B1",
+    "prerequisite_ids": [52, 11],
+    "rule_description": "## Negative Pronouns (ni- series)\n\n### Basic Forms\n| Type | Pronoun | Meaning |\n|------|---------|--------|\n| Person | **nitko** | no one |\n| Thing | **ništa** | nothing |\n| Place | **nigdje** | nowhere |\n| Time | **nikad(a)** | never |\n| Quality | **nikakav** | no kind of |\n| Direction | **nikamo** | to nowhere |\n\n### DOUBLE NEGATIVE Required!\n| Croatian | English |\n|----------|--------|\n| **Nitko ne** dolazi. | Nobody is coming. |\n| **Ništa ne** znam. | I don't know anything. |\n| **Nikad ne** kasnim. | I never am late. |\n| **Nigdje ga ne** vidim. | I don't see him anywhere. |\n\n### Declension of Nitko\n| Case | Form |\n|------|------|\n| Nom | nitko |\n| Gen | nikog(a) |\n| Dat | nikom(u) |\n| Acc | nikog(a) |\n| Ins | nikim |"
+  },
+  {
+    "display_order": 54,
+    "name": "Reflexive Possession",
+    "cefr_level": "B1",
+    "prerequisite_ids": [14],
+    "rule_description": "## Svoj = One's Own\n\n### Forms (Declines Like Moj)\n| Gender | Nom | Gen | Dat | Acc |\n|--------|-----|-----|-----|-----|\n| Masc | svoj | svog | svom | svoj/svog |\n| Fem | svoja | svoje | svojoj | svoju |\n| Neut | svoje | svog | svom | svoje |\n\n### When to Use SVOJ\nWhen possessor = subject of the sentence:\n\n| Correct | Incorrect | Meaning |\n|---------|-----------|--------|\n| On voli **svoju** ženu. | ~~On voli njegovu ženu.~~ | He loves his (own) wife. |\n| Ja čitam **svoju** knjigu. | | I read my (own) book. |\n| Oni žive u **svojoj** kući. | | They live in their (own) house. |\n\n### When NOT to Use SVOJ\nWhen possessor ≠ subject:\n\n- On voli **njezinu** ženu. (He loves her wife - not his own)\n- Vidim **njegovu** kuću. (I see his house)\n\n**Svoj is NEVER in nominative!**"
+  },
+  {
+    "display_order": 55,
+    "name": "Complex Aspect Pairs",
+    "cefr_level": "B2",
+    "prerequisite_ids": [35],
+    "rule_description": "## Multiple Perfective Forms from One Imperfective\n\n### Pisati (to write) → Different Perfectives\n| Perfective | Meaning | Example |\n|------------|---------|--------|\n| **na**pisati | write (complete) | Napisao sam pismo. |\n| **pre**pisati | copy, rewrite | Prepisao sam tekst. |\n| **u**pisati | write in, enroll | Upisao sam se na fakultet. |\n| **is**pisati | write out | Ispisao sam sve. |\n| **pot**pisati | sign | Potpisao sam ugovor. |\n| **za**pisati | write down, note | Zapisao sam broj. |\n| **do**pisati | add (writing) | Dopisao sam kraj. |\n| **o**pisati | describe | Opisao sam situaciju. |\n\n### Key Insight\nEach prefix adds specific meaning:\n- **na-** = completion onto surface\n- **pre-** = across, re-do\n- **u-** = into\n- **is-** = out (completely)\n- **za-** = behind, begin\n- **o-** = around (describing)"
+  },
+  {
+    "display_order": 56,
+    "name": "Motion Verbs (Prefixed)",
+    "cefr_level": "B2",
+    "prerequisite_ids": [48, 35],
+    "rule_description": "## IĆI (Go) with Prefixes\n\n| Prefix | Verb | Meaning |\n|--------|------|--------|\n| **do-** | doći | come (arrive) |\n| **ot-** | otići | go away (leave) |\n| **iz-** | izaći | go out (exit) |\n| **u-** | ući | go in (enter) |\n| **na-** | naići | come upon |\n| **ob-** | obići | go around |\n| **pre-** | prijeći | cross over |\n| **pro-** | proći | pass through |\n| **pri-** | prići | approach |\n| **s-** | sići | go down |\n| **uz-** | uzići | go up |\n| **za-** | zaći | go behind |\n\n### Conjugation Pattern (Present)\n| Verb | Ja | Ti | On |\n|------|-----|-----|-----|\n| doći | **dođem** | dođeš | dođe |\n| ući | **uđem** | uđeš | uđe |\n| izaći | **izađem** | izađeš | izađe |\n\n**Note:** All are PERFECTIVE. Imperfective: dolaziti, odlaziti, ulaziti, izlaziti..."
+  },
+  {
+    "display_order": 57,
+    "name": "Conditional in Complex Sentences",
+    "cefr_level": "B2",
+    "prerequisite_ids": [39, 42],
+    "rule_description": "## Conditional Sentence Types\n\n### Type 1: Real/Possible (Present/Future)\n**Ako** + present, future/present\n- **Ako** dođeš, **vidjet ćeš**.\n- **Ako** imaš vremena, **dođi**.\n\n### Type 2: Unreal/Hypothetical (Present)\n**Kad/Da** + conditional, conditional\n- **Kad bih** imao novaca, **kupio bih** auto.\n- **Da** sam bogat, **živio bih** u Zagrebu.\n\n### Type 3: Unreal Past (Counterfactual)\n**Da** + past, conditional (past)\n- **Da sam znao**, **bio bih došao**.\n- **Da si me pitao**, **rekao bih** ti.\n\n### Word Order in Conditionals\n| Type | Structure |\n|------|----------|\n| If-clause first | Ako dođeš, vidjet ću te. |\n| Main clause first | Vidjet ću te ako dođeš. |\n\n**Key:** Croatian doesn't use conditional in \"if\" clause (unlike English \"would\")"
+  },
+  {
+    "display_order": 58,
+    "name": "Subjunctive (Recognition)",
+    "cefr_level": "B2",
+    "prerequisite_ids": [39],
+    "rule_description": "## Subjunctive = DA + Present (Literary)\n\n### Structure\n**da** + **present tense** (instead of infinitive)\n\n### Common Contexts\n| With Verb | Example |\n|-----------|--------|\n| htjeti | Hoću **da dođeš**. (I want you to come) |\n| moći | Možeš **da ideš**. (You can go) |\n| trebati | Treba **da radiš**. (You should work) |\n\n### Infinitive vs Da + Present\n| Infinitive (standard) | Da + Present (colloquial/regional) |\n|-----------------------|------------------------------------|\n| Želim **ići**. | Želim **da idem**. |\n| Mogu **raditi**. | Mogu **da radim**. |\n| Treba **učiti**. | Treba **da učim**. |\n\n### Purpose Clauses\n**Da** + present for purpose:\n- Došao sam **da te vidim**. (I came to see you)\n- Učim **da položim** ispit. (I study to pass)\n\n**Note:** More common in Serbian; in Croatian, infinitive is preferred"
+  },
+  {
+    "display_order": 59,
+    "name": "Pluperfect (Pluskvamperfekt)",
+    "cefr_level": "B2",
+    "prerequisite_ids": [23],
+    "rule_description": "## Pluperfect = Had Done (Past before Past)\n\n### Formation\n**bio/bila/bili** + **sam/si/je...** + **L-participle**\nOR\n**bio/bila** + **L-participle** (without auxiliary)\n\n### Full Paradigm\n| Person | Form |\n|--------|------|\n| ja | bio sam radio / bila sam radila |\n| ti | bio si radio / bila si radila |\n| on | bio je radio |\n| ona | bila je radila |\n| mi | bili smo radili |\n| vi | bili ste radili |\n| oni | bili su radili |\n\n### Usage\nAction completed BEFORE another past action:\n\n- **Bio sam već otišao** kad je stigao.\n  (I had already left when he arrived)\n- **Bila je završila** posao prije mene.\n  (She had finished work before me)\n\n### Alternative (Common)\nOften replaced by simple perfekt with context:\n- Već sam otišao kad je stigao."
+  },
+  {
+    "display_order": 60,
+    "name": "Future Perfect (Futur II)",
+    "cefr_level": "B2",
+    "prerequisite_ids": [24, 59],
+    "rule_description": "## Future II = Will Have Done (Future Perfect)\n\n### Formation\n**budem/budeš/bude...** + **L-participle**\n\n### Paradigm\n| Person | Form |\n|--------|------|\n| ja | **budem** radio/radila |\n| ti | **budeš** radio/radila |\n| on/ona | **bude** radio/radila |\n| mi | **budemo** radili |\n| vi | **budete** radili |\n| oni | **budu** radili |\n\n### Usage\nFuture action BEFORE another future action:\n\n- Kad **budem završio**, javit ću ti se.\n  (When I have finished, I'll call you)\n- Čim **budeš stigao**, nazovi me.\n  (As soon as you arrive, call me)\n\n### Temporal Conjunctions + Futur II\n| Conjunction | Example |\n|-------------|--------|\n| kad | Kad **budem mogao**... |\n| čim | Čim **budeš gotov**... |\n| nakon što | Nakon što **budem završio**... |\n| dok | Dok **ne budeš spreman**... |"
+  },
+  {
+    "display_order": 61,
+    "name": "Reported Speech (Advanced)",
+    "cefr_level": "B2",
+    "prerequisite_ids": [43],
+    "rule_description": "## Advanced Reported Speech\n\n### Tense Backshift (Optional in Croatian)\n| Direct | Reported (formal) |\n|--------|-------------------|\n| \"Radim.\" | Rekao je da **radi**. |\n| \"Radio sam.\" | Rekao je da je **radio**. |\n| \"Radit ću.\" | Rekao je da **će raditi**. |\n\n### Reporting Commands\n| Direct | Indirect |\n|--------|----------|\n| \"Dođi!\" | Rekao mi je **da dođem**. |\n| \"Nemoj ići!\" | Rekao mi je **da ne idem**. |\n\n### Reporting Questions\n| Direct | Indirect |\n|--------|----------|\n| \"Gdje živiš?\" | Pitao me **gdje živim**. |\n| \"Govoriš li...?\" | Pitao me **govorim li**... |\n| \"Hoćeš li doći?\" | Pitao me **hoću li doći**. |\n\n### Time/Place Shifts\n| Direct | Indirect |\n|--------|----------|\n| danas | **taj dan** |\n| sutra | **sutradan** |\n| jučer | **dan prije** |\n| ovdje | **tamo** |\n| sada | **tada** |"
+  },
+  {
+    "display_order": 62,
+    "name": "Clitic Ordering",
+    "cefr_level": "B2",
+    "prerequisite_ids": [2, 5, 14, 25],
+    "rule_description": "## Clitic Order (Strict!)\n\n### Position: After First Stressed Word\n\n### Order Within Clitic Cluster\n```\n1. LI (question)\n2. Auxiliary (sam, si, je, smo, ste, su / ću, ćeš.../ bih, bi...)\n3. DATIVE pronoun (mi, ti, mu, joj, nam, vam, im)\n4. ACCUSATIVE pronoun (me, te, ga, je/ju, nas, vas, ih)\n5. SE (reflexive)\n```\n\n### Examples\n| Structure | Example |\n|-----------|--------|\n| Aux + Dat + Acc | **Je li ti ga** dao? |\n| Aux + Dat + Se | **Je li ti se** svidjelo? |\n| Aux + Acc + Se | Ovo **mi se** sviđa. |\n\n### Full Example\n- Hoće**š li mi ga** dati?\n  (Will you give it to me?)\n  = li + ćeš → hoćeš li + mi (dat) + ga (acc)\n\n### Never First!\nClitics NEVER start a sentence:\n- ~~Mi se sviđa~~ → **Sviđa mi se.**\n- ~~Ga vidim~~ → **Vidim ga.**"
+  },
+  {
+    "display_order": 63,
+    "name": "Enclitic vs Full Forms",
+    "cefr_level": "B2",
+    "prerequisite_ids": [62],
+    "rule_description": "## Short (Clitic) vs Full Pronoun Forms\n\n### Pronoun Forms\n| Person | Clitic (Acc) | Full (Acc) | Clitic (Dat) | Full (Dat) |\n|--------|--------------|------------|--------------|------------|\n| ja | me | **mene** | mi | **meni** |\n| ti | te | **tebe** | ti | **tebi** |\n| on | ga | **njega** | mu | **njemu** |\n| ona | je/ju | **nju** | joj | **njoj** |\n| mi | nas | **nas** | nam | **nama** |\n| vi | vas | **vas** | vam | **vama** |\n| oni | ih | **njih** | im | **njima** |\n\n### When to Use Full Forms\n1. **Emphasis/Contrast:**\n   - **Njega** vidim, ne tebe.\n\n2. **After prepositions:**\n   - Za **njega**. S **njom**.\n\n3. **Sentence-initial:**\n   - **Meni** se sviđa. (emphatic)\n\n4. **Standing alone:**\n   - Tko? **Ja.**"
+  },
+  {
+    "display_order": 64,
+    "name": "Verbal Aspect with Negation",
+    "cefr_level": "B2",
+    "prerequisite_ids": [35, 11],
+    "rule_description": "## Aspect Choice in Negative Sentences\n\n### Imperfective Preferred in Negation\n| Affirmative (Perf) | Negative (Imperf) |\n|--------------------|-------------------|\n| Pročitao sam. | **Nisam čitao.** |\n| Napisao sam. | **Nisam pisao.** |\n| Naučio sam. | **Nisam učio.** |\n\n### Why?\nNegation often denies the ACTION (process), not the result.\n\n### Exceptions\nPerfective negation = strong denial of specific result:\n- **Nisam napisao** to pismo. (I didn't write THAT letter)\n- **Nisam pročitao** članak. (I haven't read the article)\n\n### Imperatives: Always Imperfective in Negative\n| Positive | Negative |\n|----------|----------|\n| Napiši! (Perf) | **Nemoj pisati!** (Imperf) |\n| Pročitaj! (Perf) | **Nemoj čitati!** (Imperf) |\n| Pojedi! (Perf) | **Nemoj jesti!** (Imperf) |\n\n**Rule:** Negative commands use IMPERFECTIVE"
+  },
+  {
+    "display_order": 65,
+    "name": "Impersonal Constructions",
+    "cefr_level": "B2",
+    "prerequisite_ids": [41],
+    "rule_description": "## Impersonal (Subjectless) Sentences\n\n### With SE\n| Pattern | Example | Meaning |\n|---------|---------|--------|\n| Verb + se | **Govori se** da... | It's said that... |\n| | **Radi se** o... | It's about... |\n| | **Može se** vidjeti | One can see |\n| | **Tu se** dobro jede | One eats well here |\n\n### With TREBA\n| Pattern | Meaning |\n|---------|--------|\n| **Treba** + infinitive | One should/must |\n| **Treba** + noun (Nom) | ...is needed |\n| **Treba** mi + noun (Gen) | I need... |\n\nExamples:\n- **Treba raditi.** (One should work)\n- **Treba strpljenja.** (Patience is needed)\n- **Treba mi pomoć.** (I need help)\n\n### Weather & States\n| Expression | Meaning |\n|------------|--------|\n| **Pada** kiša. | It's raining. |\n| **Hladno** je. | It's cold. |\n| **Kasno** je. | It's late. |\n| **Teško** mi je. | I feel bad/hard. |"
+  },
+  {
+    "display_order": 66,
+    "name": "Nominalization Patterns",
+    "cefr_level": "B2",
+    "prerequisite_ids": [44, 49],
+    "rule_description": "## Verb → Noun Patterns\n\n### From Infinitive\n| Pattern | Example |\n|---------|--------|\n| -anje | čitati → čit**anje** |\n| -enje | učiti → uč**enje** |\n| -ća | pomoći → pomo**ć** |\n\n### Adjective → Noun\n| Pattern | Example |\n|---------|--------|\n| -ost | lijep → ljep**ota** |\n| -oća | čist → čist**oća** |\n| -ina | vis**ok** → vis**ina** |\n| -stvo | bogat → bog**atstvo** |\n\n### Abstract Nouns from Verbs\n| Verb | Abstract Noun |\n|------|---------------|\n| živjeti | živ**ot** (life) |\n| raditi | rad (work) |\n| misliti | mis**ao** (thought) |\n| osjećati | osjeć**aj** (feeling) |\n\n### Usage in Formal Style\n- **Čitanje** knjiga je važno.\n- **Razumijevanje** problema zahtijeva...\n- Nakon **završetka** posla..."
+  },
+  {
+    "display_order": 67,
+    "name": "Advanced Relative Clauses",
+    "cefr_level": "B2",
+    "prerequisite_ids": [42],
+    "rule_description": "## Advanced Relative Pronouns\n\n### Čiji (Whose)\n| Gender | Form |\n|--------|------|\n| Masc | čiji |\n| Fem | čija |\n| Neut | čije |\n\nExample: Čovjek **čija** je kuća...\n\n### Kakav (What Kind Of)\nAgrees with antecedent:\n- ...knjiga **kakvu** volim\n- ...čovjek **kakav** je on\n\n### Restrictive vs Non-Restrictive\n| Type | Punctuation | Example |\n|------|-------------|--------|\n| Restrictive | no comma | Student koji uči uspjet će. |\n| Non-restrictive | comma | Ana, koja živi u Zagrebu, dolazi. |\n\n### Relative Adverbs\n| Word | Usage |\n|------|-------|\n| **gdje** | ...grad gdje živim |\n| **kamo** | ...mjesto kamo idem |\n| **odakle** | ...grad odakle dolazim |\n| **kad(a)** | ...dan kad sam stigao |\n\n### Što vs Koji\n- **Što** = less formal, refers to whole clause\n- **Koji** = standard, refers to specific noun"
+  },
+  {
+    "display_order": 68,
+    "name": "Purpose & Result Clauses",
+    "cefr_level": "B2",
+    "prerequisite_ids": [31],
+    "rule_description": "## Purpose Clauses (In Order To)\n\n### DA + Present\n| Pattern | Example |\n|---------|--------|\n| **da** + present | Učim **da položim**. |\n| | Došao sam **da te vidim**. |\n\n### KAKO BI + L-Participle (Formal)\n| Pattern | Example |\n|---------|--------|\n| **kako bih** | ...kako bih mogao... |\n| **kako bi** | ...kako bi razumio... |\n\n### RADI + Genitive\n- **Radi** boljeg života. (For a better life)\n\n## Result Clauses (So That)\n\n### TAKO DA + Indicative\n| Pattern | Example |\n|---------|--------|\n| tako da | Učio je **tako da** je položio. |\n| | Kiša je padala **tako da** nismo mogli izaći. |\n\n### Distinction\n| Purpose (intention) | Result (outcome) |\n|--------------------|------------------|\n| Učim **da položim**. | Učio sam **tako da** sam položio. |\n| (I study to pass) | (I studied so that I passed) |"
+  },
+  {
+    "display_order": 69,
+    "name": "Concessive Clauses",
+    "cefr_level": "B2",
+    "prerequisite_ids": [31, 39],
+    "rule_description": "## Concessive = Although/Despite\n\n### IAKO (Although)\n| Pattern | Example |\n|---------|--------|\n| **iako** + indicative | **Iako** je kasno, radim. |\n| | **Iako** sam umoran, nastavit ću. |\n\n### PREMDA (Although - Formal)\n- **Premda** je teško, uspjet će.\n\n### MAKAR (Even If)\n| Pattern | Example |\n|---------|--------|\n| **makar** + past | **Makar** bio bolestan, došao je. |\n| **ma** + imperative | **Ma** što rekao... |\n\n### BEZ OBZIRA NA + Acc (Regardless Of)\n- **Bez obzira na** vrijeme, idemo.\n\n### UNATOČ + Dat (Despite)\n- **Unatoč** lošem vremenu, izašli smo.\n\n### Concessive with MA-\n| Pattern | Meaning |\n|---------|--------|\n| **ma koliko** | however much |\n| **ma kakav** | whatever kind |\n| **ma tko** | whoever |\n| **ma gdje** | wherever |"
+  },
+  {
+    "display_order": 70,
+    "name": "Temporal Clauses (Complex)",
+    "cefr_level": "B2",
+    "prerequisite_ids": [31],
+    "rule_description": "## Temporal Conjunctions\n\n### Simultaneous\n| Conj | Meaning | Example |\n|------|---------|--------|\n| **dok** | while | **Dok** čitam, slušam glazbu. |\n| **kad(a)** | when | **Kad** dođem, javim se. |\n\n### Sequential\n| Conj | Meaning | Example |\n|------|---------|--------|\n| **čim** | as soon as | **Čim** stignem... |\n| **pošto** | after | **Pošto** je završio... |\n| **nakon što** | after | **Nakon što** smo jeli... |\n| **prije nego** | before | **Prije nego** što odeš... |\n| **otkad** | since (time) | **Otkad** je došao... |\n\n### With Future (Futur II)\n| Conj + Futur II | Example |\n|-----------------|--------|\n| Kad **budem mogao**... | When I can... |\n| Čim **budeš stigao**... | As soon as you arrive... |\n\n### DOK NE (Until)\n- Čekaj **dok ne dođem**. (Wait until I come)\n- Uses perfective + ne"
+  },
+  {
+    "display_order": 71,
+    "name": "Cause & Reason Clauses",
+    "cefr_level": "B2",
+    "prerequisite_ids": [31],
+    "rule_description": "## Causal Conjunctions\n\n### Common Conjunctions\n| Conj | Register | Example |\n|------|----------|--------|\n| **jer** | neutral | Idem **jer** moram. |\n| **zato što** | neutral | ...zato što volim. |\n| **budući da** | formal | **Budući da** je kasno... |\n| **pošto** | neutral | **Pošto** nema vremena... |\n| **kako** | formal | **Kako** je bio umoran... |\n| **s obzirom da** | formal | **S obzirom da**... |\n\n### Position\n| First | Second |\n|-------|--------|\n| **Jer** je kasno, idem. | Idem **jer** je kasno. |\n| **Zato što** volim... | ...zato što volim. |\n\n### ZBOG + Genitive (Because Of)\n- **Zbog** kiše, ostali smo doma.\n- **Zbog** tebe, kasnimo.\n\n### Difference: JER vs ZATO ŠTO\n- **Jer** = gives reason (why)\n- **Zato što** = explains cause (because of which)"
+  },
+  {
+    "display_order": 72,
+    "name": "Comparison Clauses",
+    "cefr_level": "B2",
+    "prerequisite_ids": [28, 31],
+    "rule_description": "## Comparison Structures\n\n### KAO (Like/As)\n| Pattern | Example |\n|---------|--------|\n| **kao** + Nom | Visok **kao** ja. |\n| **kao što** + clause | **Kao što** sam rekao... |\n| **kao da** + clause | **Kao da** ne zna. (as if) |\n\n### NEGO (Than - After Comparative)\n| Pattern | Example |\n|---------|--------|\n| Comp + **nego** + Nom | Stariji **nego** ja. |\n| Comp + **od** + Gen | Stariji **od** mene. |\n| **nego što** + clause | Bolje **nego što** misliš. |\n\n### KOLIKO...TOLIKO (As Much As)\n- **Koliko** znam, **toliko** govorim.\n\n### ŠTO...TO (The More...The More)\n- **Što** više učim, **to** bolje znam.\n- **Što** prije, **to** bolje.\n\n### Equality\n| Pattern | Example |\n|---------|--------|\n| **jednako** kao | Jednako visok kao ti. |\n| **isto** kao | Isto kao ti. |"
+  },
+  {
+    "display_order": 73,
+    "name": "Stylistic Word Order",
+    "cefr_level": "B2",
+    "prerequisite_ids": null,
+    "rule_description": "## Marked Word Order for Emphasis\n\n### Neutral vs Emphatic\n| Neutral (SVO) | Emphatic |\n|---------------|----------|\n| Ivan čita knjigu. | **Knjigu** čita Ivan. |\n| Vidio sam ga. | **Njega** sam vidio. |\n| Kupio sam auto. | **Auto** sam kupio. |\n\n### Fronting Rules\n1. **Topic fronting:** Known info first\n   - (O tom) **O tome** ćemo poslije.\n\n2. **Focus fronting:** New/important info first\n   - **Meni** se to sviđa. (It's ME who likes it)\n\n3. **Contrast:** Emphasized element first\n   - **On** je došao, ne ja.\n\n### Inversion\n| Standard | Inverted (literary) |\n|----------|---------------------|\n| Lijepa je. | **Lijepa** je ona. |\n| Rekao sam. | **Rekoh** ja. (archaic) |\n\n### End Focus\nNew information at sentence end:\n- Dao sam knjigu **Ani**. (to Ana, not someone else)"
+  },
+  {
+    "display_order": 74,
+    "name": "Calques & False Friends",
+    "cefr_level": "B2",
+    "prerequisite_ids": null,
+    "rule_description": "## False Friends (Croatian vs English)\n\n### Common Errors\n| English | Wrong Croatian | Correct Croatian |\n|---------|----------------|------------------|\n| actually | ~~aktualno~~ | zapravo, ustvari |\n| eventually | ~~eventualno~~ | na kraju, konačno |\n| prospect | ~~prospekt~~ | izgled, perspektiva |\n| billion | ~~bilijun~~ | milijarda |\n| chef | ~~šef~~ | kuhar |\n| sympathetic | ~~simpatičan~~ | suosjećajan |\n\n### Anglicisms to Avoid\n| Anglicism | Correct Croatian |\n|-----------|------------------|\n| ~~printati~~ | ispisati, tiskati |\n| ~~downloadati~~ | preuzeti |\n| ~~emailati~~ | poslati e-mail |\n\n### Calque Structures\n| English Pattern | Wrong | Correct |\n|-----------------|-------|--------|\n| make sense | ~~ima smisla~~ | ima smisla ✓ |\n| have a look | ~~imati pogled~~ | pogledati |\n| take place | ~~uzeti mjesto~~ | održati se |\n\n**Tip:** When in doubt, use native Croatian expression"
+  },
+  {
+    "display_order": 75,
+    "name": "Stylistic Syntax",
+    "cefr_level": "C1",
+    "prerequisite_ids": [73],
+    "rule_description": "## Literary Word Order & Stylistic Effects\n\n### Verb-First (Literary Inversion)\n| Standard | Literary |\n|----------|----------|\n| On reče. | **Reče** on. |\n| Sunce je izašlo. | **Izađe** sunce. |\n\n### Adjective Postposition (Archaic/Poetic)\n| Standard | Poetic |\n|----------|--------|\n| lijepa žena | žena **lijepa** |\n| stara kuća | kuća **stara** |\n\n### Object Fronting (Topicalization)\n- **Njega** nikad nisam volio.\n- **To** ti ne mogu obećati.\n\n### Parenthetical Insertion\n- On je, **kako sam čuo**, stigao.\n- Rekla je, **navodno**, istinu.\n\n### Cleft Sentences (Emphasis)\n| Pattern | Example |\n|---------|--------|\n| To je X koji... | **To je on** koji je nazvao. |\n| Ono što... | **Ono što** želim je mir. |\n\n**Register:** These patterns appear in literature, journalism, formal speeches"
+  },
+  {
+    "display_order": 76,
+    "name": "Archaisms (Recognition)",
+    "cefr_level": "C1",
+    "prerequisite_ids": null,
+    "rule_description": "## Archaic Grammar (Passive Recognition)\n\n### Old Verb Forms\n| Modern | Archaic | Context |\n|--------|---------|--------|\n| bih | **bjeh** | literary |\n| reče | **rekoh** (aorist) | formal/literary |\n| bijaše | **bješe** | folk tales |\n\n### Old Case Endings\n| Modern | Archaic |\n|--------|--------|\n| prijatelja (gen pl) | prijatelj**â** |\n| u kući | u kući / u dom**u** |\n| dvaju | dvij**u** |\n\n### Archaic Vocabulary\n| Archaic | Modern |\n|---------|--------|\n| **tkogod** | netko |\n| **ino** | drugo |\n| **nuđ** | ponuda |\n| **cjelov** | poljubac |\n\n### Where Found\n- Croatian literature (pre-1990)\n- Folk poetry and songs\n- Religious texts\n- Legal documents (formal)\n- Proverbs and sayings\n\n**Purpose:** Recognition only; don't use actively"
+  },
+  {
+    "display_order": 77,
+    "name": "Dialectal Variation (Awareness)",
+    "cefr_level": "C1",
+    "prerequisite_ids": null,
+    "rule_description": "## Croatian Dialect Groups\n\n### Three Main Dialects (by \"what\" word)\n| Dialect | \"What\" | Region |\n|---------|--------|--------|\n| **Štokavski** | što | Standard Croatian |\n| **Kajkavski** | kaj | Zagreb region, north |\n| **Čakavski** | ča | Coast, islands |\n\n### Kajkavian Features\n| Standard | Kajkavian |\n|----------|----------|\n| što | **kaj** |\n| ja sam | **ja sem** |\n| kuća | **hiža** |\n| govoriti | **govoreti** |\n\n### Čakavian Features\n| Standard | Čakavian |\n|----------|----------|\n| što | **ča** |\n| mi | **mi** (different intonation) |\n| tjedan | **šetemana** |\n| more | reduced vowels |\n\n### Ikavian vs Ijekavian (within Štokavian)\n| Ekavian (Serbian) | Ijekavian (Croatian) | Ikavian |\n|-------------------|---------------------|--------|\n| mleko | mlij**e**ko | ml**i**ko |\n| reka | rij**e**ka | r**i**ka |\n\n**Standard Croatian = Štokavian + Ijekavian**"
+  },
+  {
+    "display_order": 78,
+    "name": "Formal Written Croatian",
+    "cefr_level": "C1",
+    "prerequisite_ids": null,
+    "rule_description": "## Official/Administrative Language\n\n### Formal Vocabulary\n| Informal | Formal |\n|----------|--------|\n| dobiti | **zaprimiti** |\n| dati | **uručiti, dostaviti** |\n| reći | **izvijestiti, obavijestiti** |\n| pitati | **zamoliti, zatražiti** |\n\n### Legal Phrases\n| Phrase | Meaning |\n|--------|--------|\n| **sukladno** + Dat | in accordance with |\n| **temeljem** + Gen | on the basis of |\n| **u svezi s** + Inst | in connection with |\n| **s obzirom na** + Acc | with regard to |\n| **u skladu s** + Inst | in line with |\n\n### Document Structure\n| Section | Purpose |\n|---------|--------|\n| **Predmet:** | Subject |\n| **Poziv na:** | Reference |\n| **S poštovanjem,** | Respectfully, |\n| **U prilogu:** | Attached: |\n\n### Passive Preferred\n- **Zahtjev je zaprimljen.** (not Mi smo zaprimili...)\n- **Odluka će biti donesena.** (not Donijet ćemo...)"
+  },
+  {
+    "display_order": 79,
+    "name": "Journalistic Style",
+    "cefr_level": "C1",
+    "prerequisite_ids": null,
+    "rule_description": "## News Writing Conventions\n\n### Headline Grammar\n- Omit auxiliary verbs: **Premijer stigao** (not je stigao)\n- Present for past: **Vlada donosi odluku**\n- Nominalized verbs: **Usvajanje zakona**\n\n### Lead Paragraph (5W+H)\n| Question | Croatian |\n|----------|----------|\n| Who | **Tko** |\n| What | **Što** |\n| When | **Kada** |\n| Where | **Gdje** |\n| Why | **Zašto** |\n| How | **Kako** |\n\n### Attribution\n| Pattern | Example |\n|---------|--------|\n| Direct quote | \"Tekst,\" **rekao je** ministar. |\n| Indirect | Ministar je **izjavio da**... |\n| According to | **Prema riječima** + Gen |\n| As reported | **Kako javlja/prenosi** |\n\n### Formal Phrases\n| Phrase | Usage |\n|--------|-------|\n| navodno | allegedly |\n| prema neslužbenim izvorima | according to unofficial sources |\n| potvrđeno je | it has been confirmed |"
+  },
+  {
+    "display_order": 80,
+    "name": "Academic Writing",
+    "cefr_level": "C1",
+    "prerequisite_ids": [66],
+    "rule_description": "## Academic Croatian\n\n### Impersonal Constructions\n| Pattern | Example |\n|---------|--------|\n| Passive | **Analizirani su** podaci. |\n| 1st pl. (we) | U ovom radu **razmatramo**... |\n| Impersonal | **Može se zaključiti da**... |\n\n### Hedging Expressions\n| Certainty | Expression |\n|-----------|------------|\n| Strong | **jasno je da**, **očito** |\n| Medium | **čini se da**, **izgleda** |\n| Weak | **možda**, **moguće je** |\n\n### Citation & Reference\n| Pattern | Example |\n|---------|--------|\n| According to | **Prema** Horvat (2020)... |\n| States that | Autor **navodi da**... |\n| In contrast | **Za razliku od** + Gen |\n| Similarly | **Slično tomu**, **Također** |\n\n### Thesis Structure Terms\n| Croatian | English |\n|----------|--------|\n| uvod | introduction |\n| metodologija | methodology |\n| rezultati | results |\n| rasprava | discussion |\n| zaključak | conclusion |\n| literatura | references |"
+  },
+  {
+    "display_order": 81,
+    "name": "Euphemism & Taboo",
+    "cefr_level": "C1",
+    "prerequisite_ids": null,
+    "rule_description": "## Polite Alternatives & Social Conventions\n\n### Death\n| Direct | Euphemism |\n|--------|----------|\n| umrijeti | **preminuti**, **otići** |\n| mrtav | **pokojni** |\n| ubiti | **lišiti života** |\n| samoubojstvo | **oduzeti si život** |\n\n### Bodily Functions\n| Direct | Euphemism |\n|--------|----------|\n| WC | **toalet**, **zahod**, **sanitarni čvor** |\n| povraćati | **vraćati** |\n| znojiti se | **preznojavati se** |\n\n### Age & Appearance\n| Direct | Euphemism |\n|--------|----------|\n| star | **stariji**, **u godinama** |\n| debeo | **puniji**, **krupniji** |\n| ružan | **ne baš lijep** |\n\n### Social/Professional\n| Direct | Euphemism |\n|--------|----------|\n| dobio otkaz | **ostao bez posla** |\n| siromašan | **lošije situiran** |\n| lažov | **netko tko ne govori istinu** |\n\n**Context matters:** Euphemisms vary by region and generation"
+  },
+  {
+    "display_order": 82,
+    "name": "Irony & Sarcasm Markers",
+    "cefr_level": "C1",
+    "prerequisite_ids": null,
+    "rule_description": "## Recognizing Non-Literal Meaning\n\n### Linguistic Markers\n| Marker | Example |\n|--------|--------|\n| **baš** (emphatic) | **Baš** si pametan! (You're SO smart!) |\n| **jako** (very) | **Jako** zanimljivo. (Very interesting.) |\n| **divno** (wonderful) | **Divno**, još kiša. |\n\n### Intonation Cues\n- Exaggerated stress\n- Flat/monotone delivery\n- Pause before key word\n\n### Common Ironic Phrases\n| Phrase | Literal | Ironic meaning |\n|--------|---------|----------------|\n| Hvala lijepo. | Thanks nicely | Thanks for nothing |\n| Ma nemoj! | Don't say! | Tell me something I don't know |\n| Odlično! | Excellent! | (Context-dependent) |\n| Baš me briga. | I really care | I don't care at all |\n\n### Quotation Marks (Written)\n- Ti si \"stručnjak\". (You're an \"expert\")\n- \"Lijepo\" si se ponašao. (You behaved \"nicely\")\n\n**Key:** Context + tone + relationship between speakers"
+  },
+  {
+    "display_order": 83,
+    "name": "Hedging & Mitigation",
+    "cefr_level": "C1",
+    "prerequisite_ids": [39],
+    "rule_description": "## Softening Statements\n\n### Modal Hedges\n| Direct | Hedged |\n|--------|--------|\n| To je tako. | **Moglo bi se reći da** je tako. |\n| Griješiš. | **Možda** griješiš. |\n| Nemam pravo. | **Čini mi se da** nemam pravo. |\n\n### Conditional for Politeness\n| Direct | Polite |\n|--------|--------|\n| Želim | **Htio bih** / **Želio bih** |\n| Možeš li? | **Bi li mogao/mogla?** |\n| Daj mi | **Bilo bi lijepo da mi daš** |\n\n### Hedging Expressions\n| Type | Expressions |\n|------|-------------|\n| Probability | **vjerojatno**, **možda**, **moguće** |\n| Approximation | **otprilike**, **približno**, **nekih** |\n| Attribution | **koliko znam**, **prema meni** |\n| Tentativeness | **reklo bi se**, **moglo bi se** |\n\n### Downtoners\n- **malo** (a bit): malo kasniš\n- **pomalo** (somewhat): pomalo čudno\n- **donekle** (to some extent): donekle točno"
+  },
+  {
+    "display_order": 84,
+    "name": "Emphasis Patterns",
+    "cefr_level": "C1",
+    "prerequisite_ids": [63, 73],
+    "rule_description": "## Emphatic Particles & Structures\n\n### Emphatic Particles\n| Particle | Function | Example |\n|----------|----------|--------|\n| **baš** | exactly/really | **Baš** tako! |\n| **upravo** | precisely | **Upravo** to! |\n| **čak** | even | **Čak** i on je došao. |\n| **pa** | well/so | **Pa** što onda? |\n| **tek** | only/just | **Tek** sam stigao. |\n| **već** | already | **Već** znam. |\n| **još** | still/even | **Još** uvijek čekam. |\n\n### Intensifiers\n| Word | Usage |\n|------|-------|\n| **valjda** | presumably | Valjda znaš. |\n| **jamačno** | certainly | Jamačno će doći. |\n| **svakako** | definitely | Svakako ću ti javiti. |\n| **zaista** | truly | Zaista je tako. |\n| **doista** | indeed | Doista lijep. |\n\n### Emphatic Structures\n- **Ja** to nikad ne bih napravio. (I-emphatic)\n- Napravio sam to **sam**. (by myself)\n- To je **on sam** rekao. (he himself)"
+  },
+  {
+    "display_order": 85,
+    "name": "Historical Orthography",
+    "cefr_level": "C1",
+    "prerequisite_ids": [1],
+    "rule_description": "## Pre-1990s Spelling Changes\n\n### IE vs JE\n| Old | Modern | Word |\n|-----|--------|------|\n| bielo | **bijelo** | white |\n| liep | **lijep** | nice |\n| rieč | **riječ** | word |\n\n### DC vs Đ\n| Old (Serbian influence) | Modern |\n|-------------------------|--------|\n| **dj**eca | **đ**eca |\n| **dj**ak | **đ**ak |\n| **dj**avo | **đ**avao |\n\n### Foreign Words\n| Pre-reform | Modern |\n|------------|--------|\n| kultura | still **kultura** |\n| geografija | still **geografija** |\n| filozofija | still **filozofija** |\n\n### Borrowed vs Native\n| International | Native (preferred) |\n|---------------|--------------------|\n| telefon | still **telefon** |\n| kompjuter | **računalo** |\n| aerodrom | **zračna luka** |\n\n**Note:** Some older books use pre-reform spelling. Recognition important for reading Croatian literature"
+  },
+  {
+    "display_order": 86,
+    "name": "Purism vs Borrowings",
+    "cefr_level": "C1",
+    "prerequisite_ids": [74],
+    "rule_description": "## Language Purism in Croatian\n\n### Coined Native Terms\n| Foreign | Croatian Native | Meaning |\n|---------|-----------------|--------|\n| computer | **računalo** | computer |\n| helicopter | **zrakomlat** | helicopter |\n| football | **nogomet** | football |\n| basketball | **košarka** | basketball |\n| airport | **zračna luka** | airport |\n| software | **softver** / programska podrška | software |\n\n### Accepted Borrowings\n| Word | Origin | Status |\n|------|--------|--------|\n| telefon | Greek | accepted |\n| automobil | French | accepted |\n| internet | English | accepted |\n| pizza | Italian | accepted |\n\n### Register Differences\n| Formal/Official | Informal |\n|-----------------|----------|\n| računalo | kompjuter |\n| zračna luka | aerodrom |\n| softver | softver |\n\n### When to Use Which\n- **Official documents:** Native terms\n- **Everyday speech:** Either acceptable\n- **Technical fields:** International terms common"
+  },
+  {
+    "display_order": 87,
+    "name": "Neologisms & Trends",
+    "cefr_level": "C1",
+    "prerequisite_ids": null,
+    "rule_description": "## New Word Formation & Internet Croatian\n\n### Tech Neologisms\n| English | Croatian Options |\n|---------|------------------|\n| selfie | **selfi** / samoslik |\n| hashtag | **hashtag** / ljestve |\n| streaming | **striming** / prijenos |\n| podcast | **podcast** / zvučni zapis |\n| influencer | **influenser** / utjecatelj |\n\n### Internet Slang\n| Slang | Meaning |\n|-------|--------|\n| **lol** | laughing out loud |\n| **btw** | by the way |\n| **fyi** | for your information |\n| **irl** | in real life |\n\n### Croatianized Verbs\n| English | Croatian verb |\n|---------|---------------|\n| to google | **guglati** |\n| to share | **šerati** |\n| to like | **lajkati** |\n| to post | **postati** |\n| to scroll | **skrolati** |\n\n### SMS/Chat Abbreviations\n| Abbreviation | Meaning |\n|--------------|--------|\n| **nzm** | ne znam |\n| **msm** | mislim |\n| **ofc** | of course |\n\n**Note:** Register-dependent; avoid in formal contexts"
+  },
+  {
+    "display_order": 88,
+    "name": "Proverbs & Sayings",
+    "cefr_level": "C1",
+    "prerequisite_ids": null,
+    "rule_description": "## Croatian Proverbs (Poslovice)\n\n### Common Proverbs\n| Croatian | English Equivalent |\n|----------|--------------------|\n| **Tko rano rani, dvije sreće grabi.** | Early bird catches the worm. |\n| **Polako se daleko stiže.** | Slow and steady wins the race. |\n| **Vuk dlaku mijenja, ali ćud nikada.** | Leopard can't change its spots. |\n| **Bolje ikad nego nikad.** | Better late than never. |\n| **Tko pita, ne skita.** | He who asks, doesn't wander. |\n\n### Wisdom Sayings\n| Proverb | Meaning |\n|---------|--------|\n| **Bez muke nema nauke.** | No pain, no gain. |\n| **Kakav otac, takav sin.** | Like father, like son. |\n| **Tiha voda brege dere.** | Still waters run deep. |\n| **Zla kob u dobru ne vodi.** | Bad luck leads to no good. |\n\n### Regional Variations\n- Coast: nautical proverbs\n- Interior: agricultural proverbs\n- Zagreb: urban sayings\n\n**Usage:** Add authenticity and cultural depth to speech"
+  },
+  {
+    "display_order": 89,
+    "name": "Literary Devices",
+    "cefr_level": "C1",
+    "prerequisite_ids": null,
+    "rule_description": "## Croatian Literary Terms\n\n### Common Figures of Speech\n| Device | Croatian | Example |\n|--------|----------|--------|\n| Metaphor | **metafora** | Život je putovanje. |\n| Simile | **usporedba** | Brz kao munja. |\n| Personification | **personifikacija** | Sunce se smije. |\n| Hyperbole | **hiperbola** | Umrijet ću od smijeha. |\n| Irony | **ironija** | Baš lijepo vrijeme! (in rain) |\n\n### Sound Devices\n| Device | Croatian | Example |\n|--------|----------|--------|\n| Alliteration | **aliteracija** | Petar plete plot. |\n| Onomatopoeia | **onomatopeja** | šuškati, cvrkutati |\n| Rhyme | **rima** | dan/san |\n\n### Structural Devices\n| Device | Croatian | Function |\n|--------|----------|----------|\n| Anaphora | **anafora** | Repetition at start |\n| Antithesis | **antiteza** | Contrast |\n| Parallelism | **paralelizam** | Parallel structure |\n\n### Recognition\n- Poetry: heavy use of all devices\n- Prose: metaphor, irony common\n- Journalism: occasional rhetorical devices"
+  },
+  {
+    "display_order": 90,
+    "name": "Speech Acts",
+    "cefr_level": "C1",
+    "prerequisite_ids": null,
+    "rule_description": "## Formal Speech Acts\n\n### Promising\n| Casual | Formal |\n|--------|--------|\n| Obećavam. | **Ovime se obvezujem.** |\n| Hoću. | **Jamčim da ću.** |\n\n### Requesting\n| Casual | Formal |\n|--------|--------|\n| Daj mi... | **Zamolila bih Vas za...** |\n| Trebaš... | **Ljubazno Vas molim da...** |\n\n### Apologizing\n| Level | Expression |\n|-------|------------|\n| Casual | **Oprosti.** |\n| Polite | **Ispričavam se.** |\n| Formal | **Duboko žalim.** |\n\n### Threatening (Legal)\n| Context | Expression |\n|---------|------------|\n| Warning | **Upozoravam Vas da...** |\n| Legal | **Prisilno ćemo naplatiti...** |\n| Final | **Poduzet ćemo pravne korake.** |\n\n### Refusing\n| Direct | Polite |\n|--------|--------|\n| Ne. | **Nažalost, ne mogu.** |\n| Neću. | **Bojim se da nije moguće.** |\n\n### Complimenting\n- **Odlično ste to napravili.**\n- **Impresioniran sam Vašim radom.**"
+  }
+]
