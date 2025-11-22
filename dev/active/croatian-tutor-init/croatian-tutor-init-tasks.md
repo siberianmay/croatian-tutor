@@ -1,7 +1,7 @@
 # Croatian Language Tutor - Implementation Tasks
 
 **Last Updated: 2025-11-22**
-**Current Phase**: 3 - Vocabulary System (Non-AI)
+**Current Phase**: 6 - Progress & Dashboard (NEXT)
 
 ---
 
@@ -89,7 +89,7 @@
 - [x] Create `backend/app/services/drill_service.py` (M)
 - [x] Implement CR→EN drill selection (S)
 - [x] Implement EN→CR drill selection (S)
-- [ ] Implement fill-in-blank generation (needs Gemini) (M)
+- [x] Implement fill-in-blank generation (via Gemini) (M)
 
 ### 3.4 Vocabulary UI (Frontend)
 - [x] Create Vocabulary list page with word table (M)
@@ -134,44 +134,44 @@
 ---
 
 ## Phase 5: AI Exercises
-**Status**: BLOCKED by Phase 4
+**Status**: COMPLETED
 **Goal**: Full AI-powered exercise suite
 
 ### 5.1 Exercise Service
-- [ ] Create `backend/app/services/exercise_service.py` (M)
-- [ ] Implement exercise generation orchestration (L)
-- [ ] Implement answer evaluation (L)
-- [ ] Implement error categorization (M)
+- [x] Create `backend/app/services/exercise_service.py` (M)
+- [x] Implement exercise generation orchestration (L)
+- [x] Implement answer evaluation (L)
+- [x] Implement error categorization (M)
 
 ### 5.2 Grammar Topics
-- [ ] `GET /api/v1/topics` - List grammar topics (S)
-- [ ] `GET /api/v1/topics/{id}` - Get topic with rule_description (S)
-- [ ] `POST /api/v1/topics/{id}/generate-description` - Gemini generates rule (M)
-- [ ] `GET /api/v1/topics/progress` - User's topic mastery (S)
+- [x] `GET /api/v1/topics` - List grammar topics (S)
+- [x] `GET /api/v1/topics/{id}` - Get topic with rule_description (S)
+- [x] `POST /api/v1/topics/{id}/generate-description` - Gemini generates rule (M)
+- [x] `GET /api/v1/topics/progress` - User's topic mastery (S)
 
 ### 5.3 Exercise Endpoints
-- [ ] `POST /api/v1/exercises/conversation` - Free conversation turn (M)
-- [ ] `POST /api/v1/exercises/grammar` - Grammar exercise (M)
-- [ ] `POST /api/v1/exercises/sentence-construction` - Build sentence (M)
-- [ ] `POST /api/v1/exercises/reading` - Reading comprehension (M)
-- [ ] `POST /api/v1/exercises/dialogue` - Situational dialogue (M)
-- [ ] `POST /api/v1/exercises/translate` - Sentence translation (M)
-- [ ] `POST /api/v1/exercises/evaluate` - Evaluate answer (M)
+- [x] `POST /api/v1/exercises/conversation` - Free conversation turn (M)
+- [x] `POST /api/v1/exercises/grammar` - Grammar exercise (M)
+- [x] `POST /api/v1/exercises/sentence-construction` - Build sentence (M)
+- [x] `POST /api/v1/exercises/reading` - Reading comprehension (M)
+- [x] `POST /api/v1/exercises/dialogue` - Situational dialogue (M)
+- [x] `POST /api/v1/exercises/translate` - Sentence translation (M)
+- [x] `POST /api/v1/exercises/evaluate` - Evaluate answer (M)
 
 ### 5.4 Exercise Logging
-- [ ] Log exercise activity to `exercise_log` (S)
-- [ ] Log errors to `error_log` with categorization (M)
-- [ ] Create session records (S)
+- [x] Log exercise activity to `exercise_log` (S)
+- [x] Log errors to `error_log` with categorization (M)
+- [ ] Create session records (S) - deferred to Phase 6
 
 ### 5.5 Exercise UI (Frontend)
-- [ ] Create Conversation chat interface (L)
-- [ ] Create Grammar exercise component (M)
-- [ ] Create Sentence construction UI (M)
-- [ ] Create Reading comprehension UI (M)
-- [ ] Create Dialogue/role-play UI (M)
-- [ ] Create Translation exercise UI (M)
-- [ ] Add loading states for Gemini calls (S)
-- [ ] Add error feedback display (S)
+- [x] Create Conversation chat interface (L)
+- [x] Create Grammar exercise component (M)
+- [x] Create Sentence construction UI (M)
+- [x] Create Reading comprehension UI (M)
+- [x] Create Dialogue/role-play UI (M)
+- [x] Create Translation exercise UI (M)
+- [x] Add loading states for Gemini calls (S)
+- [x] Add error feedback display (S)
 
 ---
 
