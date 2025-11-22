@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: croatian-tutor-db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-croatian}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tutor_local}
+      POSTGRES_DB: ${POSTGRES_DB:-croatian_tutor}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-croatian} -d ${POSTGRES_DB:-croatian_tutor}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - croatian-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: croatian-tutor-backend
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgresql+asyncpg://croatian:tutor_local@db:5432/croatian_tutor}
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    networks:
+      - croatian-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: croatian-tutor-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_URL=http://localhost:8000
+    networks:
+      - croatian-network
+
+volumes:
+  postgres_data:
+
+networks:
+  croatian-network:
+    driver: bridge
