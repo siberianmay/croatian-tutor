@@ -40,6 +40,13 @@ from app.schemas.exercise import (
     ExerciseEvaluationResponse,
     FillInBlankExercise,
 )
+from app.schemas.drill import (
+    DrillItem,
+    DrillSessionRequest,
+    DrillSessionResponse,
+    DrillAnswerRequest,
+    DrillAnswerResponse,
+)
 
 __all__ = [
     # User
@@ -81,4 +88,10 @@ __all__ = [
     "ExerciseEvaluationRequest",
     "ExerciseEvaluationResponse",
     "FillInBlankExercise",
+    # Drill
+    "DrillItem",
+    "DrillSessionRequest",
+    "DrillSessionResponse",
+    "DrillAnswerRequest",
+    "DrillAnswerResponse",
 ]

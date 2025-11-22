@@ -6,6 +6,7 @@ import { AppLayout } from '~components/layout/AppLayout';
 
 const HomePage = lazy(() => import('./pages/HomePage'));
 const LearnPage = lazy(() => import('./pages/LearnPage'));
+const VocabularyPage = lazy(() => import('./pages/VocabularyPage'));
 const PracticePage = lazy(() => import('./pages/PracticePage'));
 const ProgressPage = lazy(() => import('./pages/ProgressPage'));
 
@@ -16,6 +17,7 @@ const App: React.FC = () => {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/learn" element={<LearnPage />} />
+          <Route path="/vocabulary" element={<VocabularyPage />} />
           <Route path="/practice" element={<PracticePage />} />
           <Route path="/progress" element={<ProgressPage />} />
         </Routes>
