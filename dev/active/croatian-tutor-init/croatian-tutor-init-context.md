@@ -1,10 +1,21 @@
 # Croatian Language Tutor - Project Context
 
 **Last Updated: 2025-11-22**
+**Current Phase**: 2 - Database & Models
 
 ---
 
 ## SESSION PROGRESS
+
+### Phase 1: Foundation Verification (COMPLETED)
+
+All infrastructure verified working:
+- Docker Compose: All 3 containers start and run
+- PostgreSQL: Accessible and healthy
+- Backend: Health endpoint returns `{"status":"healthy"}`
+- Frontend: Loads at http://localhost:3000
+- Connectivity: Frontend container can reach backend via Docker network
+- Swagger Docs: Available at http://localhost:8000/docs
 
 ### Design Phase (COMPLETED)
 
@@ -187,12 +198,16 @@ VITE_API_URL=http://localhost:8000
 
 ## NEXT STEPS
 
-1. Replace backend models with new schema
-2. Create and run Alembic migration
-3. Create Pydantic schemas
-4. Verify Docker services start
-5. Implement WordService + endpoints
-6. Continue with implementation phases
+**Phase 2: Database & Models** (CURRENT)
+1. Replace backend models with new schema (singular table names)
+2. Create enums (PartOfSpeech, Gender, CEFRLevel, ExerciseType, ErrorCategory)
+3. Create and run Alembic migration
+4. Seed default user (id=1)
+5. Create Pydantic schemas
+
+**Then:**
+6. Phase 3: Vocabulary System (Non-AI)
+7. Phase 4: Gemini Integration
 
 ---
 

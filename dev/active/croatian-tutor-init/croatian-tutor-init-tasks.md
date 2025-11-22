@@ -1,6 +1,7 @@
 # Croatian Language Tutor - Implementation Tasks
 
 **Last Updated: 2025-11-22**
+**Current Phase**: 2 - Database & Models
 
 ---
 
@@ -17,20 +18,20 @@
 ---
 
 ## Phase 1: Foundation Verification
-**Status**: READY
+**Status**: COMPLETED
 **Goal**: Confirm existing infrastructure works
 
 ### 1.1 Docker & Connectivity
-- [ ] Verify `docker compose up` starts all services (S)
-- [ ] Verify PostgreSQL container accessible (S)
-- [ ] Verify backend health endpoint: `GET /health` (S)
-- [ ] Verify frontend loads at http://localhost:3000 (S)
-- [ ] Verify frontend can call backend API (S)
+- [x] Verify `docker compose up` starts all services (S)
+- [x] Verify PostgreSQL container accessible (S)
+- [x] Verify backend health endpoint: `GET /health` (S)
+- [x] Verify frontend loads at http://localhost:3000 (S)
+- [x] Verify frontend can call backend API (S)
 
 ---
 
 ## Phase 2: Database & Models
-**Status**: READY
+**Status**: IN PROGRESS
 **Goal**: Implement new schema
 
 ### 2.1 SQLAlchemy Models

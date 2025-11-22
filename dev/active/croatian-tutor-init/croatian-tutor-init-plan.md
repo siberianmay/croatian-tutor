@@ -208,14 +208,18 @@ Improving: Verb conjugation (2 errors, down from 8).
 
 ## 4. Implementation Phases
 
-### Phase 1: Foundation Verification
-- Verify Docker services start correctly
-- Frontend ↔ Backend connectivity
-- Database connection
+### Phase 1: Foundation Verification ✅ COMPLETE
+- ✅ Docker services start correctly (all 3 containers)
+- ✅ Frontend ↔ Backend connectivity (via Docker network)
+- ✅ Database connection (PostgreSQL healthy)
+- ✅ Health endpoints responding
+- ✅ Swagger docs accessible
 
-### Phase 2: Database & Models
+### Phase 2: Database & Models ← CURRENT
 - Create/update SQLAlchemy models (singular names)
+- Create enums (PartOfSpeech, Gender, CEFRLevel, ExerciseType, ErrorCategory)
 - Run Alembic migration
+- Seed default user (id=1)
 - Create Pydantic schemas
 
 ### Phase 3: Vocabulary System (Non-AI)
