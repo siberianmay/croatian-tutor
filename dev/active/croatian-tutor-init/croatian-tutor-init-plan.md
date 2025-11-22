@@ -215,14 +215,14 @@ Improving: Verb conjugation (2 errors, down from 8).
 - ✅ Health endpoints responding
 - ✅ Swagger docs accessible
 
-### Phase 2: Database & Models ← CURRENT
-- Create/update SQLAlchemy models (singular names)
-- Create enums (PartOfSpeech, Gender, CEFRLevel, ExerciseType, ErrorCategory)
-- Run Alembic migration
-- Seed default user (id=1)
-- Create Pydantic schemas
+### Phase 2: Database & Models ✅ COMPLETE
+- ✅ SQLAlchemy models (7 tables, singular names)
+- ✅ Enums (PartOfSpeech, Gender, CEFRLevel, ExerciseType, ErrorCategory)
+- ✅ Alembic migration applied
+- ✅ Default user seeded (id=1)
+- ✅ Pydantic schemas (user, word, grammar_topic, progress, exercise)
 
-### Phase 3: Vocabulary System (Non-AI)
+### Phase 3: Vocabulary System (Non-AI) ← CURRENT
 - Word CRUD endpoints
 - Bulk import endpoint
 - SRS scheduling logic

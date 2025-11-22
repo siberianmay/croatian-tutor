@@ -1,11 +1,20 @@
 # Croatian Language Tutor - Project Context
 
 **Last Updated: 2025-11-22**
-**Current Phase**: 2 - Database & Models
+**Current Phase**: 3 - Vocabulary System (Non-AI)
 
 ---
 
 ## SESSION PROGRESS
+
+### Phase 2: Database & Models (COMPLETED)
+
+All database models and schemas implemented:
+- **Models created**: User, Word, GrammarTopic, TopicProgress, ExerciseLog, ErrorLog, Session
+- **Enums created**: PartOfSpeech, Gender, CEFRLevel, ExerciseType, ErrorCategory
+- **Migration**: `502e2ba3bd52_initial_schema_with_all_models.py` applied
+- **Default user**: Seeded with id=1
+- **Schemas**: All Pydantic schemas for API I/O
 
 ### Phase 1: Foundation Verification (COMPLETED)
 
@@ -198,16 +207,16 @@ VITE_API_URL=http://localhost:8000
 
 ## NEXT STEPS
 
-**Phase 2: Database & Models** (CURRENT)
-1. Replace backend models with new schema (singular table names)
-2. Create enums (PartOfSpeech, Gender, CEFRLevel, ExerciseType, ErrorCategory)
-3. Create and run Alembic migration
-4. Seed default user (id=1)
-5. Create Pydantic schemas
+**Phase 3: Vocabulary System (Non-AI)** (CURRENT)
+1. Create Word CRUD operations (`backend/app/crud/word.py`)
+2. Implement SRS scheduling logic (SM-2 algorithm)
+3. Create Word API endpoints (CRUD + review)
+4. Build Vocabulary UI (list, add, edit, delete)
+5. Build Drill page with card UI
 
 **Then:**
-6. Phase 3: Vocabulary System (Non-AI)
-7. Phase 4: Gemini Integration
+6. Phase 4: Gemini Integration
+7. Phase 5: AI Exercises
 
 ---
 

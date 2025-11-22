@@ -1,7 +1,7 @@
 # Croatian Language Tutor - Implementation Tasks
 
 **Last Updated: 2025-11-22**
-**Current Phase**: 2 - Database & Models
+**Current Phase**: 3 - Vocabulary System (Non-AI)
 
 ---
 
@@ -31,43 +31,43 @@
 ---
 
 ## Phase 2: Database & Models
-**Status**: IN PROGRESS
+**Status**: COMPLETED
 **Goal**: Implement new schema
 
 ### 2.1 SQLAlchemy Models
-- [ ] Replace `backend/app/models/user.py` with new schema (S)
-- [ ] Replace `backend/app/models/word.py` with SRS fields (M)
-- [ ] Create `backend/app/models/grammar_topic.py` (S)
-- [ ] Create `backend/app/models/topic_progress.py` (S)
-- [ ] Create `backend/app/models/exercise_log.py` (S)
-- [ ] Create `backend/app/models/error_log.py` (S)
-- [ ] Create `backend/app/models/session.py` (S)
-- [ ] Update `backend/app/models/__init__.py` exports (S)
-- [ ] Delete old unused models (S)
+- [x] Replace `backend/app/models/user.py` with new schema (S)
+- [x] Replace `backend/app/models/word.py` with SRS fields (M)
+- [x] Create `backend/app/models/grammar_topic.py` (S)
+- [x] Create `backend/app/models/topic_progress.py` (S)
+- [x] Create `backend/app/models/exercise_log.py` (S)
+- [x] Create `backend/app/models/error_log.py` (S)
+- [x] Create `backend/app/models/session.py` (S)
+- [x] Update `backend/app/models/__init__.py` exports (S)
+- [x] Delete old unused models (S)
 
 ### 2.2 Enums
-- [ ] Create `PartOfSpeech` enum (S)
-- [ ] Create `Gender` enum (S)
-- [ ] Create `CEFRLevel` enum (S)
-- [ ] Create `ExerciseType` enum (S)
-- [ ] Create `ErrorCategory` enum (S)
+- [x] Create `PartOfSpeech` enum (S)
+- [x] Create `Gender` enum (S)
+- [x] Create `CEFRLevel` enum (S)
+- [x] Create `ExerciseType` enum (S)
+- [x] Create `ErrorCategory` enum (S)
 
 ### 2.3 Database Migration
-- [ ] Create Alembic migration for new schema (M)
-- [ ] Test migration runs successfully (S)
-- [ ] Seed default user (id=1) (S)
+- [x] Create Alembic migration for new schema (M)
+- [x] Test migration runs successfully (S)
+- [x] Seed default user (id=1) (S)
 
 ### 2.4 Pydantic Schemas
-- [ ] Update `backend/app/schemas/user.py` (S)
-- [ ] Create `backend/app/schemas/word.py` (M)
-- [ ] Create `backend/app/schemas/grammar_topic.py` (S)
-- [ ] Create `backend/app/schemas/progress.py` (S)
-- [ ] Create `backend/app/schemas/exercise.py` (M)
+- [x] Update `backend/app/schemas/user.py` (S)
+- [x] Create `backend/app/schemas/word.py` (M)
+- [x] Create `backend/app/schemas/grammar_topic.py` (S)
+- [x] Create `backend/app/schemas/progress.py` (S)
+- [x] Create `backend/app/schemas/exercise.py` (M)
 
 ---
 
 ## Phase 3: Vocabulary System (Non-AI Core)
-**Status**: BLOCKED by Phase 2
+**Status**: IN PROGRESS
 **Goal**: Working vocabulary drills without Gemini
 
 ### 3.1 Word CRUD Service
