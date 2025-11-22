@@ -100,3 +100,126 @@ export interface UserProgress {
   accuracy_rate: number;
   streak_days: number;
 }
+
+// Grammar Topic types
+export interface GrammarTopic {
+  id: number;
+  name: string;
+  cefr_level: CEFRLevel;
+  prerequisite_ids: number[] | null;
+  rule_description: string | null;
+  display_order: number;
+}
+
+export interface TopicProgress {
+  topic_id: number;
+  topic_name: string;
+  cefr_level: CEFRLevel;
+  mastery_score: number;
+  times_practiced: number;
+}
+
+// Conversation types
+export interface ConversationTurn {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
+export interface ConversationRequest {
+  message: string;
+  history: ConversationTurn[];
+}
+
+export interface ConversationResponse {
+  response: string;
+  corrections: Array<{
+    original: string;
+    corrected: string;
+    explanation: string;
+  }> | null;
+  new_vocabulary: string[] | null;
+}
+
+// Grammar Exercise types
+export interface GrammarExerciseRequest {
+  topic_id?: number;
+}
+
+export interface GrammarExerciseResponse {
+  exercise_id: string;
+  topic_name: string;
+  instruction: string;
+  question: string;
+  hints: string[] | null;
+}
+
+// Translation types
+export interface TranslationRequest {
+  direction: 'cr_en' | 'en_cr';
+  cefr_level?: CEFRLevel;
+}
+
+export interface TranslationResponse {
+  exercise_id: string;
+  source_text: string;
+  source_language: string;
+  target_language: string;
+}
+
+// Sentence Construction types
+export interface SentenceConstructionRequest {
+  cefr_level?: CEFRLevel;
+}
+
+export interface SentenceConstructionResponse {
+  exercise_id: string;
+  words: string[];
+  hint: string;
+}
+
+// Reading Comprehension types
+export interface ReadingExerciseRequest {
+  cefr_level?: CEFRLevel;
+}
+
+export interface ReadingExerciseResponse {
+  exercise_id: string;
+  passage: string;
+  questions: Array<{
+    question: string;
+    expected_answer: string;
+  }>;
+}
+
+// Dialogue types
+export interface DialogueExerciseRequest {
+  cefr_level?: CEFRLevel;
+  scenario?: string;
+}
+
+export interface DialogueExerciseResponse {
+  exercise_id: string;
+  scenario: string;
+  dialogue_start: string;
+  user_role: string;
+  ai_role: string;
+  suggested_phrases: string[];
+}
+
+// Answer Evaluation types
+export interface AnswerCheckRequest {
+  exercise_type: ExerciseType;
+  user_answer: string;
+  expected_answer: string;
+  context?: string;
+  topic_id?: number;
+}
+
+export interface AnswerCheckResponse {
+  correct: boolean;
+  score: number;
+  feedback: string;
+  correct_answer: string | null;
+  error_category: string | null;
+  explanation: string | null;
+}

@@ -359,7 +359,8 @@ const VocabularyPage: React.FC = () => {
           </Text>
           <Textarea
             placeholder="sunce&#10;mjesec&#10;zvijezda&#10;more&#10;planina"
-            minRows={8}
+            autosize
+            minRows={20}
             value={bulkWords}
             onChange={(e) => setBulkWords(e.target.value)}
             disabled={bulkImportMutation.isPending}

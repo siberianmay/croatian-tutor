@@ -65,7 +65,8 @@ export const wordApi = {
   bulkImport: async (words: string[]): Promise<{ imported: number; skipped_duplicates: number; words: Word[] }> => {
     const { data } = await api.post<{ imported: number; skipped_duplicates: number; words: Word[] }>(
       '/words/bulk-import',
-      { words }
+      { words },
+      { timeout: 5 * 60 * 1000 } // 5 minutes - bulk import processes words in chunks via Gemini
     );
     return data;
   },

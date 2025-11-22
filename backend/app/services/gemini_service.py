@@ -74,12 +74,32 @@ Respond with ONLY valid JSON (no markdown, no explanation):
             }
 
     async def assess_words_bulk(
-        self, croatian_words: list[str]
+        self, croatian_words: list[str], chunk_size: int = 10
     ) -> list[dict[str, Any]]:
-        """Assess multiple Croatian words in a single request."""
+        """
+        Assess multiple Croatian words, processing in chunks to avoid API limits.
+
+        Args:
+            croatian_words: List of Croatian words to assess
+            chunk_size: Number of words per Gemini API call (default: 10)
+        """
         if not croatian_words:
             return []
 
+        # Process words in chunks
+        results: list[dict[str, Any]] = []
+        for i in range(0, len(croatian_words), chunk_size):
+            chunk = croatian_words[i:i + chunk_size]
+            chunk_results = await self._assess_words_chunk(chunk)
+            results.extend(chunk_results)
+            logger.info(f"Processed chunk {i // chunk_size + 1}: {len(chunk)} words")
+
+        return results
+
+    async def _assess_words_chunk(
+        self, croatian_words: list[str]
+    ) -> list[dict[str, Any]]:
+        """Assess a chunk of Croatian words in a single Gemini request."""
         words_list = "\n".join(f"- {w}" for w in croatian_words)
         prompt = f"""Analyze these Croatian words and provide information for each.
 
@@ -103,7 +123,7 @@ Important:
 - cefr_level indicates difficulty for Croatian learners"""
 
         try:
-            response = await self._generate(prompt)
+            response = await self._generate_bulk(prompt)
             data = self._parse_json(response)
 
             if not isinstance(data, list):
@@ -120,7 +140,7 @@ Important:
                 })
             return results
         except Exception as e:
-            logger.error(f"Failed to assess words in bulk: {e}")
+            logger.error(f"Failed to assess chunk of {len(croatian_words)} words: {e}")
             # Return empty assessments on failure
             return [
                 {
@@ -237,6 +257,18 @@ Respond with ONLY valid JSON:
         config = GenerationConfig(
             temperature=0.3,
             max_output_tokens=1024,
+        )
+        response = await self._model.generate_content_async(
+            prompt,
+            generation_config=config,
+        )
+        return response.text
+
+    async def _generate_bulk(self, prompt: str) -> str:
+        """Generate content from Gemini with higher token limit for bulk operations."""
+        config = GenerationConfig(
+            temperature=0.3,
+            max_output_tokens=4096,  # Higher limit for bulk JSON responses
         )
         response = await self._model.generate_content_async(
             prompt,
