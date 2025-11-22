@@ -11,12 +11,11 @@ import {
   Modal,
   TextInput,
   Select,
-  Loader,
-  Center,
   Alert,
   Paper,
   Textarea,
 } from '@mantine/core';
+import { TableSkeleton } from '~components/skeletons';
 import { useDisclosure } from '@mantine/hooks';
 import {
   IconPlus,
@@ -224,36 +223,37 @@ const VocabularyPage: React.FC = () => {
       </div>
 
       <Paper p="md" withBorder>
-        <Group justify="space-between" mb="md">
-          <Group>
-            <TextInput
-              placeholder="Search words..."
-              leftSection={<IconSearch size={16} />}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              style={{ width: 250 }}
-            />
-            {dueCount !== undefined && dueCount > 0 && (
-              <Badge color="orange" size="lg">
-                {dueCount} words due for review
-              </Badge>
-            )}
+        <Stack gap="md" mb="md">
+          <Group justify="space-between" wrap="wrap" gap="sm">
+            <Group gap="sm" wrap="wrap">
+              <TextInput
+                placeholder="Search words..."
+                leftSection={<IconSearch size={16} />}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                style={{ minWidth: 200, flexGrow: 1 }}
+              />
+              {dueCount !== undefined && dueCount > 0 && (
+                <Badge color="orange" size="lg">
+                  {dueCount} due
+                </Badge>
+              )}
+            </Group>
+            <Group gap="sm" wrap="wrap">
+              <Button variant="light" leftSection={<IconUpload size={16} />} onClick={openBulk} size="sm">
+                Bulk Import
+              </Button>
+              <Button leftSection={<IconPlus size={16} />} onClick={open} size="sm">
+                Add Word
+              </Button>
+            </Group>
           </Group>
-          <Group>
-            <Button variant="light" leftSection={<IconUpload size={16} />} onClick={openBulk}>
-              Bulk Import
-            </Button>
-            <Button leftSection={<IconPlus size={16} />} onClick={open}>
-              Add Word
-            </Button>
-          </Group>
-        </Group>
+        </Stack>
 
         {isLoading ? (
-          <Center py="xl">
-            <Loader />
-          </Center>
+          <TableSkeleton columns={6} rows={12} />
         ) : words && words.length > 0 ? (
+          <Table.ScrollContainer minWidth={700}>
           <Table striped highlightOnHover>
             <Table.Thead>
               <Table.Tr>
@@ -344,6 +344,7 @@ const VocabularyPage: React.FC = () => {
               ))}
             </Table.Tbody>
           </Table>
+          </Table.ScrollContainer>
         ) : (
           <Text c="dimmed" ta="center" py="xl">
             No words yet. Add your first word to get started!

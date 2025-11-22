@@ -1,16 +1,23 @@
 """Gemini AI service for Croatian language learning."""
 
+import asyncio
 import json
 import logging
 from typing import Any
 
 import google.generativeai as genai
+from google.api_core import exceptions as google_exceptions
 from google.generativeai.types import GenerationConfig
 
 from app.config import settings
+from app.exceptions import GeminiParseError, GeminiRateLimitError, GeminiServiceError
 from app.models.enums import CEFRLevel, Gender, PartOfSpeech
 
 logger = logging.getLogger(__name__)
+
+# Retry configuration
+MAX_RETRIES = 3
+RETRY_DELAY_SECONDS = 1.0
 
 
 class GeminiService:
@@ -252,39 +259,68 @@ Respond with ONLY valid JSON:
                 "corrections": [] if is_correct else [f"Expected '{expected}'"],
             }
 
-    async def _generate(self, prompt: str) -> str:
-        """Generate content from Gemini."""
+    async def _generate(self, prompt: str, max_tokens: int = 1024) -> str:
+        """
+        Generate content from Gemini with retry logic.
+
+        Raises:
+            GeminiServiceError: On persistent failure after retries
+            GeminiRateLimitError: On rate limit exceeded
+        """
         config = GenerationConfig(
             temperature=0.3,
-            max_output_tokens=1024,
+            max_output_tokens=max_tokens,
         )
-        response = await self._model.generate_content_async(
-            prompt,
-            generation_config=config,
+
+        last_error: Exception | None = None
+        for attempt in range(MAX_RETRIES):
+            try:
+                response = await self._model.generate_content_async(
+                    prompt,
+                    generation_config=config,
+                )
+                return response.text
+            except google_exceptions.ResourceExhausted as e:
+                logger.warning(f"Gemini rate limit hit (attempt {attempt + 1})")
+                raise GeminiRateLimitError() from e
+            except google_exceptions.GoogleAPIError as e:
+                last_error = e
+                logger.warning(f"Gemini API error (attempt {attempt + 1}/{MAX_RETRIES}): {e}")
+                if attempt < MAX_RETRIES - 1:
+                    await asyncio.sleep(RETRY_DELAY_SECONDS * (attempt + 1))
+            except Exception as e:
+                last_error = e
+                logger.error(f"Unexpected Gemini error (attempt {attempt + 1}): {e}")
+                if attempt < MAX_RETRIES - 1:
+                    await asyncio.sleep(RETRY_DELAY_SECONDS)
+
+        raise GeminiServiceError(
+            message="AI service temporarily unavailable after retries",
+            details={"error": str(last_error)},
         )
-        return response.text
 
     async def _generate_bulk(self, prompt: str) -> str:
         """Generate content from Gemini with higher token limit for bulk operations."""
-        config = GenerationConfig(
-            temperature=0.3,
-            max_output_tokens=4096,  # Higher limit for bulk JSON responses
-        )
-        response = await self._model.generate_content_async(
-            prompt,
-            generation_config=config,
-        )
-        return response.text
+        return await self._generate(prompt, max_tokens=4096)
 
     def _parse_json(self, text: str) -> Any:
-        """Parse JSON from Gemini response, handling markdown code blocks."""
+        """
+        Parse JSON from Gemini response, handling markdown code blocks.
+
+        Raises:
+            GeminiParseError: When JSON parsing fails
+        """
         # Strip markdown code blocks if present
         text = text.strip()
         if text.startswith("```"):
             lines = text.split("\n")
             # Remove first line (```json) and last line (```)
             text = "\n".join(lines[1:-1] if lines[-1] == "```" else lines[1:])
-        return json.loads(text)
+        try:
+            return json.loads(text)
+        except json.JSONDecodeError as e:
+            logger.error(f"JSON parse error: {e}, raw text: {text[:200]}")
+            raise GeminiParseError(raw_response=text) from e
 
     def _validate_pos(self, pos: str | None) -> str:
         """Validate part of speech value."""

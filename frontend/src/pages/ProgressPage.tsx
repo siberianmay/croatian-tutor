@@ -12,11 +12,11 @@ import {
   ThemeIcon,
   Button,
   Alert,
-  Loader,
-  Center,
+  Skeleton,
   Table,
   Divider,
 } from '@mantine/core';
+import { StatCardSkeleton, CardSkeleton } from '~components/skeletons';
 import {
   IconBook,
   IconFlame,
@@ -110,9 +110,27 @@ const ProgressPage: React.FC = () => {
 
   if (loading) {
     return (
-      <Center h={400}>
-        <Loader size="lg" />
-      </Center>
+      <Stack gap="xl">
+        <Group justify="space-between">
+          <div>
+            <Skeleton height={32} width={200} mb="sm" />
+            <Skeleton height={16} width={300} />
+          </div>
+          <Skeleton height={36} width={100} />
+        </Group>
+
+        <SimpleGrid cols={{ base: 2, sm: 3, lg: 6 }} spacing="md">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <StatCardSkeleton key={i} />
+          ))}
+        </SimpleGrid>
+
+        <SimpleGrid cols={{ base: 1, md: 2 }} spacing="lg">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <CardSkeleton key={i} height={300} lines={5} />
+          ))}
+        </SimpleGrid>
+      </Stack>
     );
   }
 
