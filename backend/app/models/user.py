@@ -1,32 +1,57 @@
-from datetime import datetime
+"""User model for the Croatian Tutor application."""
 
-from sqlalchemy import DateTime, Integer, String
+from datetime import datetime
+from typing import TYPE_CHECKING
+
+from sqlalchemy import DateTime, Integer, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy.sql import func
 
 from app.database import Base
+from app.models.enums import CEFRLevel
+
+if TYPE_CHECKING:
+    from app.models.word import Word
+    from app.models.topic_progress import TopicProgress
+    from app.models.exercise_log import ExerciseLog
+    from app.models.error_log import ErrorLog
+    from app.models.session import Session
 
 
 class User(Base):
-    """User model for tracking individual learners."""
+    """User model - single user for local app, extensible for future multi-user."""
 
-    __tablename__ = "users"
+    __tablename__ = "user"
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
-    email: Mapped[str] = mapped_column(String(255), unique=True, index=True)
-    username: Mapped[str] = mapped_column(String(100), unique=True, index=True)
-    hashed_password: Mapped[str] = mapped_column(String(255))
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, default=1)
+    name: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    preferred_cefr_level: Mapped[CEFRLevel] = mapped_column(
+        default=CEFRLevel.A1,
+        nullable=False,
+    )
+    daily_goal_minutes: Mapped[int] = mapped_column(Integer, default=30, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now()
+        DateTime(timezone=True),
+        server_default=func.now(),
+        nullable=False,
     )
     updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
+        nullable=False,
     )
 
     # Relationships
-    learning_sessions: Mapped[list["LearningSession"]] = relationship(
-        "LearningSession", back_populates="user"
+    words: Mapped[list["Word"]] = relationship(back_populates="user", lazy="selectin")
+    topic_progress: Mapped[list["TopicProgress"]] = relationship(
+        back_populates="user", lazy="selectin"
     )
-    progress_records: Mapped[list["UserProgress"]] = relationship(
-        "UserProgress", back_populates="user"
+    exercise_logs: Mapped[list["ExerciseLog"]] = relationship(
+        back_populates="user", lazy="selectin"
+    )
+    error_logs: Mapped[list["ErrorLog"]] = relationship(
+        back_populates="user", lazy="selectin"
+    )
+    sessions: Mapped[list["Session"]] = relationship(
+        back_populates="user", lazy="selectin"
     )

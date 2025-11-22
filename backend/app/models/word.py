@@ -1,30 +1,55 @@
-from datetime import datetime
+"""Word model for the Croatian Tutor application."""
 
-from sqlalchemy import DateTime, ForeignKey, Integer, String, Text
+from datetime import datetime
+from typing import TYPE_CHECKING
+
+from sqlalchemy import DateTime, Float, ForeignKey, Integer, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy.sql import func
 
 from app.database import Base
+from app.models.enums import CEFRLevel, Gender, PartOfSpeech
+
+if TYPE_CHECKING:
+    from app.models.user import User
 
 
 class Word(Base):
-    """Word model for Croatian vocabulary entries."""
+    """Vocabulary word with SRS (Spaced Repetition System) fields."""
 
-    __tablename__ = "words"
+    __tablename__ = "word"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
-    croatian: Mapped[str] = mapped_column(String(200), index=True)
-    english: Mapped[str] = mapped_column(String(200), index=True)
-    pronunciation: Mapped[str | None] = mapped_column(String(200), nullable=True)
-    notes: Mapped[str | None] = mapped_column(Text, nullable=True)
-    difficulty: Mapped[int] = mapped_column(Integer, default=1)  # 1-5 scale
-    topic_id: Mapped[int] = mapped_column(
-        Integer, ForeignKey("topics.id"), index=True
+    user_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("user.id"), nullable=False, index=True
     )
+
+    # Word content
+    croatian: Mapped[str] = mapped_column(String(200), nullable=False, index=True)
+    english: Mapped[str] = mapped_column(String(200), nullable=False, index=True)
+
+    # Linguistic properties
+    part_of_speech: Mapped[PartOfSpeech] = mapped_column(nullable=False)
+    gender: Mapped[Gender | None] = mapped_column(nullable=True)  # Only for nouns
+    cefr_level: Mapped[CEFRLevel] = mapped_column(nullable=False)
+
+    # SRS fields
+    mastery_score: Mapped[int] = mapped_column(Integer, default=0, nullable=False)  # 0-10
+    ease_factor: Mapped[float] = mapped_column(Float, default=2.5, nullable=False)  # SM-2
+    correct_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    wrong_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    next_review_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    last_reviewed_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+
+    # Timestamps
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now()
+        DateTime(timezone=True),
+        server_default=func.now(),
+        nullable=False,
     )
 
     # Relationships
-    topic: Mapped["Topic"] = relationship("Topic", back_populates="words")
-    exercises: Mapped[list["Exercise"]] = relationship("Exercise", back_populates="word")
+    user: Mapped["User"] = relationship(back_populates="words")

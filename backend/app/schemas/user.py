@@ -1,19 +1,24 @@
+"""Pydantic schemas for User model."""
+
 from datetime import datetime
 
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, Field
+
+from app.models.enums import CEFRLevel
 
 
 class UserBase(BaseModel):
     """Base schema for user data."""
 
-    email: EmailStr
-    username: str = Field(..., min_length=3, max_length=100)
+    name: str | None = Field(None, max_length=100)
+    preferred_cefr_level: CEFRLevel = CEFRLevel.A1
+    daily_goal_minutes: int = Field(30, ge=0, le=480)
 
 
-class UserCreate(UserBase):
-    """Schema for creating a new user."""
+class UserUpdate(UserBase):
+    """Schema for updating user settings."""
 
-    password: str = Field(..., min_length=8)
+    pass
 
 
 class UserResponse(UserBase):
@@ -21,12 +26,6 @@ class UserResponse(UserBase):
 
     id: int
     created_at: datetime
+    updated_at: datetime
 
     model_config = {"from_attributes": True}
-
-
-class UserLogin(BaseModel):
-    """Schema for user login."""
-
-    email: EmailStr
-    password: str
