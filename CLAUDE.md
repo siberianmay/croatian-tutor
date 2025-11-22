@@ -45,7 +45,13 @@ croatian-tutor/
 | `dev-docs` | Task planning, context preservation, documentation |
 | `skill-developer` | Creating/modifying Claude skills |
 
-**Usage:** Invoke automatically when working on relevant code. Skills load architectural guidelines and patterns.
+> **⚠️ MANDATORY SKILL USAGE**
+>
+> **Backend work:** You MUST invoke `Skill(backend-dev-guidelines)` BEFORE writing or modifying ANY backend code (routes, services, CRUD, models, schemas, migrations, tests).
+>
+> **Frontend work:** You MUST invoke `Skill(frontend-dev-guidelines)` BEFORE writing or modifying ANY frontend code (components, hooks, pages, API calls, styling).
+>
+> These skills contain project-specific patterns and conventions. Skipping them will result in inconsistent code that doesn't follow project standards. Load the skill FIRST, then implement.
 
 ### Slash Commands
 
@@ -134,8 +140,32 @@ GEMINI_API_KEY=your_key_here  # Required
 - [x] Backend skeleton (FastAPI, config, health endpoint)
 - [x] Docker Compose configuration
 - [x] Database setup (PostgreSQL)
-- [ ] Frontend scaffold
-- [ ] Database models (Vocabulary, Exercise, Progress)
-- [ ] Gemini service integration
+- [x] Database models (User, Word, GrammarTopic, TopicProgress, ExerciseLog, ErrorLog, Session)
+- [x] Enums (PartOfSpeech, Gender, CEFRLevel, ExerciseType, ErrorCategory)
+- [x] Pydantic schemas (User, Word, GrammarTopic, Progress, Exercise)
+- [x] Initial Alembic migration
+- [ ] CRUD operations (in progress)
 - [ ] API routes
+- [ ] Gemini service integration
+- [ ] Frontend scaffold
 - [ ] UI implementation
+
+## Data Model
+
+### Core Models
+- **User** - Learner profile with CEFR level, preferences
+- **Word** - Vocabulary entries with Croatian/English, part of speech, gender, proficiency tracking
+- **GrammarTopic** - Grammar rules and explanations organized by CEFR level
+- **Session** - Learning session tracking
+
+### Progress Tracking
+- **TopicProgress** - Per-user mastery of grammar topics
+- **ExerciseLog** - History of completed exercises with scores
+- **ErrorLog** - Tracked errors for pattern analysis and targeted practice
+
+### Enums
+- **CEFRLevel** - A1, A2, B1, B2, C1, C2
+- **PartOfSpeech** - noun, verb, adjective, adverb, pronoun, preposition, conjunction, interjection, numeral, particle, phrase
+- **Gender** - masculine, feminine, neuter
+- **ExerciseType** - vocabulary_cr_en, vocabulary_en_cr, vocabulary_fill_blank, conversation, grammar, sentence_construction, reading, dialogue, translation_cr_en, translation_en_cr
+- **ErrorCategory** - case_error, gender_agreement, verb_conjugation, word_order, spelling, vocabulary, accent, other
