@@ -4,38 +4,184 @@
 
 ---
 
-## Key Decisions Made
+## SESSION PROGRESS
 
-### Technology Choices
+### Completed This Session (✅)
 
-| Decision | Choice | Rationale | Alternatives Considered |
-|----------|--------|-----------|------------------------|
-| Backend Framework | FastAPI | Async, auto-docs, typing, fast | Flask, Django |
-| Frontend Framework | React + Vite | Fast dev, modern tooling | Next.js, Vue |
-| UI Component Library | Mantine | Beautiful defaults, great DX | Chakra, MUI, Tailwind |
-| Database | PostgreSQL | JSON support, arrays, mature | MySQL |
-| ORM | SQLAlchemy 2.0 | Async support, industry standard | Tortoise ORM |
-| AI Service | Gemini API | User requirement | OpenAI, Claude |
-| Containerization | Docker Compose | Simple local orchestration | Kubernetes (overkill) |
+1. **Frontend Scaffold** - Full React/TypeScript/Vite/Mantine setup
+   - `frontend/package.json` - Dependencies (React 18, Mantine 7, TanStack Query 5, React Router 7)
+   - `frontend/vite.config.ts` - Vite config with path aliases (@/, ~components, ~features, etc.)
+   - `frontend/tsconfig.json` + `tsconfig.node.json` - Strict TypeScript config
+   - `frontend/Dockerfile` - Node 20 Alpine container
+   - `frontend/index.html` - Entry point
+   - `frontend/src/main.tsx` - App bootstrap with providers (Mantine, QueryClient, Router)
+   - `frontend/src/App.tsx` - Routes with lazy loading + Suspense
+   - `frontend/src/config/theme.ts` - Mantine theme config
+   - `frontend/src/components/layout/AppLayout.tsx` - AppShell with navigation
+   - `frontend/src/services/api.ts` - Axios client with /api/v1 base
+   - `frontend/src/types/index.ts` - TypeScript types (Word, Topic, Exercise, etc.)
+   - `frontend/src/pages/` - HomePage, LearnPage, PracticePage, ProgressPage (placeholder)
 
-### Architecture Decisions
+2. **Backend Models Created** (⚠️ MAY NEED REDESIGN)
+   - `backend/app/models/user.py` - User model
+   - `backend/app/models/topic.py` - Topic model
+   - `backend/app/models/word.py` - Word/vocabulary model
+   - `backend/app/models/exercise.py` - Exercise model with ExerciseType enum
+   - `backend/app/models/learning_session.py` - LearningSession + ExerciseAttempt
+   - `backend/app/models/progress.py` - UserProgress model
+   - `backend/app/models/__init__.py` - Exports all models
 
-| Decision | Choice | Rationale |
-|----------|--------|-----------|
-| Auth | None | Single user, local only |
-| API Style | REST | Simpler than GraphQL for this scope |
-| State Management | TanStack Query | Server state caching, no Redux needed |
-| Python Version | 3.12+ | Latest features, performance |
-| Node Version | 20 LTS | Stability |
+3. **Backend Schemas Started** (🟡 PARTIAL)
+   - `backend/app/schemas/user.py` - User schemas created
+
+### In Progress (🟡)
+
+**CRITICAL: DESIGN TUTORING PROCESS FIRST**
+
+The implementation was stopped because we need to design the tutoring flow BEFORE finalizing:
+- Database models
+- Pydantic schemas
+- API routes
+- Gemini integration
+
+### Remaining (⏳)
+
+1. **Design Phase (MUST DO FIRST)**
+   - Define tutoring flow: How does user interact with Gemini?
+   - Determine what context Gemini needs to function as tutor
+   - Decide what to persist vs what to generate on-the-fly
+   - Redesign database models based on actual requirements
+
+2. **After Design Approved**
+   - Finalize/redesign database models
+   - Create Pydantic schemas
+   - Create Alembic migration
+   - Create Gemini service
+   - Create API routes
+   - Test with docker-compose up
 
 ---
 
-## Project Constraints
+## KEY DECISIONS
 
-1. **Local Only**: No cloud deployment, no external access
-2. **Single User**: No authentication, no multi-tenancy
-3. **Gemini Dependency**: Core functionality requires API availability
-4. **Docker Required**: All services must run in containers
+### Made This Session
+
+| Decision | Choice | Rationale |
+|----------|--------|-----------|
+| Stop implementation | Yes | Need to design tutoring flow first |
+| Models may change | Yes | Created models without understanding Gemini context needs |
+
+### Pending Decisions (MUST DISCUSS)
+
+1. **Tutoring Flow**
+   - Free conversation vs structured lessons?
+   - Spaced repetition for vocabulary?
+   - Progressive difficulty levels?
+
+2. **Gemini's Role**
+   - Correct grammar in real-time?
+   - Generate exercises dynamically?
+   - Maintain conversation context across sessions?
+
+3. **What Context Does Gemini Need?**
+   - User's current vocabulary knowledge?
+   - Past mistakes/corrections?
+   - Topics already covered?
+   - Proficiency level?
+
+4. **What to Persist?**
+   - Full conversation history or summaries?
+   - Per-word mastery scores?
+   - Error patterns?
+
+---
+
+## FILES MODIFIED THIS SESSION
+
+### Created (Frontend)
+| File | Purpose |
+|------|---------|
+| `frontend/package.json` | Dependencies |
+| `frontend/vite.config.ts` | Vite + aliases |
+| `frontend/tsconfig.json` | TypeScript config |
+| `frontend/tsconfig.node.json` | Node TypeScript config |
+| `frontend/Dockerfile` | Container definition |
+| `frontend/index.html` | HTML entry |
+| `frontend/src/main.tsx` | React bootstrap |
+| `frontend/src/App.tsx` | Routes + lazy loading |
+| `frontend/src/vite-env.d.ts` | Vite types |
+| `frontend/src/config/theme.ts` | Mantine theme |
+| `frontend/src/components/layout/AppLayout.tsx` | App shell |
+| `frontend/src/services/api.ts` | Axios client |
+| `frontend/src/types/index.ts` | TypeScript types |
+| `frontend/src/pages/HomePage.tsx` | Home page |
+| `frontend/src/pages/LearnPage.tsx` | Learn page |
+| `frontend/src/pages/PracticePage.tsx` | Practice page |
+| `frontend/src/pages/ProgressPage.tsx` | Progress page |
+
+### Created (Backend Models - MAY NEED REDESIGN)
+| File | Purpose |
+|------|---------|
+| `backend/app/models/user.py` | User model |
+| `backend/app/models/topic.py` | Topic model |
+| `backend/app/models/word.py` | Word model |
+| `backend/app/models/exercise.py` | Exercise model |
+| `backend/app/models/learning_session.py` | Session + Attempt models |
+| `backend/app/models/progress.py` | UserProgress model |
+| `backend/app/models/__init__.py` | Model exports |
+| `backend/app/schemas/user.py` | User schemas |
+
+### Already Existed (Pre-Session)
+| File | Purpose |
+|------|---------|
+| `docker-compose.yml` | Service orchestration |
+| `.env.example` | Environment template |
+| `backend/Dockerfile` | Backend container |
+| `backend/pyproject.toml` | Python dependencies |
+| `backend/app/main.py` | FastAPI app |
+| `backend/app/config.py` | Pydantic Settings |
+| `backend/app/database.py` | Async SQLAlchemy setup |
+| `backend/alembic/` | Migration setup |
+
+---
+
+## NEXT STEPS
+
+### Immediate (Next Session)
+
+1. **DISCUSS TUTORING DESIGN** with user:
+   - How should user interact with tutor?
+   - What learning flow makes sense?
+   - What does Gemini need to know?
+
+2. After design discussion:
+   - Validate/redesign database models
+   - Proceed with implementation
+
+### Commands to Run on Resume
+
+```bash
+# Start services (to test what exists)
+docker compose up --build
+
+# Frontend: http://localhost:3000
+# Backend: http://localhost:8000/docs
+```
+
+---
+
+## Technology Choices (CONFIRMED)
+
+| Decision | Choice | Rationale |
+|----------|--------|-----------|
+| Backend Framework | FastAPI | Async, auto-docs, typing |
+| Frontend Framework | React + Vite | Fast dev, modern tooling |
+| UI Component Library | Mantine 7 | Beautiful defaults, great DX |
+| Database | PostgreSQL | JSON support, arrays, mature |
+| ORM | SQLAlchemy 2.0 | Async support |
+| AI Service | Gemini API | User requirement |
+| Containerization | Docker Compose | Simple local orchestration |
+| State Management | TanStack Query | Server state caching |
 
 ---
 
@@ -44,39 +190,27 @@
 ### APIs
 | Service | Purpose | Documentation |
 |---------|---------|---------------|
-| Gemini API | AI tutor, exercise generation, evaluation | https://ai.google.dev/docs |
+| Gemini API | AI tutor | https://ai.google.dev/docs |
 
 ### Key Libraries (Backend)
-| Library | Version | Purpose |
-|---------|---------|---------|
-| fastapi | Latest | Web framework |
-| sqlalchemy | 2.0+ | ORM |
-| alembic | Latest | Migrations |
-| asyncpg | Latest | Async PostgreSQL driver |
-| pydantic | 2.0+ | Validation |
-| google-generativeai | Latest | Gemini SDK |
-| httpx | Latest | Async HTTP client |
-| uvicorn | Latest | ASGI server |
+- fastapi, sqlalchemy 2.0, alembic, asyncpg, pydantic 2.0, google-generativeai, httpx, uvicorn
 
 ### Key Libraries (Frontend)
-| Library | Version | Purpose |
-|---------|---------|---------|
-| react | 18+ | UI framework |
-| @mantine/core | 7+ | UI components |
-| @mantine/hooks | 7+ | Utility hooks |
-| @tanstack/react-query | 5+ | Data fetching |
-| react-router-dom | 6+ | Routing |
-| axios | Latest | HTTP client |
-| typescript | 5+ | Type safety |
+- react 18, @mantine/core 7, @mantine/hooks, @tanstack/react-query 5, react-router-dom 7, axios, typescript 5
 
 ---
 
 ## Environment Variables
 
 ```bash
-# Backend
-DATABASE_URL=postgresql+asyncpg://croatian:tutor_local@db:5432/croatian_tutor
+# Required
 GEMINI_API_KEY=your_gemini_api_key_here
+
+# Database (defaults work for local Docker)
+DATABASE_URL=postgresql+asyncpg://croatian:tutor_local@db:5432/croatian_tutor
+POSTGRES_USER=croatian
+POSTGRES_PASSWORD=tutor_local
+POSTGRES_DB=croatian_tutor
 
 # Frontend
 VITE_API_URL=http://localhost:8000
@@ -84,139 +218,12 @@ VITE_API_URL=http://localhost:8000
 
 ---
 
-## Key Files Reference
+## Risk Notes
 
-Once project is scaffolded:
-
-| File | Purpose |
-|------|---------|
-| `docker-compose.yml` | Service orchestration |
-| `.env` | Environment variables (gitignored) |
-| `.env.example` | Template for env vars |
-| `backend/app/main.py` | FastAPI entry point |
-| `backend/app/config.py` | Settings/config management |
-| `backend/app/services/gemini_service.py` | Gemini API integration |
-| `frontend/src/App.tsx` | React entry component |
-| `frontend/src/api/client.ts` | API client configuration |
-
----
-
-## Database Schema Relationships
-
-```
-topics (1) ──────────────────── (N) words
-   │                                  │
-   │                                  │
-   └──── (1) ─────── (N) exercises    └──── (1) ─────── (1) word_progress
-                          │
-                          │
-         learning_sessions (1) ─────── (N) exercises (via session_id FK - optional)
-```
-
----
-
-## Gemini Prompt Templates
-
-### Base System Prompt
-```
-You are a Croatian language tutor. Respond ONLY in valid JSON format.
-Student level: {level}
-Known vocabulary count: {word_count}
-Current focus topics: {topics}
-Recent performance: {performance_summary}
-```
-
-### Exercise Generation
-```json
-{
-  "request": "generate_exercise",
-  "type": "{exercise_type}",
-  "difficulty": "{difficulty}",
-  "topic": "{topic}",
-  "avoid_words": ["{recently_used_words}"],
-  "focus_words": ["{words_needing_practice}"]
-}
-```
-
-### Response Format (Exercise)
-```json
-{
-  "exercise": {
-    "type": "vocabulary_translation",
-    "direction": "en_to_hr",
-    "prompt": "Translate: 'Good morning'",
-    "expected_answer": "Dobro jutro",
-    "acceptable_alternatives": ["Jutro"],
-    "hints": ["Think about 'good' + time of day"],
-    "difficulty": 1
-  }
-}
-```
-
-### Response Format (Evaluation)
-```json
-{
-  "evaluation": {
-    "is_correct": true,
-    "score": 1.0,
-    "feedback": "Perfect! 'Dobro jutro' is the standard greeting.",
-    "corrections": [],
-    "tips": ["You can also use just 'Jutro' informally"],
-    "next_recommendation": "Try a harder greeting exercise"
-  }
-}
-```
-
----
-
-## Common Patterns
-
-### Backend API Pattern
-```python
-# routes/words.py
-@router.get("/", response_model=list[WordResponse])
-async def list_words(
-    db: AsyncSession = Depends(get_db),
-    skip: int = 0,
-    limit: int = 100
-):
-    return await word_crud.get_multi(db, skip=skip, limit=limit)
-```
-
-### Frontend Query Pattern
-```typescript
-// hooks/useWords.ts
-export function useWords() {
-  return useQuery({
-    queryKey: ['words'],
-    queryFn: () => api.get<Word[]>('/api/v1/words').then(r => r.data)
-  });
-}
-```
-
----
-
-## Risk Mitigations
-
-| Risk | Mitigation Strategy |
-|------|---------------------|
-| Gemini API down | Cache recent exercises, show cached content |
-| Gemini response parsing fails | Retry with simplified prompt, fallback to static exercises |
-| Rate limiting | Implement request queuing, cache responses |
-| Schema changes | Always use Alembic, never modify DB directly |
-
----
-
-## Testing Strategy
-
-### Backend
-- Unit tests for services (mocked Gemini)
-- Integration tests for API endpoints
-- Use pytest-asyncio for async tests
-
-### Frontend
-- Component tests with Vitest
-- E2E tests with Playwright (optional, Phase 5)
+| Issue | Status | Notes |
+|-------|--------|-------|
+| DB models created without design | ⚠️ | May need significant changes after tutoring flow design |
+| Schemas partially created | ⚠️ | Only user.py done, stopped before completion |
 
 ---
 
@@ -226,4 +233,3 @@ export function useWords() {
 2. **Spaced Repetition**: SM-2 algorithm for word review scheduling
 3. **Export**: Allow exporting vocabulary to Anki format
 4. **Backup**: Add DB backup script to docker-compose
-5. **Mobile**: Mantine is responsive, mobile-friendly by default

@@ -4,37 +4,64 @@
 
 ---
 
+## ⚠️ BLOCKER: Design Tutoring Process First
+
+**Before continuing implementation, we MUST design:**
+1. How user interacts with Gemini tutor
+2. What context Gemini needs to function effectively
+3. What data to persist vs generate on-the-fly
+4. Validate/redesign database models based on requirements
+
+---
+
+## Phase 0: Design (NEW - MUST COMPLETE FIRST)
+**Goal**: Define tutoring flow before finalizing data models
+
+### 0.1 Tutoring Flow Design
+- [ ] Define user interaction model (conversation vs structured lessons) (M)
+- [ ] Define Gemini's role and responsibilities (M)
+- [ ] Determine what context Gemini needs per request (M)
+- [ ] Design conversation/session persistence strategy (M)
+
+### 0.2 Data Model Validation
+- [ ] Review created models against tutoring requirements (S)
+- [ ] Decide: Do we need User model? (single user app) (S)
+- [ ] Define what progress data actually needs tracking (M)
+- [ ] Finalize database schema design (M)
+
+---
+
 ## Phase 1: Foundation (MVP Infrastructure)
 **Goal**: Running containers with basic connectivity
 
 ### 1.1 Project Setup
-- [ ] Create `.env.example` with required variables (S)
-- [ ] Create `docker-compose.yml` with all services (M)
-- [ ] Create `.gitignore` with proper exclusions (S)
-- [ ] Create project `README.md` with setup instructions (S)
+- ✅ Create `.env.example` with required variables
+- ✅ Create `docker-compose.yml` with all services
+- ✅ Create `.gitignore` with proper exclusions
+- ✅ Create project `README.md` with setup instructions
 
 ### 1.2 Backend Scaffold
-- [ ] Create `backend/Dockerfile` (S)
-- [ ] Create `backend/pyproject.toml` with dependencies (S)
-- [ ] Create `backend/app/main.py` with FastAPI app (S)
-- [ ] Create `backend/app/config.py` with Pydantic Settings (S)
-- [ ] Create `backend/app/database.py` with async session (M)
-- [ ] Add `/health` endpoint (S)
-- [ ] Configure CORS for frontend (S)
+- ✅ Create `backend/Dockerfile`
+- ✅ Create `backend/pyproject.toml` with dependencies
+- ✅ Create `backend/app/main.py` with FastAPI app
+- ✅ Create `backend/app/config.py` with Pydantic Settings
+- ✅ Create `backend/app/database.py` with async session
+- ✅ Add `/health` endpoint
+- ✅ Configure CORS for frontend
 
 ### 1.3 Frontend Scaffold
-- [ ] Initialize Vite + React + TypeScript project (S)
-- [ ] Create `frontend/Dockerfile` (S)
-- [ ] Install and configure Mantine (S)
-- [ ] Create basic App shell with Mantine AppShell (M)
-- [ ] Configure React Router with placeholder pages (S)
-- [ ] Create API client with axios (S)
+- ✅ Initialize Vite + React + TypeScript project
+- ✅ Create `frontend/Dockerfile`
+- ✅ Install and configure Mantine
+- ✅ Create basic App shell with Mantine AppShell
+- ✅ Configure React Router with placeholder pages
+- ✅ Create API client with axios
 - [ ] Verify frontend can call backend `/health` (S)
 
 ### 1.4 Database Setup
 - [ ] Verify PostgreSQL container starts correctly (S)
-- [ ] Create `alembic.ini` and alembic directory (S)
-- [ ] Create initial migration with all tables (M)
+- ✅ Create `alembic.ini` and alembic directory
+- [ ] Create initial migration with all tables (M) - BLOCKED by Phase 0
 - [ ] Verify migration runs on container start (S)
 
 ### 1.5 Integration Verification
@@ -48,16 +75,15 @@
 
 ## Phase 2: Core Data Layer
 **Goal**: CRUD operations for learning data
+**STATUS**: ⏳ BLOCKED by Phase 0 design
 
 ### 2.1 SQLAlchemy Models
-- [ ] Create `models/base.py` with Base class (S)
-- [ ] Create `models/word.py` - Word and WordProgress (M)
-- [ ] Create `models/topic.py` - Topic model (S)
-- [ ] Create `models/exercise.py` - Exercise model (M)
-- [ ] Create `models/session.py` - LearningSession model (S)
-- [ ] Generate and run Alembic migration (S)
+- 🟡 Create models (CREATED BUT MAY NEED REDESIGN)
+  - Created: user.py, topic.py, word.py, exercise.py, learning_session.py, progress.py
+  - **NEEDS REVIEW** after tutoring flow design
 
 ### 2.2 Pydantic Schemas
+- 🟡 Create `schemas/user.py` - User DTOs (PARTIAL - created)
 - [ ] Create `schemas/word.py` - Word DTOs (S)
 - [ ] Create `schemas/topic.py` - Topic DTOs (S)
 - [ ] Create `schemas/exercise.py` - Exercise DTOs (M)
@@ -93,12 +119,14 @@
 ---
 
 ## Phase 3: Gemini Integration
-**Goal**: AI-powered exercise generation and evaluation
+**Goal**: AI-powered tutoring and exercises
+**STATUS**: ⏳ BLOCKED by Phase 0 design
 
 ### 3.1 Gemini Service
 - [ ] Create `services/gemini_service.py` (L)
 - [ ] Implement connection and auth (S)
-- [ ] Create system prompt builder (M)
+- [ ] Create system prompt builder with context (M)
+- [ ] Create tutoring conversation method (L)
 - [ ] Create exercise generation method (L)
 - [ ] Create answer evaluation method (L)
 - [ ] Implement response parsing with error handling (M)
@@ -111,17 +139,17 @@
 - [ ] Implement progress update after evaluation (M)
 
 ### 3.3 API Endpoints - Exercises
+- [ ] `POST /api/v1/chat` - Conversation with tutor (M)
 - [ ] `POST /api/v1/exercises/generate` - Generate exercise (M)
 - [ ] `POST /api/v1/exercises/evaluate` - Evaluate answer (M)
 - [ ] `GET /api/v1/exercises/history` - Get history (S)
-- [ ] `GET /api/v1/exercises/{id}` - Get exercise details (S)
 
-### 3.4 Frontend - Exercise UI
-- [ ] Create Practice page layout (M)
+### 3.4 Frontend - Tutor UI
+- [ ] Create Chat/Conversation component (L)
 - [ ] Create Exercise Card component (M)
 - [ ] Create Answer Input component (S)
 - [ ] Create Feedback Display component (M)
-- [ ] Implement exercise flow (generate → answer → feedback → next) (L)
+- [ ] Implement exercise flow (M)
 - [ ] Add loading states during Gemini calls (S)
 
 ---
@@ -132,33 +160,16 @@
 ### 4.1 Progress Tracking
 - [ ] Create `services/progress_service.py` (M)
 - [ ] Implement word proficiency updates (M)
-- [ ] Implement topic progress calculation (M)
 - [ ] `GET /api/v1/progress` - Overall progress (S)
-- [ ] `GET /api/v1/progress/words` - Word-level progress (S)
 
 ### 4.2 Session Management
-- [ ] `POST /api/v1/sessions/start` - Start session (S)
-- [ ] `POST /api/v1/sessions/end` - End session with summary (M)
-- [ ] `GET /api/v1/sessions` - Session history (S)
-- [ ] Track exercises within sessions (S)
+- [ ] Track learning sessions (M)
+- [ ] Session history display (S)
 
-### 4.3 AI Recommendations
-- [ ] Add recommendations request to Gemini service (M)
-- [ ] `GET /api/v1/recommendations` - Get AI recommendations (S)
-- [ ] Cache recommendations in database (S)
-
-### 4.4 Frontend - Dashboard
+### 4.3 Frontend - Dashboard
 - [ ] Create Dashboard page (M)
-- [ ] Display overall progress stats (M)
+- [ ] Display progress stats (M)
 - [ ] Display recent activity (S)
-- [ ] Display AI recommendations (S)
-- [ ] Quick-start practice button (S)
-
-### 4.5 Frontend - Progress Views
-- [ ] Create Progress page (M)
-- [ ] Word proficiency visualization (M)
-- [ ] Topic completion visualization (M)
-- [ ] Weak areas highlight (S)
 
 ---
 
@@ -167,29 +178,16 @@
 
 ### 5.1 Error Handling
 - [ ] Global error boundary in React (S)
-- [ ] Toast notifications for errors (S)
+- [ ] Toast notifications (S)
 - [ ] Backend exception handlers (S)
-- [ ] Gemini fallback for API failures (M)
 
 ### 5.2 Loading States
-- [ ] Skeleton loaders for lists (S)
-- [ ] Loading spinners for actions (S)
-- [ ] Optimistic updates where appropriate (M)
+- [ ] Skeleton loaders (S)
+- [ ] Loading spinners (S)
 
-### 5.3 History & Review
-- [ ] Exercise history page (M)
-- [ ] Review incorrect exercises (M)
-- [ ] Session summaries display (S)
-
-### 5.4 Data Management
+### 5.3 Data Management
 - [ ] Export vocabulary to JSON (S)
-- [ ] Import vocabulary from JSON (M)
-- [ ] Seed data script for initial vocabulary (S)
-
-### 5.5 UX Improvements
-- [ ] Keyboard shortcuts for practice (S)
-- [ ] Dark/light mode toggle (S) - Mantine built-in
-- [ ] Responsive design verification (S)
+- [ ] Seed data script (S)
 
 ---
 
@@ -200,40 +198,21 @@
 | S | < 30 minutes |
 | M | 30 min - 2 hours |
 | L | 2 - 4 hours |
-| XL | 4+ hours |
-
----
-
-## Dependencies
-
-```
-Phase 1 ──────► Phase 2 ──────► Phase 3 ──────► Phase 4 ──────► Phase 5
-   │               │               │               │
-   │               │               │               │
-   └─ Docker       └─ Models       └─ Gemini       └─ Sessions
-   └─ FastAPI      └─ CRUD         └─ Exercises    └─ Progress
-   └─ React        └─ Basic UI     └─ Practice UI  └─ Dashboard
-```
-
-Within phases:
-- Models must exist before CRUD
-- CRUD must exist before API endpoints
-- API endpoints must exist before frontend features
-- Gemini service must exist before exercise generation
 
 ---
 
 ## Current Status
 
-**Phase**: Not Started
-**Next Action**: Begin Phase 1.1 - Project Setup
+**Phase**: 0 - Design (NEW)
+**Blocker**: Must design tutoring flow before continuing
+**Next Action**: Discuss tutoring process with user
 
 ---
 
-## Quick Start Checklist
+## Quick Resume Checklist
 
-When resuming work, check:
-1. [ ] Docker Desktop is running
-2. [ ] `.env` file exists with `GEMINI_API_KEY`
-3. [ ] Run `docker compose up` to start services
-4. [ ] Check this task file for next uncompleted item
+When resuming work:
+1. [ ] Read `croatian-tutor-init-context.md` for session state
+2. [ ] Complete Phase 0 design discussion
+3. [ ] Review/update database models based on design
+4. [ ] Then proceed with Phase 1.5 integration verification
