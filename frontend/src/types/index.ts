@@ -223,3 +223,73 @@ export interface AnswerCheckResponse {
   error_category: string | null;
   explanation: string | null;
 }
+
+// Progress/Dashboard types
+export interface ProgressSummary {
+  total_words: number;
+  mastered_words: number;
+  words_due_today: number;
+  total_exercises: number;
+  total_errors: number;
+  streak_days: number;
+  current_level: CEFRLevel;
+}
+
+export interface VocabularyStats {
+  by_level: Record<CEFRLevel, number>;
+  by_mastery: {
+    new: number;
+    learning: number;
+    mastered: number;
+  };
+  recent_words: Array<{
+    croatian: string;
+    english: string;
+    mastery_score: number;
+  }>;
+}
+
+export interface TopicStatItem {
+  id: number;
+  name: string;
+  level: CEFRLevel;
+  mastery: number;
+  attempts: number;
+}
+
+export interface TopicStats {
+  total_topics: number;
+  practiced_topics: number;
+  mastered_topics: number;
+  topics: TopicStatItem[];
+}
+
+export interface DailyActivity {
+  date: string;
+  exercises: number;
+  duration_minutes: number;
+}
+
+export interface ActivityStats {
+  daily_activity: DailyActivity[];
+  exercise_breakdown: Record<string, number>;
+}
+
+export interface WeakArea {
+  category: string;
+  count: number;
+  suggestion: string;
+}
+
+export interface RecentError {
+  category: string;
+  details: string | null;
+  correction: string | null;
+  date: string;
+}
+
+export interface ErrorPatterns {
+  by_category: Record<string, number>;
+  recent_errors: RecentError[];
+  weak_areas: WeakArea[];
+}
