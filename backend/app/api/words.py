@@ -38,8 +38,10 @@ async def list_words(
     part_of_speech: PartOfSpeech | None = None,
     cefr_level: CEFRLevel | None = None,
     search: str | None = Query(None, min_length=1),
+    sort_by: str | None = Query(None, pattern="^(croatian|english|part_of_speech|cefr_level|mastery_score|created_at)$"),
+    sort_dir: str = Query("desc", pattern="^(asc|desc)$"),
 ) -> list[WordResponse]:
-    """List words with pagination and optional filters."""
+    """List words with pagination, filters, and sorting."""
     words = await crud.get_multi(
         user_id=DEFAULT_USER_ID,
         skip=skip,
@@ -47,6 +49,8 @@ async def list_words(
         part_of_speech=part_of_speech,
         cefr_level=cefr_level,
         search=search,
+        sort_by=sort_by,
+        sort_dir=sort_dir,
     )
     return [WordResponse.model_validate(w) for w in words]
 

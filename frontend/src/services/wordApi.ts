@@ -9,12 +9,17 @@ import type {
   CEFRLevel,
 } from '~types';
 
+export type SortField = 'croatian' | 'english' | 'part_of_speech' | 'cefr_level' | 'mastery_score' | 'created_at';
+export type SortDirection = 'asc' | 'desc';
+
 export interface WordListParams {
   skip?: number;
   limit?: number;
   part_of_speech?: PartOfSpeech;
   cefr_level?: CEFRLevel;
   search?: string;
+  sort_by?: SortField;
+  sort_dir?: SortDirection;
 }
 
 export const wordApi = {

@@ -29,7 +29,7 @@ import {
   IconSelector,
 } from '@tabler/icons-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { wordApi } from '~services/wordApi';
+import { wordApi, type SortField, type SortDirection } from '~services/wordApi';
 import type { Word, WordCreate, WordUpdate, PartOfSpeech, Gender, CEFRLevel } from '~types';
 
 const PART_OF_SPEECH_OPTIONS: { value: PartOfSpeech; label: string }[] = [
@@ -65,17 +65,6 @@ const getMasteryColor = (score: number): string => {
   return 'red';
 };
 
-type SortField = 'croatian' | 'english' | 'part_of_speech' | 'cefr_level' | 'mastery_score';
-type SortDirection = 'asc' | 'desc';
-
-const CEFR_ORDER: Record<CEFRLevel, number> = {
-  A1: 1,
-  A2: 2,
-  B1: 3,
-  B2: 4,
-  C1: 5,
-  C2: 6,
-};
 
 interface WordFormData {
   croatian: string;
@@ -100,12 +89,17 @@ const VocabularyPage: React.FC = () => {
     gender: null,
     cefr_level: 'A1',
   });
-  const [sortField, setSortField] = useState<SortField | null>(null);
-  const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
+  const [sortField, setSortField] = useState<SortField>('created_at');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
 
   const { data: words, isLoading, error } = useQuery({
-    queryKey: ['words', search],
-    queryFn: () => wordApi.list({ search: search || undefined, limit: 500 }),
+    queryKey: ['words', search, sortField, sortDirection],
+    queryFn: () => wordApi.list({
+      search: search || undefined,
+      limit: 500,
+      sort_by: sortField,
+      sort_dir: sortDirection,
+    }),
   });
 
   const { data: dueCount } = useQuery({
@@ -212,30 +206,6 @@ const VocabularyPage: React.FC = () => {
     return sortDirection === 'asc' ? <IconChevronUp size={14} /> : <IconChevronDown size={14} />;
   };
 
-  const sortedWords = React.useMemo(() => {
-    if (!words || !sortField) return words;
-
-    return [...words].sort((a, b) => {
-      let comparison = 0;
-
-      switch (sortField) {
-        case 'croatian':
-        case 'english':
-        case 'part_of_speech':
-          comparison = a[sortField].localeCompare(b[sortField]);
-          break;
-        case 'cefr_level':
-          comparison = CEFR_ORDER[a.cefr_level] - CEFR_ORDER[b.cefr_level];
-          break;
-        case 'mastery_score':
-          comparison = a.mastery_score - b.mastery_score;
-          break;
-      }
-
-      return sortDirection === 'asc' ? comparison : -comparison;
-    });
-  }, [words, sortField, sortDirection]);
-
   if (error) {
     return (
       <Alert color="red" title="Error loading vocabulary">
@@ -283,7 +253,7 @@ const VocabularyPage: React.FC = () => {
           <Center py="xl">
             <Loader />
           </Center>
-        ) : sortedWords && sortedWords.length > 0 ? (
+        ) : words && words.length > 0 ? (
           <Table striped highlightOnHover>
             <Table.Thead>
               <Table.Tr>
@@ -331,7 +301,7 @@ const VocabularyPage: React.FC = () => {
               </Table.Tr>
             </Table.Thead>
             <Table.Tbody>
-              {sortedWords.map((word) => (
+              {words.map((word) => (
                 <Table.Tr key={word.id}>
                   <Table.Td fw={500}>{word.croatian}</Table.Td>
                   <Table.Td>{word.english}</Table.Td>
