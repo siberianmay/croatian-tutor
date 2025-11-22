@@ -257,10 +257,7 @@
 - [ ] Add Import from file option in UI (M)
 
 ### 8.5 Optional Future Enhancements
-- [ ] Offline support / PWA (L)
-- [ ] User authentication for multi-user (L)
 - [ ] Advanced analytics and SRS tuning (M)
-- [ ] Pronunciation audio integration (L)
 
 ---
 

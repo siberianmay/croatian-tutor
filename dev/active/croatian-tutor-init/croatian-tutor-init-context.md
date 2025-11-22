@@ -218,10 +218,7 @@ Previously deferred tasks now collected into Phase 8:
 - UI buttons for export/import
 
 **8.5 Optional Future Enhancements**
-- Offline support / PWA
-- User authentication (if multi-user needed)
 - Advanced analytics and spaced repetition tuning
-- Pronunciation audio integration
 
 ---
 
