@@ -1,11 +1,21 @@
 # Croatian Language Tutor - Project Context
 
 **Last Updated: 2025-11-22**
-**Current Phase**: 3 - Vocabulary System (Non-AI)
+**Current Phase**: 4 - Gemini Integration (BLOCKED - need API key)
 
 ---
 
 ## SESSION PROGRESS
+
+### Phase 3: Vocabulary System (COMPLETED)
+
+Full vocabulary system implemented:
+- **Word CRUD**: `backend/app/crud/word.py` with SM-2 SRS algorithm
+- **Word API**: All endpoints at `/api/v1/words/*` (list, create, get, update, delete, due, review)
+- **Drill Service**: `backend/app/services/drill_service.py` for CR→EN and EN→CR drills
+- **Drill API**: `/api/v1/drills/*` (start, check)
+- **Vocabulary UI**: Full CRUD page at `/vocabulary` with table, search, add/edit/delete modals
+- **Practice UI**: Flashcard drill page at `/practice` with mode selection, progress tracking, SRS updates
 
 ### Phase 2: Database & Models (COMPLETED)
 
@@ -207,16 +217,15 @@ VITE_API_URL=http://localhost:8000
 
 ## NEXT STEPS
 
-**Phase 3: Vocabulary System (Non-AI)** (CURRENT)
-1. Create Word CRUD operations (`backend/app/crud/word.py`)
-2. Implement SRS scheduling logic (SM-2 algorithm)
-3. Create Word API endpoints (CRUD + review)
-4. Build Vocabulary UI (list, add, edit, delete)
-5. Build Drill page with card UI
+**Phase 4: Gemini Integration** (BLOCKED - need API key)
+1. Create `backend/app/services/gemini_service.py`
+2. Implement Gemini API connection
+3. Build prompt templates for word assessment
+4. Implement fill-in-blank sentence generation
 
 **Then:**
-6. Phase 4: Gemini Integration
-7. Phase 5: AI Exercises
+5. Phase 5: AI Exercises
+6. Phase 6: Progress & Dashboard
 
 ---
 

@@ -67,38 +67,38 @@
 ---
 
 ## Phase 3: Vocabulary System (Non-AI Core)
-**Status**: IN PROGRESS
+**Status**: COMPLETED
 **Goal**: Working vocabulary drills without Gemini
 
 ### 3.1 Word CRUD Service
-- [ ] Create `backend/app/crud/word.py` (M)
-- [ ] Implement word CRUD operations (M)
-- [ ] Implement SRS scheduling logic (SM-2) (L)
-- [ ] Implement get_due_words query (S)
+- [x] Create `backend/app/crud/word.py` (M)
+- [x] Implement word CRUD operations (M)
+- [x] Implement SRS scheduling logic (SM-2) (L)
+- [x] Implement get_due_words query (S)
 
 ### 3.2 Word API Endpoints
-- [ ] `GET /api/v1/words` - List words with pagination/filters (S)
-- [ ] `POST /api/v1/words` - Create single word (S)
-- [ ] `GET /api/v1/words/{id}` - Get word (S)
-- [ ] `PUT /api/v1/words/{id}` - Update word (S)
-- [ ] `DELETE /api/v1/words/{id}` - Delete word (S)
-- [ ] `GET /api/v1/words/due` - Get words due for review (S)
-- [ ] `POST /api/v1/words/{id}/review` - Submit drill result, update SRS (M)
+- [x] `GET /api/v1/words` - List words with pagination/filters (S)
+- [x] `POST /api/v1/words` - Create single word (S)
+- [x] `GET /api/v1/words/{id}` - Get word (S)
+- [x] `PUT /api/v1/words/{id}` - Update word (S)
+- [x] `DELETE /api/v1/words/{id}` - Delete word (S)
+- [x] `GET /api/v1/words/due` - Get words due for review (S)
+- [x] `POST /api/v1/words/{id}/review` - Submit drill result, update SRS (M)
 
 ### 3.3 Vocabulary Drill Logic (Backend)
-- [ ] Create `backend/app/services/drill_service.py` (M)
-- [ ] Implement CR→EN drill selection (S)
-- [ ] Implement EN→CR drill selection (S)
+- [x] Create `backend/app/services/drill_service.py` (M)
+- [x] Implement CR→EN drill selection (S)
+- [x] Implement EN→CR drill selection (S)
 - [ ] Implement fill-in-blank generation (needs Gemini) (M)
 
 ### 3.4 Vocabulary UI (Frontend)
-- [ ] Create Vocabulary list page with word table (M)
-- [ ] Create Add Word modal/form (M)
-- [ ] Create Edit Word functionality (S)
-- [ ] Create Delete Word with confirmation (S)
-- [ ] Create Drill page with card UI (L)
-- [ ] Implement drill flow (show card → input → feedback) (M)
-- [ ] Connect drill results to API (S)
+- [x] Create Vocabulary list page with word table (M)
+- [x] Create Add Word modal/form (M)
+- [x] Create Edit Word functionality (S)
+- [x] Create Delete Word with confirmation (S)
+- [x] Create Drill page with card UI (L)
+- [x] Implement drill flow (show card → input → feedback) (M)
+- [x] Connect drill results to API (S)
 
 ---
 
