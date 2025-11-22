@@ -198,20 +198,20 @@
 ---
 
 ## Phase 7: Polish
-**Status**: IN PROGRESS
+**Status**: COMPLETED
 **Goal**: Production-ready UX
 
 ### 7.1 Error Handling
-- [ ] Global error boundary in React (S)
-- [ ] Toast notifications for actions (S)
-- [ ] Backend exception handlers (S)
-- [ ] Gemini error fallbacks (M)
+- [x] Global error boundary in React (S) - ErrorBoundary component with dev error details
+- [x] Toast notifications for actions (S) - @mantine/notifications with toast utility
+- [x] Backend exception handlers (S) - Custom exceptions + FastAPI handlers
+- [x] Gemini error fallbacks (M) - Retry logic, rate limit handling, proper exceptions
 
 ### 7.2 UX Improvements
-- [ ] Skeleton loaders for data fetching (S)
+- [x] Skeleton loaders for data fetching (S) - TableSkeleton, StatCardSkeleton, CardSkeleton
 - [x] Keyboard shortcuts for drills (S) - Enter key for Next Word
 - [x] Sortable vocabulary table (S) - all columns sortable
-- [ ] Mobile-responsive adjustments (M)
+- [x] Mobile-responsive adjustments (M) - Burger menu, collapsible nav, table scroll, responsive layouts
 
 ### 7.3 Data Management
 - [X] Grammar topic seed data (M)

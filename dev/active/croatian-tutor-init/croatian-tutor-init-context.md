@@ -1,32 +1,37 @@
 # Croatian Language Tutor - Project Context
 
 **Last Updated: 2025-11-22**
-**Current Phase**: 7 - Polish (IN PROGRESS)
+**Current Phase**: 7 - Polish (COMPLETED)
 
 ---
 
 ## SESSION PROGRESS
 
-### 🟡 Phase 7: Polish (IN PROGRESS)
+### ✅ Phase 7: Polish (COMPLETED)
 
-UX improvements implemented this session:
+All polish tasks implemented this session:
 
-**Practice Page Improvements**:
-- Added Enter key hotkey for "Next Word" button (document-level keydown listener)
-- Changed default drill mode to "English → Croatian" (more useful for learning)
+**Error Handling**:
+- `ErrorBoundary` component (`frontend/src/components/ErrorBoundary.tsx`) - catches React errors with friendly UI
+- Toast notifications via `@mantine/notifications` - utility at `frontend/src/utils/notifications.ts`
+- Backend exception handlers (`backend/app/exceptions.py` + `main.py` handlers)
+- Gemini service retry logic with 3 attempts, exponential backoff, proper exception classes
 
-**Vocabulary Page Improvements**:
-- Added sortable table columns (Croatian, English, Type, Level, Mastery)
-- Clickable headers with sort direction indicators (chevron icons)
-- Client-side sorting with proper CEFR level ordering (A1 < A2 < ... < C2)
+**Skeleton Loaders**:
+- `TableSkeleton`, `StatCardSkeleton`, `CardSkeleton` in `frontend/src/components/skeletons/`
+- Applied to VocabularyPage (table) and ProgressPage (stats + cards)
 
-**SRS Algorithm Fixes**:
-- Fixed mastery score calculation: now experience-weighted (requires ~10 reviews for max score)
-  - Old: 1 correct = mastery 10 (broken)
-  - New: 1 correct = mastery 1, 5 correct = 5, 10 correct = 10
-- Added `correct_streak` field to Word model for proper SM-2 interval tracking
-- Wrong answer now resets streak to 0, restarting interval progression
-- Interval calculation uses consecutive streak, not total correct count
+**Mobile Responsiveness**:
+- Burger menu in AppLayout for mobile navigation
+- Collapsible navbar with `collapsed: { mobile: !opened }`
+- `Table.ScrollContainer` for horizontal scrolling on vocabulary table
+- Responsive button groups with `wrap="wrap"` and smaller sizes
+
+**Previous Session Improvements**:
+- Enter key hotkey for drill navigation
+- Sortable vocabulary table columns
+- Experience-weighted mastery scoring
+- SRS streak tracking with correct_streak field
 
 ### ✅ Phase 6: Progress & Dashboard (COMPLETED)
 
@@ -97,18 +102,27 @@ All major design decisions finalized.
 
 ## FILES MODIFIED THIS SESSION
 
-### Backend - Modified Files (Phase 7)
+### Backend - New/Modified Files (Phase 7)
 | File | Change |
 |------|--------|
+| `backend/app/exceptions.py` | **NEW** - Custom exceptions (GeminiServiceError, etc.) |
+| `backend/app/main.py` | Added exception handlers for custom + generic exceptions |
+| `backend/app/services/gemini_service.py` | Added retry logic (3 attempts), rate limit handling, proper exceptions |
 | `backend/app/models/word.py` | Added `correct_streak` field for SM-2 tracking |
 | `backend/app/crud/word.py` | Fixed mastery calculation (experience-weighted), streak tracking |
-| `backend/alembic/versions/6f2fb341c2b4_add_correct_streak_to_word.py` | Migration for correct_streak |
 
-### Frontend - Modified Files (Phase 7)
+### Frontend - New/Modified Files (Phase 7)
 | File | Change |
 |------|--------|
-| `frontend/src/pages/PracticePage.tsx` | Enter hotkey, default mode changed to EN→CR |
-| `frontend/src/pages/VocabularyPage.tsx` | Sortable table columns with direction indicators |
+| `frontend/src/components/ErrorBoundary.tsx` | **NEW** - Global error boundary with dev details |
+| `frontend/src/utils/notifications.ts` | **NEW** - Toast utility (success, error, info, warning) |
+| `frontend/src/components/skeletons/` | **NEW** - TableSkeleton, StatCardSkeleton, CardSkeleton |
+| `frontend/src/components/layout/AppLayout.tsx` | Added burger menu, collapsible mobile nav |
+| `frontend/src/main.tsx` | Added Notifications provider |
+| `frontend/src/App.tsx` | Wrapped with ErrorBoundary |
+| `frontend/src/pages/VocabularyPage.tsx` | TableSkeleton, Table.ScrollContainer, responsive layout |
+| `frontend/src/pages/ProgressPage.tsx` | Skeleton loading state with StatCardSkeleton, CardSkeleton |
+| `frontend/package.json` | Added @mantine/notifications |
 
 ---
 
@@ -180,13 +194,13 @@ All major design decisions finalized.
 
 ## NEXT STEPS
 
-### Phase 7: Polish (Remaining)
-- [ ] Global error boundary in React
-- [ ] Toast notifications for actions
-- [ ] Skeleton loaders for data fetching
-- [ ] Mobile-responsive adjustments
-- [ ] Export vocabulary to JSON
-- [ ] Grammar topic seed data
+### Phase 7: Polish (COMPLETED)
+All core polish tasks completed. Optional enhancements for future:
+- [ ] Export vocabulary to JSON/CSV
+- [ ] Import vocabulary from JSON/CSV
+- [ ] Offline support / PWA
+- [ ] User authentication (if multi-user needed)
+- [ ] Advanced analytics and spaced repetition tuning
 
 ---
 
