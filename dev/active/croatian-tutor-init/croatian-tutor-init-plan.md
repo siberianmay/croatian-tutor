@@ -243,6 +243,18 @@ Improving: Verb conjugation (2 errors, down from 8).
 - Error handling
 - Loading states
 
+### Phase 7: Polish ✅ COMPLETE
+- Error boundaries, toast notifications
+- Skeleton loaders
+- Mobile responsiveness
+- Keyboard shortcuts
+
+### Phase 8: Deferred Enhancements ← CURRENT
+- Session record tracking
+- Gemini context integration for prompts
+- Fill-in-blank sentence caching
+- Data export/import
+
 ---
 
 ## 5. Risk Assessment

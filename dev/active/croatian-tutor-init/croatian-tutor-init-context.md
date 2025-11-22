@@ -1,7 +1,7 @@
 # Croatian Language Tutor - Project Context
 
 **Last Updated: 2025-11-22**
-**Current Phase**: 7 - Polish (COMPLETED)
+**Current Phase**: 8 - Deferred Enhancements (NOT STARTED)
 
 ---
 
@@ -194,13 +194,34 @@ All major design decisions finalized.
 
 ## NEXT STEPS
 
-### Phase 7: Polish (COMPLETED)
-All core polish tasks completed. Optional enhancements for future:
-- [ ] Export vocabulary to JSON/CSV
-- [ ] Import vocabulary from JSON/CSV
-- [ ] Offline support / PWA
-- [ ] User authentication (if multi-user needed)
-- [ ] Advanced analytics and spaced repetition tuning
+### Phase 8: Deferred Enhancements (NOT STARTED)
+Previously deferred tasks now collected into Phase 8:
+
+**8.1 Session Tracking**
+- Create session records on exercise start/end
+- Track duration and outcome
+- Add session history endpoint
+
+**8.2 Gemini Context Integration**
+- Integrate user progress context into all Gemini prompts
+- Vocabulary stats, topic mastery, error patterns
+- Combined context builder for personalized AI responses
+
+**8.3 Fill-in-Blank Caching**
+- Cache generated sentences per word
+- Invalidate on word updates
+- Reduce Gemini API calls
+
+**8.4 Data Export/Import**
+- Export vocabulary to JSON/CSV
+- Import vocabulary from JSON/CSV
+- UI buttons for export/import
+
+**8.5 Optional Future Enhancements**
+- Offline support / PWA
+- User authentication (if multi-user needed)
+- Advanced analytics and spaced repetition tuning
+- Pronunciation audio integration
 
 ---
 

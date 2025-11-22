@@ -1,7 +1,7 @@
 # Croatian Language Tutor - Implementation Tasks
 
 **Last Updated: 2025-11-22**
-**Current Phase**: 7 - Polish (IN PROGRESS)
+**Current Phase**: 8 - Deferred Enhancements
 
 ---
 
@@ -220,6 +220,47 @@
 ### 7.4 Bug Fixes (Completed)
 - [x] Fixed mastery score jumping 0→10 on first correct (experience-weighted formula)
 - [x] Fixed SRS interval not resetting on wrong answer (added correct_streak field)
+
+---
+
+## Phase 8: Deferred Enhancements
+**Status**: NOT STARTED
+**Goal**: Complete previously deferred features
+
+### 8.1 Session Tracking
+- [ ] Create session records on exercise start (S)
+- [ ] Update session `ended_at` on completion (S)
+- [ ] Track session duration and outcome (S)
+- [ ] Add session history endpoint `GET /api/v1/sessions` (S)
+
+### 8.2 Gemini Context Integration
+- [ ] Integrate vocabulary stats into Gemini prompts (M)
+- [ ] Integrate topic mastery into Gemini prompts (M)
+- [ ] Integrate exercise variety summary into prompts (S)
+- [ ] Integrate error patterns into prompts (S)
+- [ ] Create combined context builder for all exercise prompts (M)
+- [ ] Test context improves AI response quality (M)
+
+### 8.3 Fill-in-Blank Caching
+- [ ] Design cache schema for generated sentences (S)
+- [ ] Add `fill_in_blank_cache` table or column (S)
+- [ ] Cache sentences after generation (S)
+- [ ] Return cached sentences when available (S)
+- [ ] Add cache invalidation on word update (S)
+
+### 8.4 Data Export/Import
+- [ ] `GET /api/v1/words/export` - Export vocabulary to JSON (S)
+- [ ] `GET /api/v1/words/export?format=csv` - Export to CSV (S)
+- [ ] `POST /api/v1/words/import` - Import from JSON (M)
+- [ ] `POST /api/v1/words/import?format=csv` - Import from CSV (M)
+- [ ] Add Export button to Vocabulary UI (S)
+- [ ] Add Import from file option in UI (M)
+
+### 8.5 Optional Future Enhancements
+- [ ] Offline support / PWA (L)
+- [ ] User authentication for multi-user (L)
+- [ ] Advanced analytics and SRS tuning (M)
+- [ ] Pronunciation audio integration (L)
 
 ---
 
