@@ -37,6 +37,7 @@ class Word(Base):
     ease_factor: Mapped[float] = mapped_column(Float, default=2.5, nullable=False)  # SM-2
     correct_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     wrong_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    correct_streak: Mapped[int] = mapped_column(Integer, default=0, nullable=False)  # Consecutive correct
     next_review_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True
     )

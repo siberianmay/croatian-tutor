@@ -178,25 +178,29 @@ class WordCRUD:
 
         if correct:
             word.correct_count += 1
+            word.correct_streak += 1
             quality = 4  # Good response
         else:
             word.wrong_count += 1
+            word.correct_streak = 0  # Reset streak on wrong answer
             quality = 1  # Failed response
 
         # Update ease factor using SM-2 formula
         new_ef = word.ease_factor + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02))
         word.ease_factor = max(1.3, new_ef)
 
-        # Calculate mastery score (0-10) based on success rate
+        # Calculate mastery score (0-10) based on success rate weighted by experience
+        # Requires ~10 reviews to reach maximum potential mastery
         total_reviews = word.correct_count + word.wrong_count
         if total_reviews > 0:
             success_rate = word.correct_count / total_reviews
-            word.mastery_score = min(10, int(success_rate * 10))
+            experience_factor = min(1.0, total_reviews / 10)
+            word.mastery_score = min(10, int(success_rate * 10 * experience_factor))
 
         # Calculate next review interval
         if correct:
             interval_days = self._calculate_interval(
-                correct_streak=word.correct_count,
+                correct_streak=word.correct_streak,
                 ease_factor=word.ease_factor,
             )
         else:

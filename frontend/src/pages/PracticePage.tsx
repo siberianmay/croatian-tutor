@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Title,
   Text,
@@ -26,7 +26,7 @@ type DrillMode = 'vocabulary_cr_en' | 'vocabulary_en_cr';
 
 const PracticePage: React.FC = () => {
   const queryClient = useQueryClient();
-  const [mode, setMode] = useState<DrillMode>('vocabulary_cr_en');
+  const [mode, setMode] = useState<DrillMode>('vocabulary_en_cr');
   const [session, setSession] = useState<DrillSessionResponse | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [userAnswer, setUserAnswer] = useState('');
@@ -74,6 +74,20 @@ const PracticePage: React.FC = () => {
   });
 
   const currentItem = session?.items[currentIndex];
+
+  // Handle Enter key for "Next Word" button when result is shown
+  useEffect(() => {
+    if (!showResult) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        handleNext();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [showResult, currentIndex, lastResult, currentItem]);
 
   const handleSubmit = () => {
     if (!currentItem || !userAnswer.trim()) return;

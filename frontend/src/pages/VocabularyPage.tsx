@@ -18,7 +18,16 @@ import {
   Textarea,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { IconPlus, IconPencil, IconTrash, IconSearch, IconUpload } from '@tabler/icons-react';
+import {
+  IconPlus,
+  IconPencil,
+  IconTrash,
+  IconSearch,
+  IconUpload,
+  IconChevronUp,
+  IconChevronDown,
+  IconSelector,
+} from '@tabler/icons-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { wordApi } from '~services/wordApi';
 import type { Word, WordCreate, WordUpdate, PartOfSpeech, Gender, CEFRLevel } from '~types';
@@ -56,6 +65,18 @@ const getMasteryColor = (score: number): string => {
   return 'red';
 };
 
+type SortField = 'croatian' | 'english' | 'part_of_speech' | 'cefr_level' | 'mastery_score';
+type SortDirection = 'asc' | 'desc';
+
+const CEFR_ORDER: Record<CEFRLevel, number> = {
+  A1: 1,
+  A2: 2,
+  B1: 3,
+  B2: 4,
+  C1: 5,
+  C2: 6,
+};
+
 interface WordFormData {
   croatian: string;
   english: string;
@@ -79,6 +100,8 @@ const VocabularyPage: React.FC = () => {
     gender: null,
     cefr_level: 'A1',
   });
+  const [sortField, setSortField] = useState<SortField | null>(null);
+  const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
 
   const { data: words, isLoading, error } = useQuery({
     queryKey: ['words', search],
@@ -175,6 +198,44 @@ const VocabularyPage: React.FC = () => {
     }
   };
 
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+    } else {
+      setSortField(field);
+      setSortDirection('asc');
+    }
+  };
+
+  const getSortIcon = (field: SortField) => {
+    if (sortField !== field) return <IconSelector size={14} />;
+    return sortDirection === 'asc' ? <IconChevronUp size={14} /> : <IconChevronDown size={14} />;
+  };
+
+  const sortedWords = React.useMemo(() => {
+    if (!words || !sortField) return words;
+
+    return [...words].sort((a, b) => {
+      let comparison = 0;
+
+      switch (sortField) {
+        case 'croatian':
+        case 'english':
+        case 'part_of_speech':
+          comparison = a[sortField].localeCompare(b[sortField]);
+          break;
+        case 'cefr_level':
+          comparison = CEFR_ORDER[a.cefr_level] - CEFR_ORDER[b.cefr_level];
+          break;
+        case 'mastery_score':
+          comparison = a.mastery_score - b.mastery_score;
+          break;
+      }
+
+      return sortDirection === 'asc' ? comparison : -comparison;
+    });
+  }, [words, sortField, sortDirection]);
+
   if (error) {
     return (
       <Alert color="red" title="Error loading vocabulary">
@@ -222,20 +283,55 @@ const VocabularyPage: React.FC = () => {
           <Center py="xl">
             <Loader />
           </Center>
-        ) : words && words.length > 0 ? (
+        ) : sortedWords && sortedWords.length > 0 ? (
           <Table striped highlightOnHover>
             <Table.Thead>
               <Table.Tr>
-                <Table.Th>Croatian</Table.Th>
-                <Table.Th>English</Table.Th>
-                <Table.Th>Type</Table.Th>
-                <Table.Th>Level</Table.Th>
-                <Table.Th>Mastery</Table.Th>
+                <Table.Th
+                  onClick={() => handleSort('croatian')}
+                  style={{ cursor: 'pointer', userSelect: 'none' }}
+                >
+                  <Group gap={4}>
+                    Croatian {getSortIcon('croatian')}
+                  </Group>
+                </Table.Th>
+                <Table.Th
+                  onClick={() => handleSort('english')}
+                  style={{ cursor: 'pointer', userSelect: 'none' }}
+                >
+                  <Group gap={4}>
+                    English {getSortIcon('english')}
+                  </Group>
+                </Table.Th>
+                <Table.Th
+                  onClick={() => handleSort('part_of_speech')}
+                  style={{ cursor: 'pointer', userSelect: 'none' }}
+                >
+                  <Group gap={4}>
+                    Type {getSortIcon('part_of_speech')}
+                  </Group>
+                </Table.Th>
+                <Table.Th
+                  onClick={() => handleSort('cefr_level')}
+                  style={{ cursor: 'pointer', userSelect: 'none' }}
+                >
+                  <Group gap={4}>
+                    Level {getSortIcon('cefr_level')}
+                  </Group>
+                </Table.Th>
+                <Table.Th
+                  onClick={() => handleSort('mastery_score')}
+                  style={{ cursor: 'pointer', userSelect: 'none' }}
+                >
+                  <Group gap={4}>
+                    Mastery {getSortIcon('mastery_score')}
+                  </Group>
+                </Table.Th>
                 <Table.Th>Actions</Table.Th>
               </Table.Tr>
             </Table.Thead>
             <Table.Tbody>
-              {words.map((word) => (
+              {sortedWords.map((word) => (
                 <Table.Tr key={word.id}>
                   <Table.Td fw={500}>{word.croatian}</Table.Td>
                   <Table.Td>{word.english}</Table.Td>
