@@ -1,7 +1,7 @@
 # Croatian Language Tutor - Implementation Tasks
 
 **Last Updated: 2025-11-22**
-**Current Phase**: 7 - Polish (NEXT)
+**Current Phase**: 7 - Polish (IN PROGRESS)
 
 ---
 
@@ -198,7 +198,7 @@
 ---
 
 ## Phase 7: Polish
-**Status**: NEXT
+**Status**: IN PROGRESS
 **Goal**: Production-ready UX
 
 ### 7.1 Error Handling
@@ -209,13 +209,17 @@
 
 ### 7.2 UX Improvements
 - [ ] Skeleton loaders for data fetching (S)
-- [ ] Keyboard shortcuts for drills (S)
+- [x] Keyboard shortcuts for drills (S) - Enter key for Next Word
+- [x] Sortable vocabulary table (S) - all columns sortable
 - [ ] Mobile-responsive adjustments (M)
 
 ### 7.3 Data Management
-- [ ] Export vocabulary to JSON (S)
-- [ ] Grammar topic seed data (M)
-- [ ] Sample vocabulary seed data (S)
+- [X] Grammar topic seed data (M)
+- [X] Sample vocabulary seed data (S)
+
+### 7.4 Bug Fixes (Completed)
+- [x] Fixed mastery score jumping 0→10 on first correct (experience-weighted formula)
+- [x] Fixed SRS interval not resetting on wrong answer (added correct_streak field)
 
 ---
 

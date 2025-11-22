@@ -1,11 +1,32 @@
 # Croatian Language Tutor - Project Context
 
 **Last Updated: 2025-11-22**
-**Current Phase**: 7 - Polish (NEXT)
+**Current Phase**: 7 - Polish (IN PROGRESS)
 
 ---
 
 ## SESSION PROGRESS
+
+### 🟡 Phase 7: Polish (IN PROGRESS)
+
+UX improvements implemented this session:
+
+**Practice Page Improvements**:
+- Added Enter key hotkey for "Next Word" button (document-level keydown listener)
+- Changed default drill mode to "English → Croatian" (more useful for learning)
+
+**Vocabulary Page Improvements**:
+- Added sortable table columns (Croatian, English, Type, Level, Mastery)
+- Clickable headers with sort direction indicators (chevron icons)
+- Client-side sorting with proper CEFR level ordering (A1 < A2 < ... < C2)
+
+**SRS Algorithm Fixes**:
+- Fixed mastery score calculation: now experience-weighted (requires ~10 reviews for max score)
+  - Old: 1 correct = mastery 10 (broken)
+  - New: 1 correct = mastery 1, 5 correct = 5, 10 correct = 10
+- Added `correct_streak` field to Word model for proper SM-2 interval tracking
+- Wrong answer now resets streak to 0, restarting interval progression
+- Interval calculation uses consecutive streak, not total correct count
 
 ### ✅ Phase 6: Progress & Dashboard (COMPLETED)
 
@@ -76,28 +97,18 @@ All major design decisions finalized.
 
 ## FILES MODIFIED THIS SESSION
 
-### Backend - New Files (Phase 6)
-| File | Purpose |
-|------|---------|
-| `backend/app/services/progress_service.py` | Progress stats, context summaries |
-| `backend/app/api/progress.py` | Progress REST endpoints |
-
-### Backend - Modified Files (Phase 6)
+### Backend - Modified Files (Phase 7)
 | File | Change |
 |------|--------|
-| `backend/app/api/router.py` | Added progress router |
-| `backend/app/services/__init__.py` | Export ProgressService |
+| `backend/app/models/word.py` | Added `correct_streak` field for SM-2 tracking |
+| `backend/app/crud/word.py` | Fixed mastery calculation (experience-weighted), streak tracking |
+| `backend/alembic/versions/6f2fb341c2b4_add_correct_streak_to_word.py` | Migration for correct_streak |
 
-### Frontend - New Files (Phase 6)
-| File | Purpose |
-|------|---------|
-| `frontend/src/services/progressApi.ts` | Progress API client |
-
-### Frontend - Modified Files (Phase 6)
+### Frontend - Modified Files (Phase 7)
 | File | Change |
 |------|--------|
-| `frontend/src/types/index.ts` | Added progress types (ProgressSummary, VocabularyStats, etc.) |
-| `frontend/src/pages/ProgressPage.tsx` | Complete dashboard implementation |
+| `frontend/src/pages/PracticePage.tsx` | Enter hotkey, default mode changed to EN→CR |
+| `frontend/src/pages/VocabularyPage.tsx` | Sortable table columns with direction indicators |
 
 ---
 
@@ -108,11 +119,13 @@ All major design decisions finalized.
 | Gemini model | gemini-2.0-flash | gemini-1.5-flash returned 404 |
 | Single user | Hardcoded user_id=1 | Per design, future-extensible |
 | SM-2 intervals | 1 day → 6 days → EF multiplier | Standard Anki-compatible |
-| Mastery score | 0-10 based on success rate | Simple, visible progress |
+| Mastery score | Experience-weighted (reviews/10 factor) | Prevents instant max mastery |
 | Fill-in-blank | Generated on-demand | No caching needed yet |
 | Mastery threshold | score >= 7 = mastered | Clear boundary for stats |
 | Streak calculation | Consecutive days with activity | Standard gamification pattern |
 | Level progression | 10 mastered words at level = advance | Simple, motivating |
+| SRS streak | Track consecutive correct, reset on wrong | Proper SM-2 interval reset |
+| Default drill mode | English → Croatian | More useful for active recall |
 
 ---
 
@@ -167,12 +180,13 @@ All major design decisions finalized.
 
 ## NEXT STEPS
 
-### Phase 7: Polish
-- Error handling improvements
-- UX polish (loading skeletons, error states)
-- Mobile responsiveness
-- Seed data for grammar topics
-- Export vocabulary to JSON
+### Phase 7: Polish (Remaining)
+- [ ] Global error boundary in React
+- [ ] Toast notifications for actions
+- [ ] Skeleton loaders for data fetching
+- [ ] Mobile-responsive adjustments
+- [ ] Export vocabulary to JSON
+- [ ] Grammar topic seed data
 
 ---
 
