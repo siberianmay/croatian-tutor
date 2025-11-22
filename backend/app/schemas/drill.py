@@ -49,3 +49,18 @@ class DrillAnswerResponse(BaseModel):
     expected_answer: str
     user_answer: str
     word_id: int
+
+
+class FillInBlankItem(BaseModel):
+    """A fill-in-the-blank exercise item."""
+
+    word_id: int
+    sentence: str  # Sentence with ___ placeholder
+    answer: str  # The word that fills the blank
+    hint: str  # English hint
+
+
+class FillInBlankRequest(BaseModel):
+    """Request to get fill-in-blank exercises."""
+
+    count: int = Field(5, ge=1, le=20, description="Number of exercises to generate")

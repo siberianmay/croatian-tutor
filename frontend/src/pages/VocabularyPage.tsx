@@ -15,9 +15,10 @@ import {
   Center,
   Alert,
   Paper,
+  Textarea,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { IconPlus, IconPencil, IconTrash, IconSearch } from '@tabler/icons-react';
+import { IconPlus, IconPencil, IconTrash, IconSearch, IconUpload } from '@tabler/icons-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { wordApi } from '~services/wordApi';
 import type { Word, WordCreate, WordUpdate, PartOfSpeech, Gender, CEFRLevel } from '~types';
@@ -66,8 +67,11 @@ interface WordFormData {
 const VocabularyPage: React.FC = () => {
   const queryClient = useQueryClient();
   const [opened, { open, close }] = useDisclosure(false);
+  const [bulkOpened, { open: openBulk, close: closeBulk }] = useDisclosure(false);
   const [editingWord, setEditingWord] = useState<Word | null>(null);
   const [search, setSearch] = useState('');
+  const [bulkWords, setBulkWords] = useState('');
+  const [bulkResult, setBulkResult] = useState<{ imported: number; skipped: number } | null>(null);
   const [formData, setFormData] = useState<WordFormData>({
     croatian: '',
     english: '',
@@ -108,6 +112,30 @@ const VocabularyPage: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ['words'] });
     },
   });
+
+  const bulkImportMutation = useMutation({
+    mutationFn: (words: string[]) => wordApi.bulkImport(words),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['words'] });
+      setBulkResult({ imported: data.imported, skipped: data.skipped_duplicates });
+      setBulkWords('');
+    },
+  });
+
+  const handleBulkImport = () => {
+    const words = bulkWords
+      .split('\n')
+      .map((w) => w.trim())
+      .filter((w) => w.length > 0);
+    if (words.length > 0) {
+      bulkImportMutation.mutate(words);
+    }
+  };
+
+  const handleCloseBulk = () => {
+    closeBulk();
+    setBulkResult(null);
+  };
 
   const handleClose = () => {
     close();
@@ -180,9 +208,14 @@ const VocabularyPage: React.FC = () => {
               </Badge>
             )}
           </Group>
-          <Button leftSection={<IconPlus size={16} />} onClick={open}>
-            Add Word
-          </Button>
+          <Group>
+            <Button variant="light" leftSection={<IconUpload size={16} />} onClick={openBulk}>
+              Bulk Import
+            </Button>
+            <Button leftSection={<IconPlus size={16} />} onClick={open}>
+              Add Word
+            </Button>
+          </Group>
         </Group>
 
         {isLoading ? (
@@ -309,6 +342,52 @@ const VocabularyPage: React.FC = () => {
             >
               {editingWord ? 'Save' : 'Add'}
             </Button>
+          </Group>
+        </Stack>
+      </Modal>
+
+      <Modal
+        opened={bulkOpened}
+        onClose={handleCloseBulk}
+        title="Bulk Import Words"
+        size="lg"
+      >
+        <Stack gap="md">
+          <Text size="sm" c="dimmed">
+            Enter Croatian words (one per line). AI will automatically detect:
+            English translation, part of speech, gender, and difficulty level.
+          </Text>
+          <Textarea
+            placeholder="sunce&#10;mjesec&#10;zvijezda&#10;more&#10;planina"
+            minRows={8}
+            value={bulkWords}
+            onChange={(e) => setBulkWords(e.target.value)}
+            disabled={bulkImportMutation.isPending}
+          />
+          {bulkResult && (
+            <Alert color="green" title="Import Complete">
+              Imported {bulkResult.imported} words.
+              {bulkResult.skipped > 0 && ` Skipped ${bulkResult.skipped} duplicates.`}
+            </Alert>
+          )}
+          {bulkImportMutation.isError && (
+            <Alert color="red" title="Import Failed">
+              {(bulkImportMutation.error as Error).message}
+            </Alert>
+          )}
+          <Group justify="flex-end" mt="md">
+            <Button variant="subtle" onClick={handleCloseBulk}>
+              {bulkResult ? 'Close' : 'Cancel'}
+            </Button>
+            {!bulkResult && (
+              <Button
+                onClick={handleBulkImport}
+                loading={bulkImportMutation.isPending}
+                disabled={!bulkWords.trim()}
+              >
+                Import with AI
+              </Button>
+            )}
           </Group>
         </Stack>
       </Modal>

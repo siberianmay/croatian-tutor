@@ -103,33 +103,33 @@
 ---
 
 ## Phase 4: Gemini Integration
-**Status**: BLOCKED by Phase 3
+**Status**: COMPLETED
 **Goal**: AI assessment and exercise generation
 
 ### 4.1 Gemini Service Foundation
-- [ ] Create `backend/app/services/gemini_service.py` (M)
-- [ ] Implement Gemini API connection (S)
-- [ ] Create base prompt builder (M)
-- [ ] Implement response parsing with error handling (M)
-- [ ] Add retry logic for failed requests (S)
+- [x] Create `backend/app/services/gemini_service.py` (M)
+- [x] Implement Gemini API connection (S)
+- [x] Create base prompt builder (M)
+- [x] Implement response parsing with error handling (M)
+- [ ] Add retry logic for failed requests (S) - deferred
 
 ### 4.2 Word Assessment
-- [ ] Implement bulk word assessment endpoint (M)
-- [ ] `POST /api/v1/words/bulk-import` - Bulk import with Gemini assessment (L)
-- [ ] Parse Gemini response for CEFR level + ease_factor (M)
-- [ ] Handle duplicates detection (S)
+- [x] Implement bulk word assessment endpoint (M)
+- [x] `POST /api/v1/words/bulk-import` - Bulk import with Gemini assessment (L)
+- [x] Parse Gemini response for CEFR level + ease_factor (M)
+- [x] Handle duplicates detection (S)
 
 ### 4.3 Context Summary Generators
-- [ ] Create `backend/app/services/progress_service.py` (M)
-- [ ] Implement vocabulary stats summary (S)
-- [ ] Implement topic mastery summary (S)
-- [ ] Implement exercise variety summary (S)
-- [ ] Implement error patterns summary (S)
-- [ ] Implement combined context builder for prompts (M)
+- [ ] Create `backend/app/services/progress_service.py` (M) - deferred to Phase 6
+- [ ] Implement vocabulary stats summary (S) - deferred
+- [ ] Implement topic mastery summary (S) - deferred
+- [ ] Implement exercise variety summary (S) - deferred
+- [ ] Implement error patterns summary (S) - deferred
+- [ ] Implement combined context builder for prompts (M) - deferred
 
 ### 4.4 Fill-in-Blank Generation
-- [ ] Implement sentence generation for fill-in-blank drills (M)
-- [ ] Cache generated sentences per word (optional) (S)
+- [x] Implement sentence generation for fill-in-blank drills (M)
+- [ ] Cache generated sentences per word (optional) (S) - deferred
 
 ---
 

@@ -61,4 +61,12 @@ export const wordApi = {
     const { data } = await api.post<WordReviewResponse>(`/words/${id}/review`, request);
     return data;
   },
+
+  bulkImport: async (words: string[]): Promise<{ imported: number; skipped_duplicates: number; words: Word[] }> => {
+    const { data } = await api.post<{ imported: number; skipped_duplicates: number; words: Word[] }>(
+      '/words/bulk-import',
+      { words }
+    );
+    return data;
+  },
 };

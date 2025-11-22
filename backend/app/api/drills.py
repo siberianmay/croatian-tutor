@@ -7,14 +7,18 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
 from app.models.enums import ExerciseType
+from app.crud.word import WordCRUD
 from app.schemas.drill import (
     DrillAnswerRequest,
     DrillAnswerResponse,
     DrillItem,
     DrillSessionRequest,
     DrillSessionResponse,
+    FillInBlankItem,
+    FillInBlankRequest,
 )
 from app.services.drill_service import DrillService
+from app.services.gemini_service import get_gemini_service
 
 router = APIRouter(prefix="/drills", tags=["drills"])
 
@@ -79,3 +83,50 @@ async def check_drill_answer(
         raise HTTPException(status_code=400, detail=result["error"])
 
     return DrillAnswerResponse(**result)
+
+
+@router.post("/fill-in-blank", response_model=list[FillInBlankItem])
+async def get_fill_in_blank_exercises(
+    request: FillInBlankRequest,
+    service: Annotated[DrillService, Depends(get_drill_service)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> list[FillInBlankItem]:
+    """
+    Generate fill-in-the-blank exercises using Gemini AI.
+
+    Selects words due for review and generates contextual sentences
+    with blanks for the target words.
+    """
+    gemini = get_gemini_service()
+    word_crud = WordCRUD(db)
+
+    # Get words for the exercise
+    words = await word_crud.get_due_words(user_id=DEFAULT_USER_ID, limit=request.count)
+
+    if not words:
+        # Fall back to any words if none due
+        words = await word_crud.get_multi(
+            user_id=DEFAULT_USER_ID, skip=0, limit=request.count
+        )
+
+    if not words:
+        return []
+
+    # Generate fill-in-blank for each word
+    items = []
+    for word in words:
+        result = await gemini.generate_fill_in_blank(
+            word=word.croatian,
+            english=word.english,
+            cefr_level=word.cefr_level.value,
+        )
+        items.append(
+            FillInBlankItem(
+                word_id=word.id,
+                sentence=result["sentence"],
+                answer=result["answer"],
+                hint=result["hint"],
+            )
+        )
+
+    return items

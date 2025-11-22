@@ -9,12 +9,15 @@ from app.crud.word import WordCRUD
 from app.database import get_db
 from app.models.enums import CEFRLevel, PartOfSpeech
 from app.schemas.word import (
+    WordBulkImportRequest,
+    WordBulkImportResponse,
     WordCreate,
     WordResponse,
     WordReviewRequest,
     WordReviewResponse,
     WordUpdate,
 )
+from app.services.gemini_service import get_gemini_service
 
 router = APIRouter(prefix="/words", tags=["words"])
 
@@ -168,4 +171,67 @@ async def review_word(
         next_review_at=word.next_review_at,
         correct_count=word.correct_count,
         wrong_count=word.wrong_count,
+    )
+
+
+@router.post("/bulk-import", response_model=WordBulkImportResponse)
+async def bulk_import_words(
+    request: WordBulkImportRequest,
+    crud: Annotated[WordCRUD, Depends(get_word_crud)],
+) -> WordBulkImportResponse:
+    """
+    Bulk import Croatian words with AI-powered assessment.
+
+    Gemini analyzes each word to determine:
+    - English translation
+    - Part of speech
+    - Gender (for nouns)
+    - CEFR difficulty level
+    """
+    gemini = get_gemini_service()
+
+    # Filter out duplicates
+    new_words = []
+    skipped = 0
+    for word in request.words:
+        word = word.strip()
+        if not word:
+            continue
+        exists = await crud.exists_for_user(DEFAULT_USER_ID, word)
+        if exists:
+            skipped += 1
+        else:
+            new_words.append(word)
+
+    if not new_words:
+        return WordBulkImportResponse(
+            imported=0,
+            skipped_duplicates=skipped,
+            words=[],
+        )
+
+    # Assess words with Gemini
+    assessments = await gemini.assess_words_bulk(new_words)
+
+    # Create words in database
+    created_words = []
+    for assessment in assessments:
+        if not assessment.get("english"):
+            # Skip words that couldn't be assessed
+            continue
+
+        word_create = WordCreate(
+            croatian=assessment["croatian"],
+            english=assessment["english"],
+            part_of_speech=PartOfSpeech(assessment["part_of_speech"]),
+            gender=assessment.get("gender"),
+            cefr_level=CEFRLevel(assessment["cefr_level"]),
+        )
+        word = await crud.create(user_id=DEFAULT_USER_ID, word_in=word_create)
+        created_words.append(WordResponse.model_validate(word))
+
+    return WordBulkImportResponse(
+        imported=len(created_words),
+        skipped_duplicates=skipped,
+        words=created_words,
     )

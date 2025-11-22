@@ -1,11 +1,20 @@
 # Croatian Language Tutor - Project Context
 
 **Last Updated: 2025-11-22**
-**Current Phase**: 4 - Gemini Integration (BLOCKED - need API key)
+**Current Phase**: 5 - AI Exercises (NEXT)
 
 ---
 
 ## SESSION PROGRESS
+
+### Phase 4: Gemini Integration (COMPLETED)
+
+AI-powered features implemented:
+- **Gemini Service**: `backend/app/services/gemini_service.py` with gemini-2.0-flash model
+- **Bulk Import**: POST `/api/v1/words/bulk-import` - AI assesses Croatian words (translation, POS, gender, CEFR level)
+- **Fill-in-Blank**: POST `/api/v1/drills/fill-in-blank` - AI generates contextual sentences
+- **Answer Evaluation**: AI-powered answer checking with feedback
+- **Bulk Import UI**: Modal in Vocabulary page for pasting word lists
 
 ### Phase 3: Vocabulary System (COMPLETED)
 
@@ -217,15 +226,15 @@ VITE_API_URL=http://localhost:8000
 
 ## NEXT STEPS
 
-**Phase 4: Gemini Integration** (BLOCKED - need API key)
-1. Create `backend/app/services/gemini_service.py`
-2. Implement Gemini API connection
-3. Build prompt templates for word assessment
-4. Implement fill-in-blank sentence generation
+**Phase 5: AI Exercises** (NEXT)
+1. Exercise service for orchestrating AI exercises
+2. Grammar topic endpoints
+3. Conversation exercise endpoint
+4. Additional exercise types (translation, sentence construction)
 
 **Then:**
-5. Phase 5: AI Exercises
-6. Phase 6: Progress & Dashboard
+5. Phase 6: Progress & Dashboard
+6. Phase 7: Polish
 
 ---
 
