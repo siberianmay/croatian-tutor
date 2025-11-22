@@ -35,6 +35,7 @@ class GrammarTopicResponse(GrammarTopicBase):
     """Schema for grammar topic response data."""
 
     id: int
+    is_learnt: bool = False
 
     model_config = {"from_attributes": True}
 

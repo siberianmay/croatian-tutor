@@ -109,6 +109,7 @@ export interface GrammarTopic {
   prerequisite_ids: number[] | null;
   rule_description: string | null;
   display_order: number;
+  is_learnt: boolean;
 }
 
 export interface TopicProgress {

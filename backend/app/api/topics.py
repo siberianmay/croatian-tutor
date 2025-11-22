@@ -41,13 +41,27 @@ def get_exercise_service(db: Annotated[AsyncSession, Depends(get_db)]) -> Exerci
 @router.get("", response_model=list[GrammarTopicResponse])
 async def list_topics(
     crud: Annotated[GrammarTopicCRUD, Depends(get_topic_crud)],
+    progress_crud: Annotated[TopicProgressCRUD, Depends(get_progress_crud)],
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=500),
     cefr_level: CEFRLevel | None = None,
 ) -> list[GrammarTopicResponse]:
     """List grammar topics with pagination and optional CEFR level filter."""
     topics = await crud.get_multi(skip=skip, limit=limit, cefr_level=cefr_level)
-    return [GrammarTopicResponse.model_validate(t) for t in topics]
+    learnt_ids = await progress_crud.get_learnt_topic_ids(DEFAULT_USER_ID)
+
+    return [
+        GrammarTopicResponse(
+            id=t.id,
+            name=t.name,
+            cefr_level=t.cefr_level,
+            prerequisite_ids=t.prerequisite_ids,
+            rule_description=t.rule_description,
+            display_order=t.display_order,
+            is_learnt=t.id in learnt_ids,
+        )
+        for t in topics
+    ]
 
 
 @router.get("/count")
@@ -109,6 +123,7 @@ async def create_topic(
 async def get_topic(
     topic_id: int,
     crud: Annotated[GrammarTopicCRUD, Depends(get_topic_crud)],
+    progress_crud: Annotated[TopicProgressCRUD, Depends(get_progress_crud)],
 ) -> GrammarTopicResponse:
     """Get a specific grammar topic by ID."""
     topic = await crud.get(topic_id)
@@ -117,7 +132,16 @@ async def get_topic(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Topic not found",
         )
-    return GrammarTopicResponse.model_validate(topic)
+    learnt_ids = await progress_crud.get_learnt_topic_ids(DEFAULT_USER_ID)
+    return GrammarTopicResponse(
+        id=topic.id,
+        name=topic.name,
+        cefr_level=topic.cefr_level,
+        prerequisite_ids=topic.prerequisite_ids,
+        rule_description=topic.rule_description,
+        display_order=topic.display_order,
+        is_learnt=topic.id in learnt_ids,
+    )
 
 
 @router.put("/{topic_id}", response_model=GrammarTopicResponse)
@@ -150,10 +174,38 @@ async def delete_topic(
         )
 
 
+@router.post("/{topic_id}/mark-learnt", response_model=GrammarTopicResponse)
+async def mark_topic_learnt(
+    topic_id: int,
+    crud: Annotated[GrammarTopicCRUD, Depends(get_topic_crud)],
+    progress_crud: Annotated[TopicProgressCRUD, Depends(get_progress_crud)],
+) -> GrammarTopicResponse:
+    """Mark a grammar topic as learnt for the current user."""
+    topic = await crud.get(topic_id)
+    if not topic:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Topic not found",
+        )
+
+    await progress_crud.mark_as_learnt(DEFAULT_USER_ID, topic_id)
+
+    return GrammarTopicResponse(
+        id=topic.id,
+        name=topic.name,
+        cefr_level=topic.cefr_level,
+        prerequisite_ids=topic.prerequisite_ids,
+        rule_description=topic.rule_description,
+        display_order=topic.display_order,
+        is_learnt=True,
+    )
+
+
 @router.post("/{topic_id}/generate-description", response_model=GrammarTopicResponse)
 async def generate_topic_description(
     topic_id: int,
     crud: Annotated[GrammarTopicCRUD, Depends(get_topic_crud)],
+    progress_crud: Annotated[TopicProgressCRUD, Depends(get_progress_crud)],
     exercise_service: Annotated[ExerciseService, Depends(get_exercise_service)],
 ) -> GrammarTopicResponse:
     """Generate AI description for a grammar topic using Gemini."""
@@ -171,6 +223,16 @@ async def generate_topic_description(
             detail="Failed to generate description",
         )
 
+    learnt_ids = await progress_crud.get_learnt_topic_ids(DEFAULT_USER_ID)
+
     # Refresh topic from DB
     topic = await crud.get(topic_id)
-    return GrammarTopicResponse.model_validate(topic)
+    return GrammarTopicResponse(
+        id=topic.id,
+        name=topic.name,
+        cefr_level=topic.cefr_level,
+        prerequisite_ids=topic.prerequisite_ids,
+        rule_description=topic.rule_description,
+        display_order=topic.display_order,
+        is_learnt=topic.id in learnt_ids,
+    )

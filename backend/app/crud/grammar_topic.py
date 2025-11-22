@@ -237,3 +237,24 @@ class TopicProgressCRUD:
             .limit(limit)
         )
         return result.scalars().all()
+
+    async def get_learnt_topic_ids(self, user_id: int) -> set[int]:
+        """Get set of topic IDs that the user has marked as learnt."""
+        result = await self._db.execute(
+            select(TopicProgress.topic_id).where(TopicProgress.user_id == user_id)
+        )
+        return set(result.scalars().all())
+
+    async def get_learnt_topics(self, user_id: int) -> Sequence[GrammarTopic]:
+        """Get all topics the user has marked as learnt."""
+        result = await self._db.execute(
+            select(GrammarTopic)
+            .join(TopicProgress, TopicProgress.topic_id == GrammarTopic.id)
+            .where(TopicProgress.user_id == user_id)
+            .order_by(GrammarTopic.cefr_level.asc(), GrammarTopic.display_order.asc())
+        )
+        return result.scalars().all()
+
+    async def mark_as_learnt(self, user_id: int, topic_id: int) -> TopicProgress:
+        """Mark a topic as learnt by creating a TopicProgress record."""
+        return await self.get_or_create(user_id, topic_id)

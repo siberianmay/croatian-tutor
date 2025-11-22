@@ -1,7 +1,7 @@
 import React from 'react';
 import { AppShell, Group, NavLink, Title, Container, Burger, useMantineTheme } from '@mantine/core';
 import { useDisclosure, useMediaQuery } from '@mantine/hooks';
-import { IconHome, IconBook, IconVocabulary, IconPencil, IconChartBar } from '@tabler/icons-react';
+import { IconHome, IconBook, IconVocabulary, IconPencil, IconChartBar, IconSchool } from '@tabler/icons-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 interface AppLayoutProps {
@@ -12,6 +12,7 @@ const navItems = [
   { label: 'Home', path: '/', icon: IconHome },
   { label: 'Learn', path: '/learn', icon: IconBook },
   { label: 'Vocabulary', path: '/vocabulary', icon: IconVocabulary },
+  { label: 'Grammar', path: '/grammar', icon: IconSchool },
   { label: 'Practice', path: '/practice', icon: IconPencil },
   { label: 'Progress', path: '/progress', icon: IconChartBar },
 ];

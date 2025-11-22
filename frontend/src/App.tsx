@@ -8,6 +8,7 @@ import ErrorBoundary from '~components/ErrorBoundary';
 const HomePage = lazy(() => import('./pages/HomePage'));
 const LearnPage = lazy(() => import('./pages/LearnPage'));
 const VocabularyPage = lazy(() => import('./pages/VocabularyPage'));
+const GrammarTopicsPage = lazy(() => import('./pages/GrammarTopicsPage'));
 const PracticePage = lazy(() => import('./pages/PracticePage'));
 const ProgressPage = lazy(() => import('./pages/ProgressPage'));
 
@@ -34,6 +35,7 @@ const App: React.FC = () => {
             <Route path="/learn/reading" element={<ReadingPage />} />
             <Route path="/learn/dialogue" element={<DialoguePage />} />
             <Route path="/vocabulary" element={<VocabularyPage />} />
+            <Route path="/grammar" element={<GrammarTopicsPage />} />
             <Route path="/practice" element={<PracticePage />} />
             <Route path="/progress" element={<ProgressPage />} />
           </Routes>

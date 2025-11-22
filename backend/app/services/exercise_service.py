@@ -31,6 +31,15 @@ class ExerciseService:
         self._progress_crud = TopicProgressCRUD(db)
         self._word_crud = WordCRUD(db)
 
+    async def _get_learnt_grammar_context(self, user_id: int) -> str:
+        """Get a string describing the grammar topics the user has learned."""
+        learnt_topics = await self._progress_crud.get_learnt_topics(user_id)
+        if not learnt_topics:
+            return ""
+
+        topic_names = [t.name for t in learnt_topics]
+        return f"\n\nIMPORTANT: The user has learned these grammar concepts. Use ONLY these grammar patterns in your response: {', '.join(topic_names)}. Do not introduce grammar the user hasn't learned yet."
+
     # -------------------------------------------------------------------------
     # Conversation
     # -------------------------------------------------------------------------
@@ -58,7 +67,9 @@ class ExerciseService:
             for h in history[-10:]  # Last 10 turns for context
         )
 
-        prompt = f"""You are a friendly Croatian language tutor. The student is at {cefr_level.value} level.
+        grammar_context = await self._get_learnt_grammar_context(user_id)
+
+        prompt = f"""You are a friendly Croatian language tutor. The student is at {cefr_level.value} level.{grammar_context}
 
 Conversation so far:
 {history_text}
@@ -236,7 +247,9 @@ Respond with ONLY valid JSON:
             source_lang = "English"
             target_lang = "Croatian"
 
-        prompt = f"""Create a translation exercise for Croatian learners at {cefr_level.value} level.
+        grammar_context = await self._get_learnt_grammar_context(user_id)
+
+        prompt = f"""Create a translation exercise for Croatian learners at {cefr_level.value} level.{grammar_context}
 
 Direction: {source_lang} → {target_lang}
 
@@ -295,7 +308,9 @@ Respond with ONLY valid JSON:
         if user_words:
             vocab_context = f"Try to use some of these words the user knows: {', '.join(w.croatian for w in user_words[:5])}"
 
-        prompt = f"""Create a sentence construction exercise for Croatian learners at {cefr_level.value} level.
+        grammar_context = await self._get_learnt_grammar_context(user_id)
+
+        prompt = f"""Create a sentence construction exercise for Croatian learners at {cefr_level.value} level.{grammar_context}
 
 {vocab_context}
 
@@ -346,7 +361,9 @@ Respond with ONLY valid JSON:
                 "questions": [{"question": str, "expected_answer": str}]
             }
         """
-        prompt = f"""Create a reading comprehension exercise for Croatian learners at {cefr_level.value} level.
+        grammar_context = await self._get_learnt_grammar_context(user_id)
+
+        prompt = f"""Create a reading comprehension exercise for Croatian learners at {cefr_level.value} level.{grammar_context}
 
 Create a short passage in Croatian (3-5 sentences) appropriate for this level, followed by 2-3 comprehension questions.
 
@@ -399,8 +416,9 @@ Respond with ONLY valid JSON:
             }
         """
         scenario_prompt = f"Scenario: {scenario}" if scenario else "Choose a common everyday scenario"
+        grammar_context = await self._get_learnt_grammar_context(user_id)
 
-        prompt = f"""Create a situational dialogue exercise for Croatian learners at {cefr_level.value} level.
+        prompt = f"""Create a situational dialogue exercise for Croatian learners at {cefr_level.value} level.{grammar_context}
 
 {scenario_prompt}
 
