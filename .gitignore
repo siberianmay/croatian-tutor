@@ -71,4 +71,4 @@ NUL
 *.xlsx
 
 # Claude Code (kept for skills/hooks)
- /.claude/
+/.claude/
