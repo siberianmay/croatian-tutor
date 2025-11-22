@@ -6,201 +6,168 @@
 
 ## SESSION PROGRESS
 
-### Completed This Session (✅)
+### Design Phase (COMPLETED)
 
-1. **Frontend Scaffold** - Full React/TypeScript/Vite/Mantine setup
-   - `frontend/package.json` - Dependencies (React 18, Mantine 7, TanStack Query 5, React Router 7)
-   - `frontend/vite.config.ts` - Vite config with path aliases (@/, ~components, ~features, etc.)
-   - `frontend/tsconfig.json` + `tsconfig.node.json` - Strict TypeScript config
-   - `frontend/Dockerfile` - Node 20 Alpine container
-   - `frontend/index.html` - Entry point
-   - `frontend/src/main.tsx` - App bootstrap with providers (Mantine, QueryClient, Router)
-   - `frontend/src/App.tsx` - Routes with lazy loading + Suspense
-   - `frontend/src/config/theme.ts` - Mantine theme config
-   - `frontend/src/components/layout/AppLayout.tsx` - AppShell with navigation
-   - `frontend/src/services/api.ts` - Axios client with /api/v1 base
-   - `frontend/src/types/index.ts` - TypeScript types (Word, Topic, Exercise, etc.)
-   - `frontend/src/pages/` - HomePage, LearnPage, PracticePage, ProgressPage (placeholder)
+All major design decisions have been finalized:
 
-2. **Backend Models Created** (⚠️ MAY NEED REDESIGN)
-   - `backend/app/models/user.py` - User model
-   - `backend/app/models/topic.py` - Topic model
-   - `backend/app/models/word.py` - Word/vocabulary model
-   - `backend/app/models/exercise.py` - Exercise model with ExerciseType enum
-   - `backend/app/models/learning_session.py` - LearningSession + ExerciseAttempt
-   - `backend/app/models/progress.py` - UserProgress model
-   - `backend/app/models/__init__.py` - Exports all models
+1. **Dual-Mode Learning**: Algorithmic drills (vocabulary) + AI-powered exercises (Gemini)
+2. **Database Schema**: 7 tables with singular names
+3. **Gemini Context**: On-demand summaries from raw data
+4. **Session Handling**: In-session memory only, metadata storage
+5. **User Model**: Single user table with id=1, future-extensible
 
-3. **Backend Schemas Started** (🟡 PARTIAL)
-   - `backend/app/schemas/user.py` - User schemas created
+### What Exists (Pre-Implementation)
 
-### In Progress (🟡)
+**Frontend (Complete Scaffold)**:
+- `frontend/package.json` - React 18, Mantine 7, TanStack Query 5, React Router 7
+- `frontend/vite.config.ts` - Vite with path aliases
+- `frontend/src/main.tsx` - App bootstrap with providers
+- `frontend/src/App.tsx` - Routes with lazy loading
+- `frontend/src/components/layout/AppLayout.tsx` - Mantine AppShell
+- `frontend/src/services/api.ts` - Axios client
+- `frontend/src/pages/` - Placeholder pages
 
-**CRITICAL: DESIGN TUTORING PROCESS FIRST**
+**Backend (Scaffold + Old Models)**:
+- `backend/app/main.py` - FastAPI app with health endpoint
+- `backend/app/config.py` - Pydantic Settings
+- `backend/app/database.py` - Async SQLAlchemy setup
+- `backend/alembic/` - Migration setup (no migrations run yet)
+- `backend/app/models/` - OLD models (need replacement based on new design)
 
-The implementation was stopped because we need to design the tutoring flow BEFORE finalizing:
-- Database models
-- Pydantic schemas
-- API routes
-- Gemini integration
+**Infrastructure**:
+- `docker-compose.yml` - PostgreSQL, backend, frontend services
+- `.env.example` - Environment template
 
-### Remaining (⏳)
+### What Needs To Be Done
 
-1. **Design Phase (MUST DO FIRST)**
-   - Define tutoring flow: How does user interact with Gemini?
-   - Determine what context Gemini needs to function as tutor
-   - Decide what to persist vs what to generate on-the-fly
-   - Redesign database models based on actual requirements
-
-2. **After Design Approved**
-   - Finalize/redesign database models
-   - Create Pydantic schemas
-   - Create Alembic migration
-   - Create Gemini service
-   - Create API routes
-   - Test with docker-compose up
+1. **Replace backend models** with new schema (singular table names)
+2. **Create Alembic migration**
+3. **Create Pydantic schemas**
+4. **Implement services** (WordService, GeminiService, etc.)
+5. **Create API endpoints**
+6. **Build frontend features**
 
 ---
 
 ## KEY DECISIONS
 
-### Made This Session
+### Made During Design Phase
 
 | Decision | Choice | Rationale |
 |----------|--------|-----------|
-| Stop implementation | Yes | Need to design tutoring flow first |
-| Models may change | Yes | Created models without understanding Gemini context needs |
+| Table naming | Singular (user, word, topic) | User preference |
+| User model | Keep with id=1 | Future extensibility |
+| Gemini memory | Per-session only | Simplicity, summaries sufficient |
+| Session storage | Metadata only | No transcript bloat |
+| Summary computation | On-demand | Simpler than background jobs |
+| SRS algorithm | SM-2 | Proven, Anki-compatible |
+| Vocabulary import | Croatian words only → Gemini provides translation + assessment | User workflow preference |
+| Phrases | Stored in `word` table with pos='phrase' | Simplicity |
+| Fill-in-blank | Generated on-the-fly by Gemini | No storage overhead |
+| Grammar topics | Pre-seeded, not dynamic | User control |
 
-### Pending Decisions (MUST DISCUSS)
+### Technical Choices (Confirmed)
 
-1. **Tutoring Flow**
-   - Free conversation vs structured lessons?
-   - Spaced repetition for vocabulary?
-   - Progressive difficulty levels?
-
-2. **Gemini's Role**
-   - Correct grammar in real-time?
-   - Generate exercises dynamically?
-   - Maintain conversation context across sessions?
-
-3. **What Context Does Gemini Need?**
-   - User's current vocabulary knowledge?
-   - Past mistakes/corrections?
-   - Topics already covered?
-   - Proficiency level?
-
-4. **What to Persist?**
-   - Full conversation history or summaries?
-   - Per-word mastery scores?
-   - Error patterns?
+| Component | Technology |
+|-----------|------------|
+| Backend | FastAPI + SQLAlchemy 2.0 (async) |
+| Frontend | React 18 + Vite + Mantine 7 |
+| Database | PostgreSQL 16 |
+| AI | Google Gemini API |
+| State | TanStack Query 5 |
+| Containers | Docker Compose |
 
 ---
 
-## FILES MODIFIED THIS SESSION
+## DATABASE SCHEMA REFERENCE
 
-### Created (Frontend)
-| File | Purpose |
-|------|---------|
-| `frontend/package.json` | Dependencies |
-| `frontend/vite.config.ts` | Vite + aliases |
-| `frontend/tsconfig.json` | TypeScript config |
-| `frontend/tsconfig.node.json` | Node TypeScript config |
-| `frontend/Dockerfile` | Container definition |
-| `frontend/index.html` | HTML entry |
-| `frontend/src/main.tsx` | React bootstrap |
-| `frontend/src/App.tsx` | Routes + lazy loading |
-| `frontend/src/vite-env.d.ts` | Vite types |
-| `frontend/src/config/theme.ts` | Mantine theme |
-| `frontend/src/components/layout/AppLayout.tsx` | App shell |
-| `frontend/src/services/api.ts` | Axios client |
-| `frontend/src/types/index.ts` | TypeScript types |
-| `frontend/src/pages/HomePage.tsx` | Home page |
-| `frontend/src/pages/LearnPage.tsx` | Learn page |
-| `frontend/src/pages/PracticePage.tsx` | Practice page |
-| `frontend/src/pages/ProgressPage.tsx` | Progress page |
+### Tables (7 total)
 
-### Created (Backend Models - MAY NEED REDESIGN)
-| File | Purpose |
-|------|---------|
-| `backend/app/models/user.py` | User model |
-| `backend/app/models/topic.py` | Topic model |
-| `backend/app/models/word.py` | Word model |
-| `backend/app/models/exercise.py` | Exercise model |
-| `backend/app/models/learning_session.py` | Session + Attempt models |
-| `backend/app/models/progress.py` | UserProgress model |
-| `backend/app/models/__init__.py` | Model exports |
-| `backend/app/schemas/user.py` | User schemas |
+```
+user                 - Single user record, preferences
+word                 - Vocabulary with SRS fields
+grammar_topic        - Topic definitions + rule descriptions
+topic_progress       - User mastery per topic
+exercise_log         - Daily activity tracking
+error_log            - Categorized mistakes
+session              - Exercise session metadata
+```
 
-### Already Existed (Pre-Session)
-| File | Purpose |
-|------|---------|
-| `docker-compose.yml` | Service orchestration |
-| `.env.example` | Environment template |
-| `backend/Dockerfile` | Backend container |
-| `backend/pyproject.toml` | Python dependencies |
-| `backend/app/main.py` | FastAPI app |
-| `backend/app/config.py` | Pydantic Settings |
-| `backend/app/database.py` | Async SQLAlchemy setup |
-| `backend/alembic/` | Migration setup |
+### Key Relationships
 
----
+```
+user (1) ─────────┬────────────── (*) word
+                  ├────────────── (*) topic_progress
+                  ├────────────── (*) exercise_log
+                  ├────────────── (*) error_log
+                  └────────────── (*) session
 
-## NEXT STEPS
-
-### Immediate (Next Session)
-
-1. **DISCUSS TUTORING DESIGN** with user:
-   - How should user interact with tutor?
-   - What learning flow makes sense?
-   - What does Gemini need to know?
-
-2. After design discussion:
-   - Validate/redesign database models
-   - Proceed with implementation
-
-### Commands to Run on Resume
-
-```bash
-# Start services (to test what exists)
-docker compose up --build
-
-# Frontend: http://localhost:3000
-# Backend: http://localhost:8000/docs
+grammar_topic (1) ─┬────────────── (*) topic_progress
+                   └────────────── (*) error_log (optional)
 ```
 
 ---
 
-## Technology Choices (CONFIRMED)
+## GEMINI CONTEXT SUMMARIES
 
-| Decision | Choice | Rationale |
-|----------|--------|-----------|
-| Backend Framework | FastAPI | Async, auto-docs, typing |
-| Frontend Framework | React + Vite | Fast dev, modern tooling |
-| UI Component Library | Mantine 7 | Beautiful defaults, great DX |
-| Database | PostgreSQL | JSON support, arrays, mature |
-| ORM | SQLAlchemy 2.0 | Async support |
-| AI Service | Gemini API | User requirement |
-| Containerization | Docker Compose | Simple local orchestration |
-| State Management | TanStack Query | Server state caching |
+### Summary Types
 
----
+| Summary | Source Table(s) | Refresh |
+|---------|-----------------|---------|
+| Vocabulary Stats | word | On-demand |
+| Topic Mastery | grammar_topic + topic_progress | On-demand |
+| Exercise Variety | exercise_log | On-demand (7 days) |
+| Error Patterns | error_log | On-demand (14 days) |
+| Learning Velocity | Derived from above | On-demand |
 
-## External Dependencies
+### Example Prompt Context
 
-### APIs
-| Service | Purpose | Documentation |
-|---------|---------|---------------|
-| Gemini API | AI tutor | https://ai.google.dev/docs |
-
-### Key Libraries (Backend)
-- fastapi, sqlalchemy 2.0, alembic, asyncpg, pydantic 2.0, google-generativeai, httpx, uvicorn
-
-### Key Libraries (Frontend)
-- react 18, @mantine/core 7, @mantine/hooks, @tanstack/react-query 5, react-router-dom 7, axios, typescript 5
+```
+[VOCABULARY] 245 words. Strong: 89, Medium: 112, Weak: 44. Due: 23.
+[TOPICS] Done: Present Tense (9/10). Learning: Dative (4/10). New: Past Tense.
+[ACTIVITY] 7d: Reading 45m, Conversation 30m, Grammar 60m.
+[ERRORS] Frequent: case_error (12x). Improving: verb_conjugation.
+```
 
 ---
 
-## Environment Variables
+## FILES TO MODIFY/CREATE
+
+### Backend - Models (Replace)
+
+| File | Status | Notes |
+|------|--------|-------|
+| `backend/app/models/user.py` | Replace | New schema |
+| `backend/app/models/word.py` | Replace | Add SRS fields |
+| `backend/app/models/grammar_topic.py` | Create | New table |
+| `backend/app/models/topic_progress.py` | Create | New table |
+| `backend/app/models/exercise_log.py` | Create | New table |
+| `backend/app/models/error_log.py` | Create | New table |
+| `backend/app/models/session.py` | Create | Rename from learning_session |
+| `backend/app/models/__init__.py` | Update | Export new models |
+
+### Backend - Schemas (Create)
+
+| File | Status |
+|------|--------|
+| `backend/app/schemas/user.py` | Update |
+| `backend/app/schemas/word.py` | Create |
+| `backend/app/schemas/grammar_topic.py` | Create |
+| `backend/app/schemas/exercise.py` | Create |
+| `backend/app/schemas/progress.py` | Create |
+
+### Backend - Services (Create)
+
+| File | Purpose |
+|------|---------|
+| `backend/app/services/word_service.py` | CRUD, bulk import, SRS |
+| `backend/app/services/gemini_service.py` | API, prompts, parsing |
+| `backend/app/services/exercise_service.py` | Generation, evaluation |
+| `backend/app/services/progress_service.py` | Stats, summaries |
+
+---
+
+## ENVIRONMENT VARIABLES
 
 ```bash
 # Required
@@ -218,18 +185,19 @@ VITE_API_URL=http://localhost:8000
 
 ---
 
-## Risk Notes
+## NEXT STEPS
 
-| Issue | Status | Notes |
-|-------|--------|-------|
-| DB models created without design | ⚠️ | May need significant changes after tutoring flow design |
-| Schemas partially created | ⚠️ | Only user.py done, stopped before completion |
+1. Replace backend models with new schema
+2. Create and run Alembic migration
+3. Create Pydantic schemas
+4. Verify Docker services start
+5. Implement WordService + endpoints
+6. Continue with implementation phases
 
 ---
 
-## Notes for Future Development
+## NOTES
 
-1. **Audio Support**: Consider ElevenLabs or Google TTS for pronunciation
-2. **Spaced Repetition**: SM-2 algorithm for word review scheduling
-3. **Export**: Allow exporting vocabulary to Anki format
-4. **Backup**: Add DB backup script to docker-compose
+- Old models in `backend/app/models/` should be replaced, not modified
+- Delete unused models: `exercise.py`, `learning_session.py`, `progress.py`, `topic.py`
+- Frontend scaffold is complete, just needs feature implementation

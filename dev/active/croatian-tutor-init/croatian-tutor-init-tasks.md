@@ -4,190 +4,216 @@
 
 ---
 
-## ⚠️ BLOCKER: Design Tutoring Process First
+## Phase 0: Design
+**Status**: COMPLETED
 
-**Before continuing implementation, we MUST design:**
-1. How user interacts with Gemini tutor
-2. What context Gemini needs to function effectively
-3. What data to persist vs generate on-the-fly
-4. Validate/redesign database models based on requirements
-
----
-
-## Phase 0: Design (NEW - MUST COMPLETE FIRST)
-**Goal**: Define tutoring flow before finalizing data models
-
-### 0.1 Tutoring Flow Design
-- [ ] Define user interaction model (conversation vs structured lessons) (M)
-- [ ] Define Gemini's role and responsibilities (M)
-- [ ] Determine what context Gemini needs per request (M)
-- [ ] Design conversation/session persistence strategy (M)
-
-### 0.2 Data Model Validation
-- [ ] Review created models against tutoring requirements (S)
-- [ ] Decide: Do we need User model? (single user app) (S)
-- [ ] Define what progress data actually needs tracking (M)
-- [ ] Finalize database schema design (M)
+- [x] Define learning modes (AI vs non-AI) (M)
+- [x] Design vocabulary system (SRS, drill types) (M)
+- [x] Design Gemini context strategy (summaries) (M)
+- [x] Design session handling (M)
+- [x] Decide on user model (single user with table) (S)
+- [x] Finalize database schema (M)
 
 ---
 
-## Phase 1: Foundation (MVP Infrastructure)
-**Goal**: Running containers with basic connectivity
+## Phase 1: Foundation Verification
+**Status**: READY
+**Goal**: Confirm existing infrastructure works
 
-### 1.1 Project Setup
-- ✅ Create `.env.example` with required variables
-- ✅ Create `docker-compose.yml` with all services
-- ✅ Create `.gitignore` with proper exclusions
-- ✅ Create project `README.md` with setup instructions
-
-### 1.2 Backend Scaffold
-- ✅ Create `backend/Dockerfile`
-- ✅ Create `backend/pyproject.toml` with dependencies
-- ✅ Create `backend/app/main.py` with FastAPI app
-- ✅ Create `backend/app/config.py` with Pydantic Settings
-- ✅ Create `backend/app/database.py` with async session
-- ✅ Add `/health` endpoint
-- ✅ Configure CORS for frontend
-
-### 1.3 Frontend Scaffold
-- ✅ Initialize Vite + React + TypeScript project
-- ✅ Create `frontend/Dockerfile`
-- ✅ Install and configure Mantine
-- ✅ Create basic App shell with Mantine AppShell
-- ✅ Configure React Router with placeholder pages
-- ✅ Create API client with axios
-- [ ] Verify frontend can call backend `/health` (S)
-
-### 1.4 Database Setup
-- [ ] Verify PostgreSQL container starts correctly (S)
-- ✅ Create `alembic.ini` and alembic directory
-- [ ] Create initial migration with all tables (M) - BLOCKED by Phase 0
-- [ ] Verify migration runs on container start (S)
-
-### 1.5 Integration Verification
-- [ ] `docker compose up` starts all services (S)
-- [ ] Frontend accessible at http://localhost:3000 (S)
-- [ ] Backend accessible at http://localhost:8000 (S)
-- [ ] Swagger docs accessible at http://localhost:8000/docs (S)
-- [ ] Backend connects to database (S)
+### 1.1 Docker & Connectivity
+- [ ] Verify `docker compose up` starts all services (S)
+- [ ] Verify PostgreSQL container accessible (S)
+- [ ] Verify backend health endpoint: `GET /health` (S)
+- [ ] Verify frontend loads at http://localhost:3000 (S)
+- [ ] Verify frontend can call backend API (S)
 
 ---
 
-## Phase 2: Core Data Layer
-**Goal**: CRUD operations for learning data
-**STATUS**: ⏳ BLOCKED by Phase 0 design
+## Phase 2: Database & Models
+**Status**: READY
+**Goal**: Implement new schema
 
 ### 2.1 SQLAlchemy Models
-- 🟡 Create models (CREATED BUT MAY NEED REDESIGN)
-  - Created: user.py, topic.py, word.py, exercise.py, learning_session.py, progress.py
-  - **NEEDS REVIEW** after tutoring flow design
+- [ ] Replace `backend/app/models/user.py` with new schema (S)
+- [ ] Replace `backend/app/models/word.py` with SRS fields (M)
+- [ ] Create `backend/app/models/grammar_topic.py` (S)
+- [ ] Create `backend/app/models/topic_progress.py` (S)
+- [ ] Create `backend/app/models/exercise_log.py` (S)
+- [ ] Create `backend/app/models/error_log.py` (S)
+- [ ] Create `backend/app/models/session.py` (S)
+- [ ] Update `backend/app/models/__init__.py` exports (S)
+- [ ] Delete old unused models (S)
 
-### 2.2 Pydantic Schemas
-- 🟡 Create `schemas/user.py` - User DTOs (PARTIAL - created)
-- [ ] Create `schemas/word.py` - Word DTOs (S)
-- [ ] Create `schemas/topic.py` - Topic DTOs (S)
-- [ ] Create `schemas/exercise.py` - Exercise DTOs (M)
-- [ ] Create `schemas/common.py` - Pagination, etc. (S)
+### 2.2 Enums
+- [ ] Create `PartOfSpeech` enum (S)
+- [ ] Create `Gender` enum (S)
+- [ ] Create `CEFRLevel` enum (S)
+- [ ] Create `ExerciseType` enum (S)
+- [ ] Create `ErrorCategory` enum (S)
 
-### 2.3 CRUD Operations
-- [ ] Create `crud/base.py` with generic CRUD class (M)
-- [ ] Create `crud/word.py` - Word operations (S)
-- [ ] Create `crud/topic.py` - Topic operations (S)
-- [ ] Create `crud/exercise.py` - Exercise operations (S)
+### 2.3 Database Migration
+- [ ] Create Alembic migration for new schema (M)
+- [ ] Test migration runs successfully (S)
+- [ ] Seed default user (id=1) (S)
 
-### 2.4 API Endpoints - Words
-- [ ] `GET /api/v1/words` - List words with pagination (S)
-- [ ] `POST /api/v1/words` - Create word (S)
-- [ ] `GET /api/v1/words/{id}` - Get single word (S)
-- [ ] `PUT /api/v1/words/{id}` - Update word (S)
-- [ ] `DELETE /api/v1/words/{id}` - Delete word (S)
-
-### 2.5 API Endpoints - Topics
-- [ ] `GET /api/v1/topics` - List topics (S)
-- [ ] `POST /api/v1/topics` - Create topic (S)
-- [ ] `PUT /api/v1/topics/{id}` - Update topic (S)
-- [ ] `DELETE /api/v1/topics/{id}` - Delete topic (S)
-
-### 2.6 Frontend - Vocabulary Management
-- [ ] Create Vocabulary page with word list (M)
-- [ ] Create Add Word form/modal (M)
-- [ ] Create Edit Word functionality (S)
-- [ ] Create Delete Word with confirmation (S)
-- [ ] Create Topics page with topic list (M)
-- [ ] Create Add/Edit Topic functionality (S)
+### 2.4 Pydantic Schemas
+- [ ] Update `backend/app/schemas/user.py` (S)
+- [ ] Create `backend/app/schemas/word.py` (M)
+- [ ] Create `backend/app/schemas/grammar_topic.py` (S)
+- [ ] Create `backend/app/schemas/progress.py` (S)
+- [ ] Create `backend/app/schemas/exercise.py` (M)
 
 ---
 
-## Phase 3: Gemini Integration
-**Goal**: AI-powered tutoring and exercises
-**STATUS**: ⏳ BLOCKED by Phase 0 design
+## Phase 3: Vocabulary System (Non-AI Core)
+**Status**: BLOCKED by Phase 2
+**Goal**: Working vocabulary drills without Gemini
 
-### 3.1 Gemini Service
-- [ ] Create `services/gemini_service.py` (L)
-- [ ] Implement connection and auth (S)
-- [ ] Create system prompt builder with context (M)
-- [ ] Create tutoring conversation method (L)
-- [ ] Create exercise generation method (L)
-- [ ] Create answer evaluation method (L)
+### 3.1 Word CRUD Service
+- [ ] Create `backend/app/crud/word.py` (M)
+- [ ] Implement word CRUD operations (M)
+- [ ] Implement SRS scheduling logic (SM-2) (L)
+- [ ] Implement get_due_words query (S)
+
+### 3.2 Word API Endpoints
+- [ ] `GET /api/v1/words` - List words with pagination/filters (S)
+- [ ] `POST /api/v1/words` - Create single word (S)
+- [ ] `GET /api/v1/words/{id}` - Get word (S)
+- [ ] `PUT /api/v1/words/{id}` - Update word (S)
+- [ ] `DELETE /api/v1/words/{id}` - Delete word (S)
+- [ ] `GET /api/v1/words/due` - Get words due for review (S)
+- [ ] `POST /api/v1/words/{id}/review` - Submit drill result, update SRS (M)
+
+### 3.3 Vocabulary Drill Logic (Backend)
+- [ ] Create `backend/app/services/drill_service.py` (M)
+- [ ] Implement CR→EN drill selection (S)
+- [ ] Implement EN→CR drill selection (S)
+- [ ] Implement fill-in-blank generation (needs Gemini) (M)
+
+### 3.4 Vocabulary UI (Frontend)
+- [ ] Create Vocabulary list page with word table (M)
+- [ ] Create Add Word modal/form (M)
+- [ ] Create Edit Word functionality (S)
+- [ ] Create Delete Word with confirmation (S)
+- [ ] Create Drill page with card UI (L)
+- [ ] Implement drill flow (show card → input → feedback) (M)
+- [ ] Connect drill results to API (S)
+
+---
+
+## Phase 4: Gemini Integration
+**Status**: BLOCKED by Phase 3
+**Goal**: AI assessment and exercise generation
+
+### 4.1 Gemini Service Foundation
+- [ ] Create `backend/app/services/gemini_service.py` (M)
+- [ ] Implement Gemini API connection (S)
+- [ ] Create base prompt builder (M)
 - [ ] Implement response parsing with error handling (M)
 - [ ] Add retry logic for failed requests (S)
 
-### 3.2 Exercise Service
-- [ ] Create `services/exercise_service.py` (M)
-- [ ] Implement exercise generation orchestration (M)
-- [ ] Implement answer submission and evaluation (M)
-- [ ] Implement progress update after evaluation (M)
+### 4.2 Word Assessment
+- [ ] Implement bulk word assessment endpoint (M)
+- [ ] `POST /api/v1/words/bulk-import` - Bulk import with Gemini assessment (L)
+- [ ] Parse Gemini response for CEFR level + ease_factor (M)
+- [ ] Handle duplicates detection (S)
 
-### 3.3 API Endpoints - Exercises
-- [ ] `POST /api/v1/chat` - Conversation with tutor (M)
-- [ ] `POST /api/v1/exercises/generate` - Generate exercise (M)
+### 4.3 Context Summary Generators
+- [ ] Create `backend/app/services/progress_service.py` (M)
+- [ ] Implement vocabulary stats summary (S)
+- [ ] Implement topic mastery summary (S)
+- [ ] Implement exercise variety summary (S)
+- [ ] Implement error patterns summary (S)
+- [ ] Implement combined context builder for prompts (M)
+
+### 4.4 Fill-in-Blank Generation
+- [ ] Implement sentence generation for fill-in-blank drills (M)
+- [ ] Cache generated sentences per word (optional) (S)
+
+---
+
+## Phase 5: AI Exercises
+**Status**: BLOCKED by Phase 4
+**Goal**: Full AI-powered exercise suite
+
+### 5.1 Exercise Service
+- [ ] Create `backend/app/services/exercise_service.py` (M)
+- [ ] Implement exercise generation orchestration (L)
+- [ ] Implement answer evaluation (L)
+- [ ] Implement error categorization (M)
+
+### 5.2 Grammar Topics
+- [ ] `GET /api/v1/topics` - List grammar topics (S)
+- [ ] `GET /api/v1/topics/{id}` - Get topic with rule_description (S)
+- [ ] `POST /api/v1/topics/{id}/generate-description` - Gemini generates rule (M)
+- [ ] `GET /api/v1/topics/progress` - User's topic mastery (S)
+
+### 5.3 Exercise Endpoints
+- [ ] `POST /api/v1/exercises/conversation` - Free conversation turn (M)
+- [ ] `POST /api/v1/exercises/grammar` - Grammar exercise (M)
+- [ ] `POST /api/v1/exercises/sentence-construction` - Build sentence (M)
+- [ ] `POST /api/v1/exercises/reading` - Reading comprehension (M)
+- [ ] `POST /api/v1/exercises/dialogue` - Situational dialogue (M)
+- [ ] `POST /api/v1/exercises/translate` - Sentence translation (M)
 - [ ] `POST /api/v1/exercises/evaluate` - Evaluate answer (M)
-- [ ] `GET /api/v1/exercises/history` - Get history (S)
 
-### 3.4 Frontend - Tutor UI
-- [ ] Create Chat/Conversation component (L)
-- [ ] Create Exercise Card component (M)
-- [ ] Create Answer Input component (S)
-- [ ] Create Feedback Display component (M)
-- [ ] Implement exercise flow (M)
-- [ ] Add loading states during Gemini calls (S)
+### 5.4 Exercise Logging
+- [ ] Log exercise activity to `exercise_log` (S)
+- [ ] Log errors to `error_log` with categorization (M)
+- [ ] Create session records (S)
+
+### 5.5 Exercise UI (Frontend)
+- [ ] Create Conversation chat interface (L)
+- [ ] Create Grammar exercise component (M)
+- [ ] Create Sentence construction UI (M)
+- [ ] Create Reading comprehension UI (M)
+- [ ] Create Dialogue/role-play UI (M)
+- [ ] Create Translation exercise UI (M)
+- [ ] Add loading states for Gemini calls (S)
+- [ ] Add error feedback display (S)
 
 ---
 
-## Phase 4: Learning Flow
-**Goal**: Complete learning experience
+## Phase 6: Progress & Dashboard
+**Status**: BLOCKED by Phase 5
+**Goal**: Visibility into learning progress
 
-### 4.1 Progress Tracking
-- [ ] Create `services/progress_service.py` (M)
-- [ ] Implement word proficiency updates (M)
-- [ ] `GET /api/v1/progress` - Overall progress (S)
+### 6.1 Progress Endpoints
+- [ ] `GET /api/v1/progress/summary` - Overall stats (S)
+- [ ] `GET /api/v1/progress/vocabulary` - Vocabulary breakdown (S)
+- [ ] `GET /api/v1/progress/topics` - Topic mastery overview (S)
+- [ ] `GET /api/v1/progress/activity` - Recent activity (S)
+- [ ] `GET /api/v1/progress/errors` - Error patterns (S)
 
-### 4.2 Session Management
-- [ ] Track learning sessions (M)
-- [ ] Session history display (S)
-
-### 4.3 Frontend - Dashboard
-- [ ] Create Dashboard page (M)
-- [ ] Display progress stats (M)
+### 6.2 Dashboard UI
+- [ ] Create Dashboard page layout (M)
+- [ ] Display vocabulary stats chart (M)
+- [ ] Display topic progress (M)
 - [ ] Display recent activity (S)
+- [ ] Display error patterns/weak areas (M)
+- [ ] Add "Start Practice" quick actions (S)
 
 ---
 
-## Phase 5: Polish
-**Goal**: Refined user experience
+## Phase 7: Polish
+**Status**: BLOCKED by Phase 6
+**Goal**: Production-ready UX
 
-### 5.1 Error Handling
+### 7.1 Error Handling
 - [ ] Global error boundary in React (S)
-- [ ] Toast notifications (S)
+- [ ] Toast notifications for actions (S)
 - [ ] Backend exception handlers (S)
+- [ ] Gemini error fallbacks (M)
 
-### 5.2 Loading States
-- [ ] Skeleton loaders (S)
-- [ ] Loading spinners (S)
+### 7.2 UX Improvements
+- [ ] Skeleton loaders for data fetching (S)
+- [ ] Keyboard shortcuts for drills (S)
+- [ ] Mobile-responsive adjustments (M)
 
-### 5.3 Data Management
+### 7.3 Data Management
 - [ ] Export vocabulary to JSON (S)
-- [ ] Seed data script (S)
+- [ ] Grammar topic seed data (M)
+- [ ] Sample vocabulary seed data (S)
 
 ---
 
@@ -201,18 +227,10 @@
 
 ---
 
-## Current Status
-
-**Phase**: 0 - Design (NEW)
-**Blocker**: Must design tutoring flow before continuing
-**Next Action**: Discuss tutoring process with user
-
----
-
 ## Quick Resume Checklist
 
 When resuming work:
-1. [ ] Read `croatian-tutor-init-context.md` for session state
-2. [ ] Complete Phase 0 design discussion
-3. [ ] Review/update database models based on design
-4. [ ] Then proceed with Phase 1.5 integration verification
+1. [ ] Read `croatian-tutor-init-context.md` for current state
+2. [ ] Check which phase is in progress
+3. [ ] Continue from first unchecked task in current phase
+4. [ ] Update context file if making significant decisions
