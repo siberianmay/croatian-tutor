@@ -344,6 +344,72 @@ class ProgressService:
 
         return "\n".join(parts)
 
+    async def build_gemini_context(self, user_id: int) -> str:
+        """
+        Build a comprehensive context block for Gemini prompts.
+
+        This generates a structured context that follows the prompt template
+        from the design docs, providing the AI with full learner context.
+        """
+        summary = await self.get_summary(user_id)
+        vocab_stats = await self.get_vocabulary_stats(user_id)
+        topic_stats = await self.get_topic_stats(user_id)
+        activity = await self.get_activity(user_id, days=7)
+        error_stats = await self.get_error_patterns(user_id)
+
+        # Build vocabulary summary
+        vocab_section = f"""[VOCABULARY SUMMARY]
+{summary['total_words']} words total. Strong (7-10): {vocab_stats['by_mastery']['mastered']}, Medium (1-6): {vocab_stats['by_mastery']['learning']}, New (0): {vocab_stats['by_mastery']['new']}.
+By level: {', '.join(f"{k}: {v}" for k, v in vocab_stats['by_level'].items()) if vocab_stats['by_level'] else 'None yet'}.
+Due for review: {summary['words_due_today']} words."""
+
+        # Build topic progress summary
+        completed_topics = [t for t in topic_stats['topics'] if t['mastery'] >= 7]
+        in_progress_topics = [t for t in topic_stats['topics'] if 0 < t['mastery'] < 7]
+        not_started_topics = [t for t in topic_stats['topics'] if t['mastery'] == 0 and t['attempts'] == 0]
+
+        completed_str = ", ".join(f"{t['name']} ({t['mastery']}/10)" for t in completed_topics[:5]) if completed_topics else "None yet"
+        in_progress_str = ", ".join(f"{t['name']} ({t['mastery']}/10)" for t in in_progress_topics[:3]) if in_progress_topics else "None"
+        not_started_str = ", ".join(t['name'] for t in not_started_topics[:3]) if not_started_topics else "None"
+
+        topic_section = f"""[TOPIC PROGRESS]
+Completed: {completed_str}.
+In progress: {in_progress_str}.
+Not started: {not_started_str}."""
+
+        # Build activity summary
+        exercise_breakdown = activity.get('exercise_breakdown', {})
+        activity_parts = [f"{k.replace('_', ' ').title()}: {v}" for k, v in exercise_breakdown.items() if v > 0]
+        activity_str = ", ".join(activity_parts) if activity_parts else "No recent activity"
+
+        activity_section = f"""[RECENT ACTIVITY]
+Last 7 days: {activity_str}.
+Study streak: {summary['streak_days']} days."""
+
+        # Build error patterns summary
+        error_section_parts = []
+        if error_stats['weak_areas']:
+            for area in error_stats['weak_areas'][:2]:
+                error_section_parts.append(f"{area['category'].replace('_', ' ').title()}: {area['count']}x")
+
+        error_section = f"""[ERROR PATTERNS]
+{chr(10).join(error_section_parts) if error_section_parts else 'No significant error patterns yet.'}"""
+
+        # Combine all sections
+        context = f"""Here is the student's learning context:
+
+{vocab_section}
+
+{topic_section}
+
+{activity_section}
+
+{error_section}
+
+Student's current CEFR level: {summary['current_level']}"""
+
+        return context
+
     # -------------------------------------------------------------------------
     # Private helpers
     # -------------------------------------------------------------------------

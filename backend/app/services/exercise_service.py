@@ -8,11 +8,14 @@ from typing import Any
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.crud.grammar_topic import GrammarTopicCRUD, TopicProgressCRUD
+from app.crud.session import SessionCRUD
 from app.crud.word import WordCRUD
 from app.models.enums import CEFRLevel, ErrorCategory, ExerciseType
 from app.models.exercise_log import ExerciseLog
 from app.models.error_log import ErrorLog
+from app.models.session import Session
 from app.services.gemini_service import GeminiService
+from app.services.progress_service import ProgressService
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +33,16 @@ class ExerciseService:
         self._topic_crud = GrammarTopicCRUD(db)
         self._progress_crud = TopicProgressCRUD(db)
         self._word_crud = WordCRUD(db)
+        self._session_crud = SessionCRUD(db)
+        self._progress_service = ProgressService(db)
+
+    async def _get_user_context(self, user_id: int) -> str:
+        """Get comprehensive user context for Gemini prompts."""
+        try:
+            return await self._progress_service.build_gemini_context(user_id)
+        except Exception as e:
+            logger.warning(f"Failed to build user context: {e}")
+            return ""
 
     async def _get_learnt_grammar_context(self, user_id: int) -> str:
         """Get a string describing the grammar topics the user has learned."""
@@ -68,8 +81,12 @@ class ExerciseService:
         )
 
         grammar_context = await self._get_learnt_grammar_context(user_id)
+        user_context = await self._get_user_context(user_id)
 
-        prompt = f"""You are a friendly Croatian language tutor. The student is at {cefr_level.value} level.{grammar_context}
+        prompt = f"""You are a friendly Croatian language tutor.
+
+{user_context}
+{grammar_context}
 
 Conversation so far:
 {history_text}
@@ -82,6 +99,7 @@ Respond in a helpful, encouraging way. If the user writes in Croatian:
 3. Introduce new vocabulary when appropriate
 
 If the user writes in English, respond primarily in Croatian with English explanations as needed.
+Tailor your responses to the student's level and focus on their weak areas when appropriate.
 
 Respond with ONLY valid JSON:
 {{
@@ -173,15 +191,21 @@ Respond with ONLY valid JSON:
                 "expected_answer": "",
             }
 
+        # Get user context for personalized exercise
+        user_context = await self._get_user_context(user_id)
+
         # Generate exercise via Gemini
         level = cefr_level.value if cefr_level else topic.cefr_level.value
         prompt = f"""Create a grammar exercise for Croatian learners.
+
+{user_context}
 
 Topic: {topic.name}
 CEFR Level: {level}
 {"Rule Description: " + topic.rule_description if topic.rule_description else ""}
 
 Create an exercise that tests understanding of this grammar topic.
+Consider the student's current level and weak areas when designing the exercise.
 
 Respond with ONLY valid JSON:
 {{
@@ -248,12 +272,17 @@ Respond with ONLY valid JSON:
             target_lang = "Croatian"
 
         grammar_context = await self._get_learnt_grammar_context(user_id)
+        user_context = await self._get_user_context(user_id)
 
-        prompt = f"""Create a translation exercise for Croatian learners at {cefr_level.value} level.{grammar_context}
+        prompt = f"""Create a translation exercise for Croatian learners.
+
+{user_context}
+{grammar_context}
 
 Direction: {source_lang} → {target_lang}
 
 Create a sentence appropriate for this level that will help practice common vocabulary and grammar.
+Consider the student's weak areas and vocabulary level when creating the sentence.
 
 Respond with ONLY valid JSON:
 {{
@@ -303,18 +332,23 @@ Respond with ONLY valid JSON:
             }
         """
         # Try to use user's vocabulary
-        user_words = await self._word_crud.get_multi(user_id=1, limit=10)
+        user_words = await self._word_crud.get_multi(user_id=user_id, limit=10)
         vocab_context = ""
         if user_words:
             vocab_context = f"Try to use some of these words the user knows: {', '.join(w.croatian for w in user_words[:5])}"
 
         grammar_context = await self._get_learnt_grammar_context(user_id)
+        user_context = await self._get_user_context(user_id)
 
-        prompt = f"""Create a sentence construction exercise for Croatian learners at {cefr_level.value} level.{grammar_context}
+        prompt = f"""Create a sentence construction exercise for Croatian learners.
+
+{user_context}
+{grammar_context}
 
 {vocab_context}
 
 Create a Croatian sentence, then provide its words in shuffled order for the learner to arrange.
+Design the sentence to reinforce grammar patterns the student has learned.
 
 Respond with ONLY valid JSON:
 {{
@@ -362,10 +396,15 @@ Respond with ONLY valid JSON:
             }
         """
         grammar_context = await self._get_learnt_grammar_context(user_id)
+        user_context = await self._get_user_context(user_id)
 
-        prompt = f"""Create a reading comprehension exercise for Croatian learners at {cefr_level.value} level.{grammar_context}
+        prompt = f"""Create a reading comprehension exercise for Croatian learners.
 
-Create a short passage in Croatian (3-5 sentences) appropriate for this level, followed by 2-3 comprehension questions.
+{user_context}
+{grammar_context}
+
+Create a short passage in Croatian (3-5 sentences) appropriate for the student's level, followed by 2-3 comprehension questions.
+Use vocabulary and grammar patterns the student has been learning.
 
 Respond with ONLY valid JSON:
 {{
@@ -417,12 +456,17 @@ Respond with ONLY valid JSON:
         """
         scenario_prompt = f"Scenario: {scenario}" if scenario else "Choose a common everyday scenario"
         grammar_context = await self._get_learnt_grammar_context(user_id)
+        user_context = await self._get_user_context(user_id)
 
-        prompt = f"""Create a situational dialogue exercise for Croatian learners at {cefr_level.value} level.{grammar_context}
+        prompt = f"""Create a situational dialogue exercise for Croatian learners.
+
+{user_context}
+{grammar_context}
 
 {scenario_prompt}
 
 Create a role-play scenario where the learner practices real-world Croatian conversation.
+Tailor the complexity and vocabulary to the student's current level and focus on areas they need practice.
 
 Respond with ONLY valid JSON:
 {{
@@ -482,7 +526,11 @@ Respond with ONLY valid JSON:
                 "explanation": str | None
             }
         """
+        user_context = await self._get_user_context(user_id)
+
         prompt = f"""Evaluate this Croatian language exercise answer.
+
+{user_context}
 
 Exercise type: {exercise_type.value}
 Expected answer: {expected_answer}
@@ -494,12 +542,13 @@ Consider:
 - Grammar accuracy
 - Alternative valid phrasings
 - Partial credit for mostly correct answers
+- The student's current level and learning history
 
 Respond with ONLY valid JSON:
 {{
     "correct": true/false,
     "score": 0.0 to 1.0 (partial credit allowed),
-    "feedback": "Encouraging, educational feedback",
+    "feedback": "Encouraging, educational feedback tailored to the student's level",
     "error_category": "case_error|gender_agreement|verb_conjugation|word_order|spelling|vocabulary|accent|other|null",
     "explanation": "Brief explanation of any mistakes (or null if correct)"
 }}"""
@@ -633,6 +682,31 @@ Use Croatian examples with English translations."""
             self._db.add(log)
 
         await self._db.flush()
+
+    async def get_or_create_session(
+        self,
+        user_id: int,
+        exercise_type: ExerciseType,
+    ) -> tuple[Session, bool]:
+        """
+        Get or create an active session for the given exercise type.
+
+        Returns:
+            Tuple of (session, created) where created is True if a new session was started.
+        """
+        return await self._session_crud.get_or_create_active(user_id, exercise_type)
+
+    async def end_session(
+        self,
+        user_id: int,
+        session_id: int,
+        outcome: str | None = None,
+    ) -> Session | None:
+        """End a session with optional outcome summary."""
+        from app.schemas.session import SessionEnd
+
+        session_end = SessionEnd(outcome=outcome)
+        return await self._session_crud.end_session(session_id, user_id, session_end)
 
     async def _log_error(
         self,
