@@ -181,6 +181,17 @@ class TopicProgressCRUD:
         """
         Update user's progress on a topic after practice.
 
+        Mastery scale: 0-1000
+        - 0-200: Beginner (just learned)
+        - 200-500: Learning (needs regular practice)
+        - 500-750: Intermediate (getting comfortable)
+        - 750-900: Advanced (mostly mastered)
+        - 900-1000: Mastered
+
+        Scoring:
+        - Correct: +15 to +30 points (more at lower mastery)
+        - Incorrect: -10 to -20 points (more at higher mastery)
+
         Args:
             user_id: User ID
             topic_id: Topic ID
@@ -193,14 +204,32 @@ class TopicProgressCRUD:
         progress.last_practiced_at = datetime.now(timezone.utc)
 
         if correct is not None:
-            # Adjust score based on correctness
+            current = progress.mastery_score
             if correct:
-                progress.mastery_score = min(10, progress.mastery_score + 1)
+                # More points at lower mastery, fewer at higher (diminishing returns)
+                if current < 200:
+                    gain = 30
+                elif current < 500:
+                    gain = 25
+                elif current < 750:
+                    gain = 20
+                else:
+                    gain = 15
+                progress.mastery_score = min(1000, current + gain)
             else:
-                progress.mastery_score = max(0, progress.mastery_score - 1)
+                # Larger penalty at higher mastery (mistakes matter more when you should know it)
+                if current < 200:
+                    loss = 10
+                elif current < 500:
+                    loss = 12
+                elif current < 750:
+                    loss = 15
+                else:
+                    loss = 20
+                progress.mastery_score = max(0, current - loss)
         elif score_delta:
             new_score = progress.mastery_score + score_delta
-            progress.mastery_score = max(0, min(10, new_score))
+            progress.mastery_score = max(0, min(1000, new_score))
 
         await self._db.flush()
         await self._db.refresh(progress)

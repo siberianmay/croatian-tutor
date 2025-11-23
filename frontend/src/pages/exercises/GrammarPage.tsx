@@ -55,6 +55,7 @@ const GrammarPage: React.FC = () => {
         user_answer: answer,
         expected_answer: (exercise as any)?.expectedAnswer || '',
         context: exercise?.question || '',
+        topic_id: exercise?.topic_id,  // Track progress for this grammar topic
       }),
     onSuccess: (data) => {
       setResult({

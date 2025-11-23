@@ -174,6 +174,7 @@ async def generate_grammar_exercise(
 
     return GrammarExerciseResponse(
         exercise_id=result["exercise_id"],
+        topic_id=result["topic_id"],
         topic_name=result["topic_name"],
         instruction=result["instruction"],
         question=result["question"],

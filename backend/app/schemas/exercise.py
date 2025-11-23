@@ -44,6 +44,7 @@ class GrammarExerciseResponse(BaseModel):
     """Response with a grammar exercise."""
 
     exercise_id: str
+    topic_id: int
     topic_name: str
     instruction: str
     question: str

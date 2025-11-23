@@ -65,32 +65,27 @@ class ExerciseService:
         if not topics_with_mastery:
             return ""
 
-        # Build context with mastery info - sorted weakest first by the query
+        # Build explicit topic list with mastery scores
+        # Scale: 0-1000 (shown as percentage)
         topic_lines = []
-        weak_topics = []
         for t in topics_with_mastery:
             mastery = t["mastery_score"]
             name = t["name"]
-            # Categorize mastery: 0-3 weak, 4-6 learning, 7-10 strong
-            if mastery <= 3:
-                topic_lines.append(f"- {name} (WEAK - needs practice, mastery: {mastery}/10)")
-                weak_topics.append(name)
-            elif mastery <= 6:
-                topic_lines.append(f"- {name} (learning, mastery: {mastery}/10)")
+            pct = mastery // 10  # 0-100%
+
+            # Simple level labels
+            if mastery < 400:
+                level = "WEAK"
+            elif mastery < 800:
+                level = "LEARNING"
             else:
-                topic_lines.append(f"- {name} (strong, mastery: {mastery}/10)")
+                level = "STRONG"
 
-        context = f"""
-GRAMMAR KNOWLEDGE (use ONLY these patterns):
+            topic_lines.append(f"'{name}' - {level} ({pct}%)")
+
+        return f"""
+USER'S GRAMMAR KNOWLEDGE (use ONLY these patterns, prioritize WEAK topics):
 {chr(10).join(topic_lines)}"""
-
-        if weak_topics:
-            context += f"""
-
-FOCUS AREAS: The user is weak in these topics and needs more practice: {', '.join(weak_topics)}.
-Prioritize exercises that reinforce these weak areas."""
-
-        return context
 
     # -------------------------------------------------------------------------
     # Conversation

@@ -148,6 +148,7 @@ export interface GrammarExerciseRequest {
 
 export interface GrammarExerciseResponse {
   exercise_id: string;
+  topic_id: number;
   topic_name: string;
   instruction: string;
   question: string;
