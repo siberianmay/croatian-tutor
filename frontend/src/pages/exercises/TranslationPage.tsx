@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Title,
   Text,
@@ -64,6 +64,20 @@ const TranslationPage: React.FC = () => {
     if (!userAnswer.trim()) return;
     evaluateMutation.mutate(userAnswer);
   };
+
+  // Handle Enter key for "Next Translation" button when result is shown
+  useEffect(() => {
+    if (!result) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Enter' && !generateMutation.isPending) {
+        generateMutation.mutate();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [result, generateMutation.isPending]);
 
   return (
     <Stack gap="lg">
