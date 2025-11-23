@@ -90,11 +90,13 @@ const VocabularyPage: React.FC = () => {
   });
   const [sortField, setSortField] = useState<SortField>('created_at');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
+  const [levelFilter, setLevelFilter] = useState<CEFRLevel | ''>('');
 
   const { data: words, isLoading, error } = useQuery({
-    queryKey: ['words', search, sortField, sortDirection],
+    queryKey: ['words', search, sortField, sortDirection, levelFilter],
     queryFn: () => wordApi.list({
       search: search || undefined,
+      cefr_level: levelFilter || undefined,
       limit: 500,
       sort_by: sortField,
       sort_dir: sortDirection,
@@ -231,7 +233,15 @@ const VocabularyPage: React.FC = () => {
                 leftSection={<IconSearch size={16} />}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                style={{ minWidth: 200, flexGrow: 1 }}
+                style={{ minWidth: 200 }}
+              />
+              <Select
+                placeholder="All levels"
+                data={CEFR_OPTIONS}
+                value={levelFilter}
+                onChange={(value) => setLevelFilter((value as CEFRLevel) || '')}
+                clearable
+                style={{ minWidth: 160 }}
               />
               {dueCount !== undefined && dueCount > 0 && (
                 <Badge color="orange" size="lg">
