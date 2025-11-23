@@ -245,6 +245,8 @@ async def generate_translation_exercise(
 
     return TranslationResponse(
         exercise_id=result["exercise_id"],
+        topic_id=result.get("topic_id"),
+        topic_name=result.get("topic_name"),
         source_text=result["source_text"],
         source_language=result["source_language"],
         target_language=result["target_language"],

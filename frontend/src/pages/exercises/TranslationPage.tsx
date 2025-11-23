@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Title,
   Text,
@@ -25,7 +25,7 @@ type Direction = 'cr_en' | 'en_cr';
 const TranslationPage: React.FC = () => {
   const navigate = useNavigate();
   const [cefrLevel, setCefrLevel] = useState<CEFRLevel>('A1');
-  const [direction, setDirection] = useState<Direction>('cr_en');
+  const [direction, setDirection] = useState<Direction>('en_cr');
   const [exercise, setExercise] = useState<TranslationResponse | null>(null);
   const [userAnswer, setUserAnswer] = useState('');
   const [result, setResult] = useState<{
@@ -34,6 +34,7 @@ const TranslationPage: React.FC = () => {
     correctAnswer?: string | null;
   } | null>(null);
   const [exerciseStartTime, setExerciseStartTime] = useState<number | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // End chat session when leaving the page
   useEffect(() => {
@@ -56,6 +57,8 @@ const TranslationPage: React.FC = () => {
       setUserAnswer('');
       setResult(null);
       setExerciseStartTime(Date.now());
+      // Focus input after render
+      setTimeout(() => inputRef.current?.focus(), 0);
     },
   });
 
@@ -68,6 +71,7 @@ const TranslationPage: React.FC = () => {
         user_answer: answer,
         expected_answer: exercise?.expected_answer || '',
         context: `Translate: ${exercise?.source_text}`,
+        topic_id: exercise?.topic_id ?? undefined,
         duration_minutes: durationMinutes,
       });
     },
@@ -158,6 +162,12 @@ const TranslationPage: React.FC = () => {
               </Badge>
             </Group>
 
+            {exercise.topic_name && (
+              <Badge color="green" size="sm" variant="light">
+                Grammar: {exercise.topic_name}
+              </Badge>
+            )}
+
             <Paper p="xl" bg="gray.0" radius="md" ta="center">
               <Text size="xl" fw={500}>
                 {exercise.source_text}
@@ -167,6 +177,7 @@ const TranslationPage: React.FC = () => {
             {!result ? (
               <>
                 <TextInput
+                  ref={inputRef}
                   placeholder={`Translate to ${exercise.target_language}...`}
                   value={userAnswer}
                   onChange={(e) => setUserAnswer(e.target.value)}

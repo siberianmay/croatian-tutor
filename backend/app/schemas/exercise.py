@@ -67,6 +67,8 @@ class TranslationResponse(BaseModel):
     """Response with a translation exercise."""
 
     exercise_id: str
+    topic_id: int | None = None
+    topic_name: str | None = None
     source_text: str
     source_language: str
     target_language: str

@@ -164,6 +164,8 @@ export interface TranslationRequest {
 
 export interface TranslationResponse {
   exercise_id: string;
+  topic_id: number | null;
+  topic_name: string | null;
   source_text: string;
   source_language: string;
   target_language: string;

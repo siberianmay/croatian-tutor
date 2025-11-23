@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Title,
   Text,
@@ -32,6 +32,7 @@ const GrammarPage: React.FC = () => {
     explanation?: string | null;
   } | null>(null);
   const [exerciseStartTime, setExerciseStartTime] = useState<number | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // End chat session when leaving the page
   useEffect(() => {
@@ -47,6 +48,8 @@ const GrammarPage: React.FC = () => {
       setUserAnswer('');
       setResult(null);
       setExerciseStartTime(Date.now());
+      // Focus input after render
+      setTimeout(() => inputRef.current?.focus(), 0);
     },
   });
 
@@ -159,6 +162,7 @@ const GrammarPage: React.FC = () => {
             {!result ? (
               <>
                 <TextInput
+                  ref={inputRef}
                   placeholder="Type your answer..."
                   value={userAnswer}
                   onChange={(e) => setUserAnswer(e.target.value)}

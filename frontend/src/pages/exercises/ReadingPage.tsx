@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Title,
   Text,
@@ -33,6 +33,7 @@ const ReadingPage: React.FC = () => {
   const [questionStates, setQuestionStates] = useState<QuestionState[]>([]);
   const [submitted, setSubmitted] = useState(false);
   const [exerciseStartTime, setExerciseStartTime] = useState<number | null>(null);
+  const firstInputRef = useRef<HTMLInputElement>(null);
 
   // End chat session when leaving the page
   useEffect(() => {
@@ -48,6 +49,8 @@ const ReadingPage: React.FC = () => {
       setQuestionStates(data.questions.map(() => ({ answer: '' })));
       setSubmitted(false);
       setExerciseStartTime(Date.now());
+      // Focus first question input after render
+      setTimeout(() => firstInputRef.current?.focus(), 0);
     },
   });
 
@@ -202,6 +205,7 @@ const ReadingPage: React.FC = () => {
                     </Text>
 
                     <TextInput
+                      ref={idx === 0 ? firstInputRef : undefined}
                       placeholder="Your answer..."
                       value={questionStates[idx]?.answer || ''}
                       onChange={(e) => handleAnswerChange(idx, e.target.value)}

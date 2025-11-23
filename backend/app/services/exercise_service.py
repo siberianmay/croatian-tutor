@@ -337,6 +337,8 @@ Respond with ONLY valid JSON:
         Returns:
             {
                 "exercise_id": str,
+                "topic_id": int | None,
+                "topic_name": str | None,
                 "source_text": str,
                 "source_language": str,
                 "target_language": str,
@@ -350,7 +352,8 @@ Respond with ONLY valid JSON:
             source_lang = "English"
             target_lang = "Croatian"
 
-        grammar_context = await self._get_learnt_grammar_context(user_id)
+        # Get grammar topics for progress tracking
+        grammar_context, topic_map = await self._get_grammar_topics_for_exercise(user_id)
         user_context = await self._get_user_context(user_id)
 
         # Build session key - separate sessions for each direction
@@ -365,17 +368,20 @@ CRITICAL RULES:
 1. Generate UNIQUE sentences each time - NEVER repeat a sentence you've already given
 2. Vary vocabulary, topics, and sentence complexity
 3. Always respond with ONLY valid JSON (no markdown, no explanation)
-4. Remember all sentences from this conversation to avoid repetition"""
+4. Remember all sentences from this conversation to avoid repetition
+5. Include the topic_id of the PRIMARY grammar concept being practiced"""
 
         prompt = f"""Generate a NEW translation exercise (completely different from any previous ones).
 
 Direction: {source_lang} → {target_lang}
 CEFR Level: {cefr_level.value}
 
-Create a sentence appropriate for this level that will help practice common vocabulary and grammar.
+Create a sentence appropriate for this level that practices a grammar topic from the list above.
+Prioritize WEAK topics to help the user improve.
 
 Respond with ONLY valid JSON:
 {{
+    "topic_id": <number from the topic list - the PRIMARY grammar concept in this sentence>,
     "source_text": "The sentence in {source_lang}",
     "expected_answer": "The correct translation in {target_lang}"
 }}"""
@@ -388,8 +394,20 @@ Respond with ONLY valid JSON:
             )
             data = self._gemini._parse_json(response_text)
 
+            # Validate topic_id from Gemini's response
+            returned_topic_id = data.get("topic_id")
+            if returned_topic_id and topic_map and returned_topic_id in topic_map:
+                selected_topic_id = returned_topic_id
+                selected_topic_name = topic_map[returned_topic_id]
+            else:
+                # No valid topic - user may not have any learnt topics
+                selected_topic_id = None
+                selected_topic_name = None
+
             return {
                 "exercise_id": str(uuid.uuid4()),
+                "topic_id": selected_topic_id,
+                "topic_name": selected_topic_name,
                 "source_text": data.get("source_text", ""),
                 "source_language": source_lang,
                 "target_language": target_lang,
@@ -399,6 +417,8 @@ Respond with ONLY valid JSON:
             logger.error(f"Translation exercise generation failed: {e}")
             return {
                 "exercise_id": "",
+                "topic_id": None,
+                "topic_name": None,
                 "source_text": "Translation generation failed.",
                 "source_language": source_lang,
                 "target_language": target_lang,
