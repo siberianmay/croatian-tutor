@@ -94,7 +94,7 @@ const DialoguePage: React.FC = () => {
     <Stack gap="lg" style={{ height: 'calc(100vh - 140px)' }}>
       <Group justify="space-between">
         <Group>
-          <ActionIcon variant="subtle" onClick={() => navigate('/learn')}>
+          <ActionIcon variant="subtle" onClick={() => navigate('/')}>
             <IconArrowLeft size={20} />
           </ActionIcon>
           <div>

@@ -234,7 +234,7 @@ const GrammarTopicsPage: React.FC = () => {
             </Group>
 
             {selectedTopic.rule_description ? (
-              <Paper p="md" withBorder style={{ maxHeight: '60vh', overflow: 'auto' }}>
+              <Paper p="md" withBorder style={{ maxHeight: '80vh', overflow: 'auto' }}>
                 <Markdown remarkPlugins={[remarkGfm]}>{selectedTopic.rule_description}</Markdown>
               </Paper>
             ) : (

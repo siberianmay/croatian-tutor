@@ -97,7 +97,7 @@ const TranslationPage: React.FC = () => {
     <Stack gap="lg">
       <Group justify="space-between">
         <Group>
-          <ActionIcon variant="subtle" onClick={() => navigate('/learn')}>
+          <ActionIcon variant="subtle" onClick={() => navigate('/')}>
             <IconArrowLeft size={20} />
           </ActionIcon>
           <div>

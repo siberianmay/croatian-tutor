@@ -385,7 +385,7 @@ const ProgressPage: React.FC = () => {
             variant="light"
             fullWidth
             mt="md"
-            onClick={() => navigate('/learn/grammar')}
+            onClick={() => navigate('/grammar-exercises')}
           >
             Practice Grammar
           </Button>
@@ -441,7 +441,7 @@ const ProgressPage: React.FC = () => {
             variant="light"
             fullWidth
             mt="md"
-            onClick={() => navigate('/learn')}
+            onClick={() => navigate('/')}
           >
             Start Exercises
           </Button>
@@ -546,7 +546,7 @@ const ProgressPage: React.FC = () => {
             variant="light"
             color="violet"
             leftSection={<IconBooks size={18} />}
-            onClick={() => navigate('/learn/grammar')}
+            onClick={() => navigate('/grammar-exercises')}
           >
             Grammar Drills
           </Button>
@@ -554,7 +554,7 @@ const ProgressPage: React.FC = () => {
             variant="light"
             color="orange"
             leftSection={<IconBook size={18} />}
-            onClick={() => navigate('/learn/conversation')}
+            onClick={() => navigate('/conversation')}
           >
             Chat with Tutor
           </Button>
