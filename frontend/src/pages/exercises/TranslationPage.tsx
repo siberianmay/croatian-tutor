@@ -33,6 +33,7 @@ const TranslationPage: React.FC = () => {
     feedback: string;
     correctAnswer?: string | null;
   } | null>(null);
+  const [exerciseStartTime, setExerciseStartTime] = useState<number | null>(null);
 
   // End chat session when leaving the page
   useEffect(() => {
@@ -54,17 +55,22 @@ const TranslationPage: React.FC = () => {
       setExercise(data);
       setUserAnswer('');
       setResult(null);
+      setExerciseStartTime(Date.now());
     },
   });
 
   const evaluateMutation = useMutation({
-    mutationFn: (answer: string) =>
-      exerciseApi.evaluate({
+    mutationFn: (answer: string) => {
+      const durationMs = exerciseStartTime ? Date.now() - exerciseStartTime : 0;
+      const durationMinutes = Math.max(1, Math.round(durationMs / 60000));
+      return exerciseApi.evaluate({
         exercise_type: direction === 'cr_en' ? 'translation_cr_en' : 'translation_en_cr',
         user_answer: answer,
         expected_answer: exercise?.expected_answer || '',
         context: `Translate: ${exercise?.source_text}`,
-      }),
+        duration_minutes: durationMinutes,
+      });
+    },
     onSuccess: (data) => {
       setResult({
         correct: data.correct,

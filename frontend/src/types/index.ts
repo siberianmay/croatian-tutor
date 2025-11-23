@@ -202,6 +202,7 @@ export interface ReadingBatchEvaluateRequest {
     expected_answer: string;
     user_answer: string;
   }>;
+  duration_minutes?: number;
 }
 
 export interface ReadingEvaluationResult {
@@ -236,6 +237,7 @@ export interface AnswerCheckRequest {
   expected_answer: string;
   context?: string;
   topic_id?: number;
+  duration_minutes?: number;
 }
 
 export interface AnswerCheckResponse {

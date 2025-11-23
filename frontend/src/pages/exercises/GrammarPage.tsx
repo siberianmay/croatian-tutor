@@ -31,6 +31,7 @@ const GrammarPage: React.FC = () => {
     feedback: string;
     explanation?: string | null;
   } | null>(null);
+  const [exerciseStartTime, setExerciseStartTime] = useState<number | null>(null);
 
   // End chat session when leaving the page
   useEffect(() => {
@@ -45,18 +46,23 @@ const GrammarPage: React.FC = () => {
       setExercise(data);
       setUserAnswer('');
       setResult(null);
+      setExerciseStartTime(Date.now());
     },
   });
 
   const evaluateMutation = useMutation({
-    mutationFn: (answer: string) =>
-      exerciseApi.evaluate({
+    mutationFn: (answer: string) => {
+      const durationMs = exerciseStartTime ? Date.now() - exerciseStartTime : 0;
+      const durationMinutes = Math.max(1, Math.round(durationMs / 60000));
+      return exerciseApi.evaluate({
         exercise_type: 'grammar',
         user_answer: answer,
         expected_answer: (exercise as any)?.expectedAnswer || '',
         context: exercise?.question || '',
         topic_id: exercise?.topic_id,  // Track progress for this grammar topic
-      }),
+        duration_minutes: durationMinutes,
+      });
+    },
     onSuccess: (data) => {
       setResult({
         correct: data.correct,

@@ -28,6 +28,7 @@ const SentenceConstructionPage: React.FC = () => {
     feedback: string;
     correctAnswer?: string | null;
   } | null>(null);
+  const [exerciseStartTime, setExerciseStartTime] = useState<number | null>(null);
 
   // End chat session when leaving the page
   useEffect(() => {
@@ -47,17 +48,22 @@ const SentenceConstructionPage: React.FC = () => {
       setExercise(data);
       setSelectedWords([]);
       setResult(null);
+      setExerciseStartTime(Date.now());
     },
   });
 
   const evaluateMutation = useMutation({
-    mutationFn: (answer: string) =>
-      exerciseApi.evaluate({
+    mutationFn: (answer: string) => {
+      const durationMs = exerciseStartTime ? Date.now() - exerciseStartTime : 0;
+      const durationMinutes = Math.max(1, Math.round(durationMs / 60000));
+      return exerciseApi.evaluate({
         exercise_type: 'sentence_construction',
         user_answer: answer,
         expected_answer: (exercise as any)?.expectedAnswer || '',
         context: exercise?.hint || '',
-      }),
+        duration_minutes: durationMinutes,
+      });
+    },
     onSuccess: (data) => {
       setResult({
         correct: data.correct,

@@ -107,6 +107,7 @@ class ReadingBatchEvaluateRequest(BaseModel):
 
     passage: str
     answers: list[ReadingAnswerItem]
+    duration_minutes: int = Field(default=0, ge=0, description="Time spent on reading exercise in minutes")
 
 
 class ReadingEvaluationResult(BaseModel):
@@ -131,6 +132,7 @@ class AnswerCheckRequest(BaseModel):
     expected_answer: str
     context: str = ""
     topic_id: int | None = None
+    duration_minutes: int = Field(default=0, ge=0, description="Time spent on this exercise in minutes")
 
 
 # -----------------------------------------------------------------------------
@@ -345,6 +347,7 @@ async def evaluate_reading_answers(
     await service.log_exercise_activity(
         user_id=DEFAULT_USER_ID,
         exercise_type=ExerciseType.READING,
+        duration_minutes=request.duration_minutes,
         exercises_completed=1,
     )
 
@@ -455,6 +458,7 @@ async def evaluate_answer(
     await service.log_exercise_activity(
         user_id=DEFAULT_USER_ID,
         exercise_type=request.exercise_type,
+        duration_minutes=request.duration_minutes,
         exercises_completed=1,
     )
 

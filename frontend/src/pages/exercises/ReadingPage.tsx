@@ -32,6 +32,7 @@ const ReadingPage: React.FC = () => {
   const [exercise, setExercise] = useState<ReadingExerciseResponse | null>(null);
   const [questionStates, setQuestionStates] = useState<QuestionState[]>([]);
   const [submitted, setSubmitted] = useState(false);
+  const [exerciseStartTime, setExerciseStartTime] = useState<number | null>(null);
 
   // End chat session when leaving the page
   useEffect(() => {
@@ -46,12 +47,15 @@ const ReadingPage: React.FC = () => {
       setExercise(data);
       setQuestionStates(data.questions.map(() => ({ answer: '' })));
       setSubmitted(false);
+      setExerciseStartTime(Date.now());
     },
   });
 
   const evaluateMutation = useMutation({
     mutationFn: async () => {
       if (!exercise) throw new Error('No exercise');
+      const durationMs = exerciseStartTime ? Date.now() - exerciseStartTime : 0;
+      const durationMinutes = Math.max(1, Math.round(durationMs / 60000));
       return exerciseApi.evaluateReadingBatch({
         passage: exercise.passage,
         answers: exercise.questions.map((q, idx) => ({
@@ -59,6 +63,7 @@ const ReadingPage: React.FC = () => {
           expected_answer: q.expected_answer,
           user_answer: questionStates[idx]?.answer || '',
         })),
+        duration_minutes: durationMinutes,
       });
     },
     onSuccess: (data) => {

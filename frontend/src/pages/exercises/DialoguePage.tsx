@@ -18,6 +18,8 @@ import {
 import { IconSend, IconArrowLeft, IconRefresh, IconInfoCircle } from '@tabler/icons-react';
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { exerciseApi } from '~services/exerciseApi';
 import type { CEFRLevel, DialogueExerciseResponse, ConversationTurn } from '~types';
 
@@ -193,7 +195,11 @@ const DialoguePage: React.FC = () => {
                     <Text size="sm" fw={500} c={msg.role === 'user' ? 'blue.7' : 'pink.7'}>
                       {msg.role === 'user' ? scenario.user_role : scenario.ai_role}
                     </Text>
-                    <Text>{msg.content}</Text>
+                    {msg.role === 'user' ? (
+                      <Text>{msg.content}</Text>
+                    ) : (
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>
+                    )}
 
                     {msg.corrections && msg.corrections.length > 0 && (
                       <Card withBorder p="sm" bg="yellow.0" radius="sm">
