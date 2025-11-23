@@ -165,6 +165,7 @@ export interface TranslationResponse {
   source_text: string;
   source_language: string;
   target_language: string;
+  expected_answer: string;
 }
 
 // Sentence Construction types

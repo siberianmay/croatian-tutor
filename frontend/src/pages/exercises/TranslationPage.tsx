@@ -26,7 +26,7 @@ const TranslationPage: React.FC = () => {
   const navigate = useNavigate();
   const [cefrLevel, setCefrLevel] = useState<CEFRLevel>('A1');
   const [direction, setDirection] = useState<Direction>('cr_en');
-  const [exercise, setExercise] = useState<TranslationResponse & { expectedAnswer?: string } | null>(null);
+  const [exercise, setExercise] = useState<TranslationResponse | null>(null);
   const [userAnswer, setUserAnswer] = useState('');
   const [result, setResult] = useState<{
     correct: boolean;
@@ -48,7 +48,7 @@ const TranslationPage: React.FC = () => {
       exerciseApi.evaluate({
         exercise_type: direction === 'cr_en' ? 'translation_cr_en' : 'translation_en_cr',
         user_answer: answer,
-        expected_answer: (exercise as any)?.expectedAnswer || '',
+        expected_answer: exercise?.expected_answer || '',
         context: `Translate: ${exercise?.source_text}`,
       }),
     onSuccess: (data) => {

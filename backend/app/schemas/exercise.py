@@ -64,6 +64,7 @@ class TranslationResponse(BaseModel):
     source_text: str
     source_language: str
     target_language: str
+    expected_answer: str
 
 
 class ExerciseEvaluationRequest(BaseModel):

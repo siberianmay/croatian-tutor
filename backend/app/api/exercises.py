@@ -215,6 +215,7 @@ async def generate_translation_exercise(
         source_text=result["source_text"],
         source_language=result["source_language"],
         target_language=result["target_language"],
+        expected_answer=result["expected_answer"],
     )
 
 
