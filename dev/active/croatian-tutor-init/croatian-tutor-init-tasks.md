@@ -224,22 +224,22 @@
 ---
 
 ## Phase 8: Deferred Enhancements
-**Status**: NOT STARTED
+**Status**: IN PROGRESS
 **Goal**: Complete previously deferred features
 
 ### 8.1 Session Tracking
-- [ ] Create session records on exercise start (S)
-- [ ] Update session `ended_at` on completion (S)
-- [ ] Track session duration and outcome (S)
-- [ ] Add session history endpoint `GET /api/v1/sessions` (S)
+- [x] Create session records on exercise start (S)
+- [x] Update session `ended_at` on completion (S)
+- [x] Track session duration and outcome (S)
+- [x] Add session history endpoint `GET /api/v1/sessions` (S)
 
 ### 8.2 Gemini Context Integration
-- [ ] Integrate vocabulary stats into Gemini prompts (M)
-- [ ] Integrate topic mastery into Gemini prompts (M)
-- [ ] Integrate exercise variety summary into prompts (S)
-- [ ] Integrate error patterns into prompts (S)
-- [ ] Create combined context builder for all exercise prompts (M)
-- [ ] Test context improves AI response quality (M)
+- [x] Integrate vocabulary stats into Gemini prompts (M)
+- [x] Integrate topic mastery into Gemini prompts (M)
+- [x] Integrate exercise variety summary into prompts (S)
+- [x] Integrate error patterns into prompts (S)
+- [x] Create combined context builder for all exercise prompts (M)
+- [x] Test context improves AI response quality (M)
 
 ### 8.3 Fill-in-Blank Caching
 - [ ] Design cache schema for generated sentences (S)

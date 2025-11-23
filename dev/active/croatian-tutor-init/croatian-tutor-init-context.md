@@ -1,11 +1,31 @@
 # Croatian Language Tutor - Project Context
 
 **Last Updated: 2025-11-22**
-**Current Phase**: 8 - Deferred Enhancements (NOT STARTED)
+**Current Phase**: 8 - Deferred Enhancements (IN PROGRESS)
 
 ---
 
 ## SESSION PROGRESS
+
+### 🔄 Phase 8: Deferred Enhancements (IN PROGRESS)
+
+**8.1 Session Tracking (COMPLETED)**:
+- `backend/app/schemas/session.py` - Pydantic schemas (SessionCreate, SessionEnd, SessionResponse)
+- `backend/app/crud/session.py` - CRUD operations (create, get, get_active, get_multi, end_session, get_or_create_active)
+- `backend/app/api/sessions.py` - API endpoints (POST /, GET /, GET /active, GET /{id}, POST /{id}/end)
+- `backend/app/api/router.py` - Added sessions router
+- `backend/app/services/exercise_service.py` - Added session integration methods
+
+**8.2 Gemini Context Integration (COMPLETED)**:
+- `backend/app/services/progress_service.py` - Added `build_gemini_context()` method
+- `backend/app/services/exercise_service.py` - Integrated context into all exercise prompts:
+  - conversation_turn
+  - generate_grammar_exercise
+  - generate_translation_exercise
+  - generate_sentence_construction
+  - generate_reading_exercise
+  - generate_dialogue_exercise
+  - evaluate_answer
 
 ### ✅ Phase 7: Polish (COMPLETED)
 
@@ -190,22 +210,29 @@ All major design decisions finalized.
 - `GET /errors` - Error patterns and weak areas
 - `GET /context` - Text summary for AI context
 
+### Sessions API (`/api/v1/sessions`)
+- `POST /` - Start a new learning session
+- `GET /` - List sessions with pagination/filters
+- `GET /active` - Get currently active session
+- `GET /{id}` - Get specific session
+- `POST /{id}/end` - End a session with outcome
+
 ---
 
 ## NEXT STEPS
 
-### Phase 8: Deferred Enhancements (NOT STARTED)
+### Phase 8: Deferred Enhancements (IN PROGRESS)
 Previously deferred tasks now collected into Phase 8:
 
-**8.1 Session Tracking**
-- Create session records on exercise start/end
-- Track duration and outcome
-- Add session history endpoint
+**8.1 Session Tracking** ✅ COMPLETED
+- Session CRUD with start/end tracking
+- Duration and outcome tracking
+- Session history API endpoint
 
-**8.2 Gemini Context Integration**
-- Integrate user progress context into all Gemini prompts
-- Vocabulary stats, topic mastery, error patterns
-- Combined context builder for personalized AI responses
+**8.2 Gemini Context Integration** ✅ COMPLETED
+- Comprehensive context builder in progress_service
+- Integrated into all exercise generation prompts
+- Includes vocabulary, topics, activity, and error patterns
 
 **8.3 Fill-in-Blank Caching**
 - Cache generated sentences per word
