@@ -34,7 +34,7 @@ const App: React.FC = () => {
             <Route path="/dialogue" element={<DialoguePage />} />
             <Route path="/vocabulary" element={<VocabularyPage />} />
             <Route path="/grammar" element={<GrammarTopicsPage />} />
-            <Route path="/practice" element={<PracticePage />} />
+            <Route path="/flashcards" element={<PracticePage />} />
             <Route path="/progress" element={<ProgressPage />} />
           </Routes>
         </Suspense>

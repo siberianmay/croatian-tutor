@@ -10,9 +10,9 @@ interface AppLayoutProps {
 
 const navItems = [
   { label: 'Learn', path: '/', icon: IconBook },
+  { label: 'Flashcards', path: '/flashcards', icon: IconPencil },
   { label: 'Vocabulary', path: '/vocabulary', icon: IconVocabulary },
   { label: 'Grammar', path: '/grammar', icon: IconSchool },
-  { label: 'Practice', path: '/practice', icon: IconPencil },
   { label: 'Progress', path: '/progress', icon: IconChartBar },
 ];
 

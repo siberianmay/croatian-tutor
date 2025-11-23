@@ -130,7 +130,7 @@ const PracticePage: React.FC = () => {
     return (
       <Stack gap="lg">
         <div>
-          <Title order={1}>Practice</Title>
+          <Title order={1}>Flashcards</Title>
           <Text c="dimmed" mt="sm">
             Test your vocabulary with flashcard drills
           </Text>
@@ -192,7 +192,7 @@ const PracticePage: React.FC = () => {
     <Stack gap="lg">
       <Group justify="space-between">
         <div>
-          <Title order={1}>Practice</Title>
+          <Title order={1}>Flashcards</Title>
           <Text c="dimmed">
             {mode === 'vocabulary_cr_en' ? 'Croatian → English' : 'English → Croatian'}
           </Text>
