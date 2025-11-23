@@ -143,12 +143,14 @@ GEMINI_API_KEY=your_key_here  # Required
 - [x] Database models (User, Word, GrammarTopic, TopicProgress, ExerciseLog, ErrorLog, Session)
 - [x] Enums (PartOfSpeech, Gender, CEFRLevel, ExerciseType, ErrorCategory)
 - [x] Pydantic schemas (User, Word, GrammarTopic, Progress, Exercise)
-- [x] Initial Alembic migration
-- [ ] CRUD operations (in progress)
-- [ ] API routes
-- [ ] Gemini service integration
-- [ ] Frontend scaffold
-- [ ] UI implementation
+- [x] Alembic migrations
+- [x] CRUD operations (Word, GrammarTopic, TopicProgress, Session)
+- [x] API routes (Words, Drills, Topics, Exercises, Progress, Sessions, Analytics)
+- [x] Gemini service integration (chat sessions, exercise generation)
+- [x] Frontend (React + Mantine UI)
+- [x] All exercise types (Translation, Grammar, Reading, Dialogue, Sentence Construction)
+- [x] Progress tracking dashboard
+- [x] Analytics (leeches, forecast, velocity, difficulty)
 
 ## Data Model
 

@@ -1,11 +1,48 @@
 # Croatian Language Tutor - Project Context
 
 **Last Updated: 2025-11-23**
-**Current Phase**: 8 - Deferred Enhancements (COMPLETED)
+**Current Phase**: Post-MVP - AI Exercise Improvements
 
 ---
 
 ## SESSION PROGRESS
+
+### ✅ AI Exercise Improvements (2025-11-23)
+
+**1. Gemini Chat Session Management (COMPLETED)**
+- Problem: Gemini kept giving the same sentences repeatedly (e.g., "Ja jedem jabuku")
+- Solution: Implemented persistent chat sessions per exercise type
+- Files modified:
+  - `backend/app/services/gemini_service.py` - Added `_chat_sessions` dict, `generate_in_chat()`, `end_chat_session()`
+  - `backend/app/services/exercise_service.py` - All exercise generators now use chat sessions
+  - `backend/app/api/exercises.py` - Added `POST /session/end` endpoint
+  - `frontend/src/services/exerciseApi.ts` - Added `endSession()` API call
+  - All exercise pages (Translation, Grammar, Reading, Dialogue, SentenceConstruction) - Added `useEffect` cleanup to end session on unmount
+
+**2. Grammar Topic Mastery Scale (COMPLETED)**
+- Changed from 0-10 to 0-1000 for granular tracking
+- Migration: `a1b2c3d4e5f6_scale_topic_mastery_to_1000.py`
+- New thresholds: WEAK (<400), LEARNING (400-800), STRONG (800+)
+- Scoring logic:
+  - Correct: +15 to +30 points (more at lower mastery)
+  - Incorrect: -10 to -20 points (more at higher mastery)
+
+**3. Grammar Exercise Topic Selection (COMPLETED)**
+- Problem: Topic was pre-selected before Gemini generated exercise; didn't track progress properly
+- Solution: Gemini now selects which topic to test based on mastery levels
+- Flow:
+  1. Get all learnt topics with IDs: `[ID:1] 'Noun Cases' - WEAK (12%)`
+  2. Gemini selects topic and returns `topic_id` in response
+  3. Backend validates `topic_id`, stores for progress tracking
+  4. Frontend sends `topic_id` when evaluating answer
+  5. `update_progress()` updates that specific topic's mastery
+
+**4. Grammar Context Enhancement (COMPLETED)**
+- Topics now include IDs for Gemini to reference
+- Format: `[ID:3] 'Personal Pronouns' - LEARNING (45%)`
+- Gemini prioritizes WEAK topics automatically
+
+---
 
 ### ✅ Phase 8: Deferred Enhancements (COMPLETED)
 
@@ -122,6 +159,27 @@ All major design decisions finalized.
 
 ## FILES MODIFIED THIS SESSION
 
+### Backend - AI Exercise Improvements (Latest)
+| File | Change |
+|------|--------|
+| `backend/app/services/gemini_service.py` | Added chat session management (`_chat_sessions`, `generate_in_chat()`, `end_chat_session()`) |
+| `backend/app/services/exercise_service.py` | Refactored all generators to use chat sessions; new `_get_grammar_topics_for_exercise()` |
+| `backend/app/api/exercises.py` | Added `POST /session/end` endpoint; returns `topic_id` in grammar response |
+| `backend/app/crud/grammar_topic.py` | `get_learnt_topics_with_mastery()` now returns `topic_id`; `update_progress()` uses 0-1000 scale |
+| `backend/app/schemas/exercise.py` | Added `topic_id` to `GrammarExerciseResponse`; `recent_sentences` to `TranslationRequest` |
+| `backend/alembic/versions/a1b2c3d4e5f6_*.py` | **NEW** Migration: scale mastery_score from 0-10 to 0-1000 |
+
+### Frontend - AI Exercise Improvements (Latest)
+| File | Change |
+|------|--------|
+| `frontend/src/services/exerciseApi.ts` | Added `endSession()` API call |
+| `frontend/src/types/index.ts` | Added `topic_id` to `GrammarExerciseResponse`; `recent_sentences` to `TranslationRequest` |
+| `frontend/src/pages/exercises/GrammarPage.tsx` | Added session cleanup on unmount; sends `topic_id` when evaluating |
+| `frontend/src/pages/exercises/TranslationPage.tsx` | Added session cleanup on unmount |
+| `frontend/src/pages/exercises/ReadingPage.tsx` | Added session cleanup on unmount |
+| `frontend/src/pages/exercises/DialoguePage.tsx` | Added session cleanup on unmount |
+| `frontend/src/pages/exercises/SentenceConstructionPage.tsx` | Added session cleanup on unmount |
+
 ### Backend - New/Modified Files (Phase 7)
 | File | Change |
 |------|--------|
@@ -153,13 +211,18 @@ All major design decisions finalized.
 | Gemini model | gemini-2.0-flash | gemini-1.5-flash returned 404 |
 | Single user | Hardcoded user_id=1 | Per design, future-extensible |
 | SM-2 intervals | 1 day → 6 days → EF multiplier | Standard Anki-compatible |
-| Mastery score | Experience-weighted (reviews/10 factor) | Prevents instant max mastery |
+| Word mastery score | Experience-weighted (reviews/10 factor) | Prevents instant max mastery |
 | Fill-in-blank | Generated on-demand | No caching needed yet |
-| Mastery threshold | score >= 7 = mastered | Clear boundary for stats |
+| Word mastery threshold | score >= 7 = mastered | Clear boundary for stats |
 | Streak calculation | Consecutive days with activity | Standard gamification pattern |
 | Level progression | 10 mastered words at level = advance | Simple, motivating |
 | SRS streak | Track consecutive correct, reset on wrong | Proper SM-2 interval reset |
 | Default drill mode | English → Croatian | More useful for active recall |
+| **Topic mastery scale** | **0-1000** | Fine-grained tracking; displayed as 0-100% |
+| **Topic mastery thresholds** | **WEAK <400, LEARNING 400-800, STRONG 800+** | Three simple levels for Gemini context |
+| **Topic scoring** | **+15-30 correct, -10-20 wrong** | Diminishing returns at high mastery |
+| **Chat sessions** | **In-memory per exercise type** | Prevents repeated sentences; cleared on page leave |
+| **Grammar topic selection** | **Gemini selects based on mastery** | More accurate progress tracking |
 
 ---
 
@@ -194,13 +257,14 @@ All major design decisions finalized.
 
 ### Exercises API (`/api/v1/exercises`)
 - `POST /conversation` - Chat with AI tutor
-- `POST /grammar` - Generate grammar exercise
+- `POST /grammar` - Generate grammar exercise (returns `topic_id` for progress tracking)
 - `POST /translate` - Generate translation exercise
 - `POST /sentence-construction` - Generate sentence arrangement
 - `POST /reading` - Generate reading comprehension
 - `POST /dialogue` - Start dialogue scenario
 - `POST /dialogue/turn` - Continue dialogue
-- `POST /evaluate` - Evaluate any exercise answer
+- `POST /evaluate` - Evaluate any exercise answer (accepts `topic_id` for grammar tracking)
+- `POST /session/end` - **NEW** End chat session (clears Gemini history for variety)
 
 ### Progress API (`/api/v1/progress`)
 - `GET /summary` - Overall stats (words, streak, level)
@@ -262,3 +326,6 @@ curl http://localhost:8000/api/v1/progress/summary
 - 622 words in DB (bulk imported)
 - Frontend hot-reloads, backend uses uvicorn --reload in Docker
 - Progress dashboard accessible at /progress
+- **MIGRATION NEEDED**: Run `docker compose exec backend alembic upgrade head` to apply mastery scale change (0-10 → 0-1000)
+- **Chat sessions**: In-memory only, lost on backend restart (acceptable for single-user app)
+- **Grammar flow**: Gemini selects topic → returns topic_id → frontend sends it back on evaluate → mastery updated

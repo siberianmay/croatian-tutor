@@ -78,21 +78,42 @@ croatian-tutor/
 │   │   ├── services/     # Business logic + Gemini
 │   │   └── crud/         # Database operations
 │   └── alembic/          # Database migrations
-└── frontend/             # React application (planned)
+└── frontend/             # React application
     └── src/
-        ├── components/
-        ├── pages/
-        ├── api/
-        └── hooks/
+        ├── components/   # Reusable UI components
+        ├── pages/        # Route pages
+        ├── services/     # API clients
+        ├── types/        # TypeScript definitions
+        └── utils/        # Utilities (notifications, etc.)
 ```
 
 ## Features
 
-- Vocabulary tracking with proficiency scores
-- AI-generated exercises tailored to your level
-- Answer evaluation with detailed feedback
-- Progress tracking and learning recommendations
-- Topic-based learning organization
+### Vocabulary System
+- Full CRUD for vocabulary with SM-2 spaced repetition algorithm
+- Bulk import with AI-powered word assessment (translation, POS, gender, CEFR level)
+- Flashcard drills (Croatian↔English) with mastery tracking
+- Fill-in-blank exercises with AI-generated sentences
+
+### AI Exercise Suite
+- **Conversation**: Chat with AI tutor, receive corrections and explanations
+- **Grammar**: Topic-based exercises with Gemini selecting topics based on mastery
+- **Translation**: Bidirectional (CR↔EN) translation practice
+- **Sentence Construction**: Drag-and-drop word arrangement
+- **Reading Comprehension**: Passages with comprehension questions
+- **Dialogue**: Role-play scenarios with AI partner
+
+### AI Session Management
+- Persistent Gemini chat sessions per exercise type for variety (no repeated sentences)
+- Sessions reset on page navigation
+- Grammar topic mastery scale (0-1000) with WEAK/LEARNING/STRONG thresholds
+
+### Progress Tracking
+- Dashboard with stats (level, streak, words due, exercises completed)
+- Vocabulary mastery breakdown by CEFR level
+- Grammar topic progress with mastery percentages
+- Activity heatmap and error pattern analysis
+- Analytics: leeches detection, forecast, velocity metrics
 
 ## Data Model
 
@@ -106,14 +127,6 @@ The application uses CEFR levels (A1-C2) to track and adapt to learner progress:
 - **ErrorLog** - Error pattern tracking for targeted practice
 - **Session** - Learning session management
 
-### Exercise Types
-- Vocabulary drills (Croatian↔English, fill-in-blank)
-- Grammar exercises
-- Translation practice
-- Conversation with AI tutor
-- Reading comprehension
-- Sentence construction
-
 ## Current Status
 
 | Component | Status |
@@ -124,7 +137,11 @@ The application uses CEFR levels (A1-C2) to track and adapt to learner progress:
 | SQLAlchemy models | ✅ Complete |
 | Pydantic schemas | ✅ Complete |
 | Alembic migrations | ✅ Complete |
-| CRUD operations | 🔄 In progress |
-| API routes | ⬜ Pending |
-| Gemini integration | ⬜ Pending |
-| Frontend | ⬜ Pending |
+| CRUD operations | ✅ Complete |
+| API routes | ✅ Complete |
+| Gemini integration | ✅ Complete |
+| Frontend | ✅ Complete |
+| Progress Dashboard | ✅ Complete |
+| Analytics | ✅ Complete |
+| AI Exercise Suite | ✅ Complete |
+| Chat Session Management | ✅ Complete |
