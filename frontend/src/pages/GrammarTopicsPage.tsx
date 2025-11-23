@@ -17,6 +17,8 @@ import { TableSkeleton } from '~components/skeletons';
 import { useDisclosure } from '@mantine/hooks';
 import { IconCheck, IconEye, IconBook } from '@tabler/icons-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import Markdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { topicApi } from '~services/topicApi';
 import type { GrammarTopic, CEFRLevel } from '~types';
 
@@ -233,7 +235,7 @@ const GrammarTopicsPage: React.FC = () => {
 
             {selectedTopic.rule_description ? (
               <Paper p="md" withBorder style={{ maxHeight: '60vh', overflow: 'auto' }}>
-                <Text style={{ whiteSpace: 'pre-wrap' }}>{selectedTopic.rule_description}</Text>
+                <Markdown remarkPlugins={[remarkGfm]}>{selectedTopic.rule_description}</Markdown>
               </Paper>
             ) : (
               <Alert color="yellow" title="No description available">
