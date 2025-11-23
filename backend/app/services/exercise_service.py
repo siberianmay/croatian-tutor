@@ -60,13 +60,37 @@ class ExerciseService:
             return ""
 
     async def _get_learnt_grammar_context(self, user_id: int) -> str:
-        """Get a string describing the grammar topics the user has learned."""
-        learnt_topics = await self._progress_crud.get_learnt_topics(user_id)
-        if not learnt_topics:
+        """Get a string describing the grammar topics the user has learned with mastery levels."""
+        topics_with_mastery = await self._progress_crud.get_learnt_topics_with_mastery(user_id)
+        if not topics_with_mastery:
             return ""
 
-        topic_names = [t.name for t in learnt_topics]
-        return f"\n\nIMPORTANT: The user has learned these grammar concepts. Use ONLY these grammar patterns in your response: {', '.join(topic_names)}. Do not introduce grammar the user hasn't learned yet."
+        # Build context with mastery info - sorted weakest first by the query
+        topic_lines = []
+        weak_topics = []
+        for t in topics_with_mastery:
+            mastery = t["mastery_score"]
+            name = t["name"]
+            # Categorize mastery: 0-3 weak, 4-6 learning, 7-10 strong
+            if mastery <= 3:
+                topic_lines.append(f"- {name} (WEAK - needs practice, mastery: {mastery}/10)")
+                weak_topics.append(name)
+            elif mastery <= 6:
+                topic_lines.append(f"- {name} (learning, mastery: {mastery}/10)")
+            else:
+                topic_lines.append(f"- {name} (strong, mastery: {mastery}/10)")
+
+        context = f"""
+GRAMMAR KNOWLEDGE (use ONLY these patterns):
+{chr(10).join(topic_lines)}"""
+
+        if weak_topics:
+            context += f"""
+
+FOCUS AREAS: The user is weak in these topics and needs more practice: {', '.join(weak_topics)}.
+Prioritize exercises that reinforce these weak areas."""
+
+        return context
 
     # -------------------------------------------------------------------------
     # Conversation
