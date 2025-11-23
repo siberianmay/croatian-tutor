@@ -247,8 +247,13 @@ Reason: Want Gemini to evaluate fresh each time
 ### 8.4 Data Export/Import - SKIPPED
 Reason: Not needed at this time
 
-### 8.5 Optional Future Enhancements
-- [ ] Advanced analytics and SRS tuning (M)
+### 8.5 Advanced Analytics and SRS Tuning
+- [x] Create AnalyticsService with leech detection (M)
+- [x] Add review forecast functionality (S)
+- [x] Add learning velocity metrics (M)
+- [x] Add difficulty breakdown by POS/CEFR level (M)
+- [x] Create analytics API endpoints (S)
+- [x] Register analytics router (S)
 
 ---
 

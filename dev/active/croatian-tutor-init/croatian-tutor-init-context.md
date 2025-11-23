@@ -7,7 +7,7 @@
 
 ## SESSION PROGRESS
 
-### 🔄 Phase 8: Deferred Enhancements (IN PROGRESS)
+### ✅ Phase 8: Deferred Enhancements (COMPLETED)
 
 **8.1 Session Tracking (COMPLETED)**:
 - `backend/app/schemas/session.py` - Pydantic schemas (SessionCreate, SessionEnd, SessionResponse)
@@ -217,31 +217,25 @@ All major design decisions finalized.
 - `GET /{id}` - Get specific session
 - `POST /{id}/end` - End a session with outcome
 
+### Analytics API (`/api/v1/analytics`)
+- `GET /` - Get all analytics (combined)
+- `GET /leeches` - Get words with high failure rates
+- `GET /forecast` - Get upcoming review forecast by day
+- `GET /velocity` - Get learning velocity metrics
+- `GET /difficulty` - Get performance breakdown by POS/CEFR level
+
 ---
 
-## NEXT STEPS
+## PROJECT STATUS
 
-### Phase 8: Deferred Enhancements (IN PROGRESS)
-Previously deferred tasks now collected into Phase 8:
+**All phases completed.** The croatian-tutor-init task is DONE.
 
-**8.1 Session Tracking** ✅ COMPLETED
-- Session CRUD with start/end tracking
-- Duration and outcome tracking
-- Session history API endpoint
-
-**8.2 Gemini Context Integration** ✅ COMPLETED
-- Comprehensive context builder in progress_service
-- Integrated into all exercise generation prompts
-- Includes vocabulary, topics, activity, and error patterns
-
-**8.3 Fill-in-Blank Caching** - SKIPPED
-- Reason: Want Gemini to evaluate fresh each time
-
-**8.4 Data Export/Import** - SKIPPED
-- Reason: Not needed at this time
-
-**8.5 Optional Future Enhancements**
-- Advanced analytics and spaced repetition tuning
+### Summary of Phase 8
+- **8.1 Session Tracking** ✅ - Session CRUD, duration/outcome tracking
+- **8.2 Gemini Context Integration** ✅ - Context builder for AI prompts
+- **8.3 Fill-in-Blank Caching** - SKIPPED (want fresh Gemini evaluation)
+- **8.4 Data Export/Import** - SKIPPED (not needed)
+- **8.5 Advanced Analytics** ✅ - Leech detection, forecast, velocity, difficulty breakdown
 
 ---
 
