@@ -5,7 +5,6 @@ import { LoadingOverlay } from '@mantine/core';
 import { AppLayout } from '~components/layout/AppLayout';
 import ErrorBoundary from '~components/ErrorBoundary';
 
-const HomePage = lazy(() => import('./pages/HomePage'));
 const LearnPage = lazy(() => import('./pages/LearnPage'));
 const VocabularyPage = lazy(() => import('./pages/VocabularyPage'));
 const GrammarTopicsPage = lazy(() => import('./pages/GrammarTopicsPage'));
@@ -26,14 +25,13 @@ const App: React.FC = () => {
       <AppLayout>
         <Suspense fallback={<LoadingOverlay visible />}>
           <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/learn" element={<LearnPage />} />
-            <Route path="/learn/conversation" element={<ConversationPage />} />
-            <Route path="/learn/grammar" element={<GrammarPage />} />
-            <Route path="/learn/translation" element={<TranslationPage />} />
-            <Route path="/learn/sentence" element={<SentenceConstructionPage />} />
-            <Route path="/learn/reading" element={<ReadingPage />} />
-            <Route path="/learn/dialogue" element={<DialoguePage />} />
+            <Route path="/" element={<LearnPage />} />
+            <Route path="/conversation" element={<ConversationPage />} />
+            <Route path="/grammar-exercises" element={<GrammarPage />} />
+            <Route path="/translation" element={<TranslationPage />} />
+            <Route path="/sentence" element={<SentenceConstructionPage />} />
+            <Route path="/reading" element={<ReadingPage />} />
+            <Route path="/dialogue" element={<DialoguePage />} />
             <Route path="/vocabulary" element={<VocabularyPage />} />
             <Route path="/grammar" element={<GrammarTopicsPage />} />
             <Route path="/practice" element={<PracticePage />} />

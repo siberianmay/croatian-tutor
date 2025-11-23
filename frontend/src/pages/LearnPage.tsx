@@ -83,7 +83,7 @@ const LearnPage: React.FC = () => {
           description="Chat freely with the AI tutor in Croatian. Get corrections and suggestions as you go."
           icon={<IconMessageCircle size={28} />}
           color="blue"
-          path="/learn/conversation"
+          path="/conversation"
           badge="AI Tutor"
         />
 
@@ -92,7 +92,7 @@ const LearnPage: React.FC = () => {
           description="Practice grammar topics like cases, conjugation, and sentence structure."
           icon={<IconBooks size={28} />}
           color="green"
-          path="/learn/grammar"
+          path="/grammar-exercises"
         />
 
         <ExerciseCard
@@ -100,7 +100,7 @@ const LearnPage: React.FC = () => {
           description="Translate sentences between Croatian and English."
           icon={<IconLanguage size={28} />}
           color="orange"
-          path="/learn/translation"
+          path="/translation"
         />
 
         <ExerciseCard
@@ -108,7 +108,7 @@ const LearnPage: React.FC = () => {
           description="Arrange shuffled words to form correct Croatian sentences."
           icon={<IconBlockquote size={28} />}
           color="violet"
-          path="/learn/sentence"
+          path="/sentence"
         />
 
         <ExerciseCard
@@ -116,7 +116,7 @@ const LearnPage: React.FC = () => {
           description="Read Croatian passages and answer comprehension questions."
           icon={<IconBook2 size={28} />}
           color="teal"
-          path="/learn/reading"
+          path="/reading"
         />
 
         <ExerciseCard
@@ -124,7 +124,7 @@ const LearnPage: React.FC = () => {
           description="Role-play real-world scenarios like ordering food or asking directions."
           icon={<IconUsers size={28} />}
           color="pink"
-          path="/learn/dialogue"
+          path="/dialogue"
         />
       </SimpleGrid>
     </Stack>
