@@ -1,7 +1,7 @@
 # Croatian Language Tutor - Project Context
 
-**Last Updated: 2025-11-22**
-**Current Phase**: 8 - Deferred Enhancements (IN PROGRESS)
+**Last Updated: 2025-11-23**
+**Current Phase**: 8 - Deferred Enhancements (COMPLETED)
 
 ---
 
@@ -234,15 +234,11 @@ Previously deferred tasks now collected into Phase 8:
 - Integrated into all exercise generation prompts
 - Includes vocabulary, topics, activity, and error patterns
 
-**8.3 Fill-in-Blank Caching**
-- Cache generated sentences per word
-- Invalidate on word updates
-- Reduce Gemini API calls
+**8.3 Fill-in-Blank Caching** - SKIPPED
+- Reason: Want Gemini to evaluate fresh each time
 
-**8.4 Data Export/Import**
-- Export vocabulary to JSON/CSV
-- Import vocabulary from JSON/CSV
-- UI buttons for export/import
+**8.4 Data Export/Import** - SKIPPED
+- Reason: Not needed at this time
 
 **8.5 Optional Future Enhancements**
 - Advanced analytics and spaced repetition tuning

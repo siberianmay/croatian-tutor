@@ -1,7 +1,7 @@
 # Croatian Language Tutor - Implementation Tasks
 
-**Last Updated: 2025-11-22**
-**Current Phase**: 8 - Deferred Enhancements
+**Last Updated: 2025-11-23**
+**Current Phase**: COMPLETED
 
 ---
 
@@ -224,7 +224,7 @@
 ---
 
 ## Phase 8: Deferred Enhancements
-**Status**: IN PROGRESS
+**Status**: COMPLETED
 **Goal**: Complete previously deferred features
 
 ### 8.1 Session Tracking
@@ -241,20 +241,11 @@
 - [x] Create combined context builder for all exercise prompts (M)
 - [x] Test context improves AI response quality (M)
 
-### 8.3 Fill-in-Blank Caching
-- [ ] Design cache schema for generated sentences (S)
-- [ ] Add `fill_in_blank_cache` table or column (S)
-- [ ] Cache sentences after generation (S)
-- [ ] Return cached sentences when available (S)
-- [ ] Add cache invalidation on word update (S)
+### 8.3 Fill-in-Blank Caching - SKIPPED
+Reason: Want Gemini to evaluate fresh each time
 
-### 8.4 Data Export/Import
-- [ ] `GET /api/v1/words/export` - Export vocabulary to JSON (S)
-- [ ] `GET /api/v1/words/export?format=csv` - Export to CSV (S)
-- [ ] `POST /api/v1/words/import` - Import from JSON (M)
-- [ ] `POST /api/v1/words/import?format=csv` - Import from CSV (M)
-- [ ] Add Export button to Vocabulary UI (S)
-- [ ] Add Import from file option in UI (M)
+### 8.4 Data Export/Import - SKIPPED
+Reason: Not needed at this time
 
 ### 8.5 Optional Future Enhancements
 - [ ] Advanced analytics and SRS tuning (M)
