@@ -91,6 +91,20 @@ const SentenceConstructionPage: React.FC = () => {
     setResult(null);
   };
 
+  // Handle Enter key for "Next Sentence" button when result is shown
+  useEffect(() => {
+    if (!result) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Enter' && !generateMutation.isPending) {
+        generateMutation.mutate();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [result, generateMutation.isPending]);
+
   return (
     <Stack gap="lg">
       <Group justify="space-between">

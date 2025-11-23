@@ -102,6 +102,20 @@ const ReadingPage: React.FC = () => {
   const scoreSummary = getScoreSummary();
   const allAnswered = questionStates.length > 0 && questionStates.every((q) => q.answer.trim());
 
+  // Handle Enter key for "Next Reading" button when submitted
+  useEffect(() => {
+    if (!submitted) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Enter' && !generateMutation.isPending) {
+        generateMutation.mutate();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [submitted, generateMutation.isPending]);
+
   return (
     <Stack gap="lg">
       <Group justify="space-between">
