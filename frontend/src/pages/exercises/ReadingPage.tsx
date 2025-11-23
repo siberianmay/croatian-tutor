@@ -13,16 +13,17 @@ import {
   Select,
   ActionIcon,
   Divider,
+  Progress,
 } from '@mantine/core';
-import { IconArrowLeft, IconCheck, IconX, IconRefresh } from '@tabler/icons-react';
+import { IconArrowLeft, IconCheck, IconX, IconRefresh, IconSend } from '@tabler/icons-react';
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { exerciseApi } from '~services/exerciseApi';
-import type { CEFRLevel, ReadingExerciseResponse } from '~types';
+import type { CEFRLevel, ReadingExerciseResponse, ReadingEvaluationResult } from '~types';
 
 interface QuestionState {
   answer: string;
-  result?: { correct: boolean; feedback: string } | null;
+  result?: ReadingEvaluationResult | null;
 }
 
 const ReadingPage: React.FC = () => {
@@ -30,7 +31,7 @@ const ReadingPage: React.FC = () => {
   const [cefrLevel, setCefrLevel] = useState<CEFRLevel>('A1');
   const [exercise, setExercise] = useState<ReadingExerciseResponse | null>(null);
   const [questionStates, setQuestionStates] = useState<QuestionState[]>([]);
-  const [allAnswered, setAllAnswered] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   // End chat session when leaving the page
   useEffect(() => {
@@ -44,28 +45,30 @@ const ReadingPage: React.FC = () => {
     onSuccess: (data) => {
       setExercise(data);
       setQuestionStates(data.questions.map(() => ({ answer: '' })));
-      setAllAnswered(false);
+      setSubmitted(false);
     },
   });
 
   const evaluateMutation = useMutation({
-    mutationFn: async ({ index, answer, expected }: { index: number; answer: string; expected: string }) => {
-      const result = await exerciseApi.evaluate({
-        exercise_type: 'reading',
-        user_answer: answer,
-        expected_answer: expected,
-        context: exercise?.passage || '',
+    mutationFn: async () => {
+      if (!exercise) throw new Error('No exercise');
+      return exerciseApi.evaluateReadingBatch({
+        passage: exercise.passage,
+        answers: exercise.questions.map((q, idx) => ({
+          question: q.question,
+          expected_answer: q.expected_answer,
+          user_answer: questionStates[idx]?.answer || '',
+        })),
       });
-      return { index, result };
     },
-    onSuccess: ({ index, result }) => {
+    onSuccess: (data) => {
       setQuestionStates((prev) =>
-        prev.map((q, i) =>
-          i === index ? { ...q, result: { correct: result.correct, feedback: result.feedback } } : q
-        )
+        prev.map((q, i) => ({
+          ...q,
+          result: data.results[i] || null,
+        }))
       );
-      // Check if all questions answered
-      setAllAnswered(true);
+      setSubmitted(true);
     },
   });
 
@@ -75,17 +78,24 @@ const ReadingPage: React.FC = () => {
     );
   };
 
-  const handleCheckAnswer = (index: number) => {
+  const handleSubmitAll = () => {
     if (!exercise) return;
-    const state = questionStates[index];
-    if (!state?.answer.trim()) return;
-
-    evaluateMutation.mutate({
-      index,
-      answer: state.answer,
-      expected: exercise.questions[index].expected_answer,
-    });
+    const hasAllAnswers = questionStates.every((q) => q.answer.trim());
+    if (!hasAllAnswers) return;
+    evaluateMutation.mutate();
   };
+
+  // Calculate score summary
+  const getScoreSummary = () => {
+    if (!submitted) return null;
+    const correct = questionStates.filter((q) => q.result?.correct).length;
+    const total = questionStates.length;
+    const percentage = Math.round((correct / total) * 100);
+    return { correct, total, percentage };
+  };
+
+  const scoreSummary = getScoreSummary();
+  const allAnswered = questionStates.length > 0 && questionStates.every((q) => q.answer.trim());
 
   return (
     <Stack gap="lg">
@@ -138,10 +148,31 @@ const ReadingPage: React.FC = () => {
             </Paper>
           </Card>
 
+          {/* Score Summary (shown after submission) */}
+          {submitted && scoreSummary && (
+            <Card shadow="sm" padding="lg" radius="md" withBorder>
+              <Group justify="space-between" mb="md">
+                <Title order={4}>Results</Title>
+                <Badge
+                  size="lg"
+                  color={scoreSummary.percentage >= 70 ? 'green' : scoreSummary.percentage >= 50 ? 'yellow' : 'red'}
+                >
+                  {scoreSummary.correct}/{scoreSummary.total} correct ({scoreSummary.percentage}%)
+                </Badge>
+              </Group>
+              <Progress
+                value={scoreSummary.percentage}
+                color={scoreSummary.percentage >= 70 ? 'green' : scoreSummary.percentage >= 50 ? 'yellow' : 'red'}
+                size="lg"
+                radius="md"
+              />
+            </Card>
+          )}
+
           {/* Questions */}
           <Card shadow="sm" padding="xl" radius="md" withBorder>
             <Badge color="blue" mb="md">
-              Comprehension Questions
+              Comprehension Questions ({exercise.questions.length})
             </Badge>
             <Stack gap="lg">
               {exercise.questions.map((q, idx) => (
@@ -151,24 +182,14 @@ const ReadingPage: React.FC = () => {
                       {idx + 1}. {q.question}
                     </Text>
 
-                    {!questionStates[idx]?.result ? (
-                      <Group>
-                        <TextInput
-                          placeholder="Your answer..."
-                          value={questionStates[idx]?.answer || ''}
-                          onChange={(e) => handleAnswerChange(idx, e.target.value)}
-                          flex={1}
-                          onKeyPress={(e) => e.key === 'Enter' && handleCheckAnswer(idx)}
-                        />
-                        <Button
-                          onClick={() => handleCheckAnswer(idx)}
-                          loading={evaluateMutation.isPending}
-                          disabled={!questionStates[idx]?.answer?.trim()}
-                        >
-                          Check
-                        </Button>
-                      </Group>
-                    ) : (
+                    <TextInput
+                      placeholder="Your answer..."
+                      value={questionStates[idx]?.answer || ''}
+                      onChange={(e) => handleAnswerChange(idx, e.target.value)}
+                      disabled={submitted}
+                    />
+
+                    {questionStates[idx]?.result && (
                       <Alert
                         icon={
                           questionStates[idx].result?.correct ? (
@@ -186,18 +207,27 @@ const ReadingPage: React.FC = () => {
                 </Paper>
               ))}
 
-              {allAnswered && (
-                <>
-                  <Divider />
-                  <Button
-                    onClick={() => generateMutation.mutate()}
-                    loading={generateMutation.isPending}
-                    size="lg"
-                    leftSection={<IconRefresh size={20} />}
-                  >
-                    Next Reading
-                  </Button>
-                </>
+              <Divider />
+
+              {!submitted ? (
+                <Button
+                  onClick={handleSubmitAll}
+                  loading={evaluateMutation.isPending}
+                  size="lg"
+                  leftSection={<IconSend size={20} />}
+                  disabled={!allAnswered}
+                >
+                  Submit All Answers
+                </Button>
+              ) : (
+                <Button
+                  onClick={() => generateMutation.mutate()}
+                  loading={generateMutation.isPending}
+                  size="lg"
+                  leftSection={<IconRefresh size={20} />}
+                >
+                  Next Reading
+                </Button>
               )}
             </Stack>
           </Card>

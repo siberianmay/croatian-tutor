@@ -11,6 +11,8 @@ import type {
   SentenceConstructionResponse,
   ReadingExerciseRequest,
   ReadingExerciseResponse,
+  ReadingBatchEvaluateRequest,
+  ReadingBatchEvaluateResponse,
   DialogueExerciseRequest,
   DialogueExerciseResponse,
   AnswerCheckRequest,
@@ -73,6 +75,16 @@ export const exerciseApi = {
   ): Promise<ReadingExerciseResponse> {
     const response = await api.post<ReadingExerciseResponse>(
       '/exercises/reading',
+      request
+    );
+    return response.data;
+  },
+
+  async evaluateReadingBatch(
+    request: ReadingBatchEvaluateRequest
+  ): Promise<ReadingBatchEvaluateResponse> {
+    const response = await api.post<ReadingBatchEvaluateResponse>(
+      '/exercises/reading/evaluate-batch',
       request
     );
     return response.data;

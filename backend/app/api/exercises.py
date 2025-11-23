@@ -94,6 +94,35 @@ class ReadingExerciseRequest(BaseModel):
     cefr_level: CEFRLevel = CEFRLevel.A1
 
 
+class ReadingAnswerItem(BaseModel):
+    """Single question-answer pair for batch evaluation."""
+
+    question: str
+    expected_answer: str
+    user_answer: str
+
+
+class ReadingBatchEvaluateRequest(BaseModel):
+    """Request for batch evaluation of reading answers."""
+
+    passage: str
+    answers: list[ReadingAnswerItem]
+
+
+class ReadingEvaluationResult(BaseModel):
+    """Evaluation result for a single reading answer."""
+
+    correct: bool
+    score: float
+    feedback: str
+
+
+class ReadingBatchEvaluateResponse(BaseModel):
+    """Response with all reading answer evaluations."""
+
+    results: list[ReadingEvaluationResult]
+
+
 class AnswerCheckRequest(BaseModel):
     """Request to check any exercise answer."""
 
@@ -284,6 +313,50 @@ async def generate_reading_exercise(
         exercise_id=result["exercise_id"],
         passage=result["passage"],
         questions=result["questions"],
+    )
+
+
+@router.post("/reading/evaluate-batch", response_model=ReadingBatchEvaluateResponse)
+async def evaluate_reading_answers(
+    request: ReadingBatchEvaluateRequest,
+    service: Annotated[ExerciseService, Depends(get_exercise_service)],
+) -> ReadingBatchEvaluateResponse:
+    """
+    Evaluate all reading comprehension answers at once.
+
+    Sends all question-answer pairs to AI for batch evaluation.
+    """
+    questions_and_answers = [
+        {
+            "question": item.question,
+            "expected_answer": item.expected_answer,
+            "user_answer": item.user_answer,
+        }
+        for item in request.answers
+    ]
+
+    results = await service.evaluate_reading_answers(
+        user_id=DEFAULT_USER_ID,
+        passage=request.passage,
+        questions_and_answers=questions_and_answers,
+    )
+
+    # Log activity (count all questions as one exercise session)
+    await service.log_exercise_activity(
+        user_id=DEFAULT_USER_ID,
+        exercise_type=ExerciseType.READING,
+        exercises_completed=1,
+    )
+
+    return ReadingBatchEvaluateResponse(
+        results=[
+            ReadingEvaluationResult(
+                correct=r["correct"],
+                score=r["score"],
+                feedback=r["feedback"],
+            )
+            for r in results
+        ]
     )
 
 

@@ -195,6 +195,25 @@ export interface ReadingExerciseResponse {
   }>;
 }
 
+export interface ReadingBatchEvaluateRequest {
+  passage: string;
+  answers: Array<{
+    question: string;
+    expected_answer: string;
+    user_answer: string;
+  }>;
+}
+
+export interface ReadingEvaluationResult {
+  correct: boolean;
+  score: number;
+  feedback: string;
+}
+
+export interface ReadingBatchEvaluateResponse {
+  results: ReadingEvaluationResult[];
+}
+
 // Dialogue types
 export interface DialogueExerciseRequest {
   cefr_level?: CEFRLevel;

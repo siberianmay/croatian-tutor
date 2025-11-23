@@ -525,11 +525,12 @@ CRITICAL RULES:
 
 CEFR Level: {cefr_level.value}
 
-Create a short passage in Croatian (3-5 sentences) followed by 2-3 comprehension questions.
+Create a passage in Croatian (200-500 characters) followed by 5-10 comprehension questions.
+Questions should test understanding of the passage content - facts, details, and inferences.
 
 Respond with ONLY valid JSON:
 {{
-    "passage": "Croatian text passage",
+    "passage": "Croatian text passage (200-500 characters)",
     "questions": [
         {{"question": "Comprehension question in English or Croatian", "expected_answer": "Expected answer"}}
     ]
@@ -744,6 +745,101 @@ Respond with ONLY valid JSON:
                 "error_category": None,
                 "explanation": None,
             }
+
+    async def evaluate_reading_answers(
+        self,
+        user_id: int,
+        passage: str,
+        questions_and_answers: list[dict[str, str]],
+    ) -> list[dict[str, Any]]:
+        """
+        Evaluate all reading comprehension answers at once.
+
+        Args:
+            user_id: User ID
+            passage: The reading passage
+            questions_and_answers: List of dicts with 'question', 'expected_answer', 'user_answer'
+
+        Returns:
+            List of evaluation results for each question
+        """
+        user_context = await self._get_user_context(user_id)
+
+        # Build Q&A list for the prompt
+        qa_text = "\n".join(
+            f"{i+1}. Question: {qa['question']}\n"
+            f"   Expected: {qa['expected_answer']}\n"
+            f"   User answered: {qa['user_answer']}"
+            for i, qa in enumerate(questions_and_answers)
+        )
+
+        prompt = f"""Evaluate these reading comprehension answers.
+
+{user_context}
+
+PASSAGE:
+{passage}
+
+QUESTIONS AND ANSWERS:
+{qa_text}
+
+Consider:
+- Whether the answer demonstrates understanding of the passage
+- Spelling (including Croatian diacritics: č, ć, š, ž, đ)
+- Grammar accuracy
+- Alternative valid phrasings
+- Partial credit for mostly correct answers
+
+Respond with ONLY valid JSON - an array with one evaluation object per question:
+[
+    {{
+        "correct": true/false,
+        "score": 0.0 to 1.0,
+        "feedback": "Brief, encouraging feedback for this answer"
+    }}
+]
+
+Return exactly {len(questions_and_answers)} evaluation objects in the same order as the questions."""
+
+        try:
+            response_text = await self._gemini._generate(prompt)
+            data = self._gemini._parse_json(response_text)
+
+            # Ensure we have a list
+            if not isinstance(data, list):
+                data = [data]
+
+            # Pad or trim to match expected count
+            results = []
+            for i, qa in enumerate(questions_and_answers):
+                if i < len(data):
+                    item = data[i]
+                    results.append({
+                        "correct": bool(item.get("correct", False)),
+                        "score": float(item.get("score", 1.0 if item.get("correct") else 0.0)),
+                        "feedback": item.get("feedback", ""),
+                    })
+                else:
+                    # Fallback for missing evaluations
+                    is_correct = qa["expected_answer"].lower().strip() == qa["user_answer"].lower().strip()
+                    results.append({
+                        "correct": is_correct,
+                        "score": 1.0 if is_correct else 0.0,
+                        "feedback": "Correct!" if is_correct else f"Expected: {qa['expected_answer']}",
+                    })
+
+            return results
+        except Exception as e:
+            logger.error(f"Batch reading evaluation failed: {e}")
+            # Fall back to exact match for all
+            return [
+                {
+                    "correct": qa["expected_answer"].lower().strip() == qa["user_answer"].lower().strip(),
+                    "score": 1.0 if qa["expected_answer"].lower().strip() == qa["user_answer"].lower().strip() else 0.0,
+                    "feedback": "Correct!" if qa["expected_answer"].lower().strip() == qa["user_answer"].lower().strip() else f"Expected: {qa['expected_answer']}",
+                }
+                for qa in questions_and_answers
+            ]
 
     # -------------------------------------------------------------------------
     # Topic Rule Generation
