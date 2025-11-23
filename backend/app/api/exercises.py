@@ -202,6 +202,7 @@ async def generate_translation_exercise(
         user_id=DEFAULT_USER_ID,
         direction=request.direction,
         cefr_level=cefr,
+        recent_sentences=request.recent_sentences,
     )
 
     if not result.get("exercise_id"):
@@ -390,4 +391,57 @@ async def evaluate_answer(
         correct_answer=result.get("correct_answer"),
         error_category=result.get("error_category"),
         explanation=result.get("explanation"),
+    )
+
+
+# -----------------------------------------------------------------------------
+# Chat Session Management
+# -----------------------------------------------------------------------------
+
+
+class EndSessionRequest(BaseModel):
+    """Request to end an exercise chat session."""
+
+    exercise_type: str = Field(
+        ...,
+        description="Exercise type: translation, grammar, sentence_construction, reading, dialogue",
+    )
+    variant: str = Field(
+        default="",
+        description="Optional variant (e.g., 'cr_en' or 'en_cr' for translation)",
+    )
+
+
+class EndSessionResponse(BaseModel):
+    """Response from ending a chat session."""
+
+    ended: bool
+    message: str
+
+
+@router.post("/session/end", response_model=EndSessionResponse)
+async def end_exercise_session(
+    request: EndSessionRequest,
+    service: Annotated[ExerciseService, Depends(get_exercise_service)],
+) -> EndSessionResponse:
+    """
+    End an exercise chat session.
+
+    Call this when the user navigates away from an exercise page to clear
+    the Gemini chat history. This allows fresh exercises on the next visit.
+    """
+    ended = service.end_exercise_chat_session(
+        user_id=DEFAULT_USER_ID,
+        exercise_type=request.exercise_type,
+        variant=request.variant,
+    )
+
+    if ended:
+        return EndSessionResponse(
+            ended=True,
+            message=f"Session ended for {request.exercise_type}",
+        )
+    return EndSessionResponse(
+        ended=False,
+        message=f"No active session found for {request.exercise_type}",
     )

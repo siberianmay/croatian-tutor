@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Title,
   Text,
@@ -31,6 +31,13 @@ const ReadingPage: React.FC = () => {
   const [exercise, setExercise] = useState<ReadingExerciseResponse | null>(null);
   const [questionStates, setQuestionStates] = useState<QuestionState[]>([]);
   const [allAnswered, setAllAnswered] = useState(false);
+
+  // End chat session when leaving the page
+  useEffect(() => {
+    return () => {
+      exerciseApi.endSession('reading').catch(() => {});
+    };
+  }, []);
 
   const generateMutation = useMutation({
     mutationFn: () => exerciseApi.generateReading({ cefr_level: cefrLevel }),

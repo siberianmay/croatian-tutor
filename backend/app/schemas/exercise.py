@@ -55,6 +55,11 @@ class TranslationRequest(BaseModel):
 
     direction: str = Field(..., pattern="^(cr_en|en_cr)$")  # Croatian to English or vice versa
     cefr_level: CEFRLevel | None = None
+    recent_sentences: list[str] = Field(
+        default_factory=list,
+        max_length=20,
+        description="Recent sentences to avoid repetition",
+    )
 
 
 class TranslationResponse(BaseModel):

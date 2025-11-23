@@ -34,8 +34,22 @@ const TranslationPage: React.FC = () => {
     correctAnswer?: string | null;
   } | null>(null);
 
+  // End chat session when leaving the page
+  useEffect(() => {
+    return () => {
+      // End session for the current direction on unmount
+      exerciseApi.endSession('translation', direction).catch(() => {
+        // Silently ignore errors on cleanup
+      });
+    };
+  }, [direction]);
+
   const generateMutation = useMutation({
-    mutationFn: () => exerciseApi.generateTranslation({ direction, cefr_level: cefrLevel }),
+    mutationFn: () =>
+      exerciseApi.generateTranslation({
+        direction,
+        cefr_level: cefrLevel,
+      }),
     onSuccess: (data) => {
       setExercise(data);
       setUserAnswer('');

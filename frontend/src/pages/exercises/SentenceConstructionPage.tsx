@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   Title,
   Text,
@@ -28,6 +28,13 @@ const SentenceConstructionPage: React.FC = () => {
     feedback: string;
     correctAnswer?: string | null;
   } | null>(null);
+
+  // End chat session when leaving the page
+  useEffect(() => {
+    return () => {
+      exerciseApi.endSession('sentence_construction').catch(() => {});
+    };
+  }, []);
 
   const availableWords = useMemo(() => {
     if (!exercise) return [];

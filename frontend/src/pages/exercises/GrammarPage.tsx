@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Title,
   Text,
@@ -31,6 +31,13 @@ const GrammarPage: React.FC = () => {
     feedback: string;
     explanation?: string | null;
   } | null>(null);
+
+  // End chat session when leaving the page
+  useEffect(() => {
+    return () => {
+      exerciseApi.endSession('grammar').catch(() => {});
+    };
+  }, []);
 
   const generateMutation = useMutation({
     mutationFn: () => exerciseApi.generateGrammar({}, cefrLevel),

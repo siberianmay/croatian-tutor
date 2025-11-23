@@ -37,6 +37,13 @@ const DialoguePage: React.FC = () => {
   const [input, setInput] = useState('');
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  // End chat session when leaving the page
+  useEffect(() => {
+    return () => {
+      exerciseApi.endSession('dialogue').catch(() => {});
+    };
+  }, []);
+
   const generateMutation = useMutation({
     mutationFn: () => exerciseApi.generateDialogue({ cefr_level: cefrLevel }),
     onSuccess: (data) => {

@@ -36,6 +36,21 @@ class ExerciseService:
         self._session_crud = SessionCRUD(db)
         self._progress_service = ProgressService(db)
 
+    def _build_session_key(self, user_id: int, exercise_type: str, variant: str = "") -> str:
+        """Build a unique session key for chat context."""
+        if variant:
+            return f"user_{user_id}_{exercise_type}_{variant}"
+        return f"user_{user_id}_{exercise_type}"
+
+    def end_exercise_chat_session(self, user_id: int, exercise_type: str, variant: str = "") -> bool:
+        """
+        End a chat session for a specific exercise type.
+
+        Call this when user navigates away from an exercise page.
+        """
+        session_key = self._build_session_key(user_id, exercise_type, variant)
+        return self._gemini.end_chat_session(session_key)
+
     async def _get_user_context(self, user_id: int) -> str:
         """Get comprehensive user context for Gemini prompts."""
         try:
@@ -94,7 +109,7 @@ Conversation so far:
 User: {message}
 
 Respond in a helpful, encouraging way. If the user writes in Croatian:
-1. Gently correct any grammar or spelling mistakes
+1. Correct any grammar or spelling mistakes
 2. Provide the natural way to express their thought
 3. Introduce new vocabulary when appropriate
 
@@ -192,20 +207,32 @@ Respond with ONLY valid JSON:
             }
 
         # Get user context for personalized exercise
+        grammar_context = await self._get_learnt_grammar_context(user_id)
         user_context = await self._get_user_context(user_id)
 
-        # Generate exercise via Gemini
-        level = cefr_level.value if cefr_level else topic.cefr_level.value
-        prompt = f"""Create a grammar exercise for Croatian learners.
+        # Build session key for chat context
+        session_key = self._build_session_key(user_id, "grammar")
 
+        # System instruction for grammar exercise generation
+        system_instruction = f"""You are a Croatian grammar exercise generator.
 {user_context}
+{grammar_context}
+
+CRITICAL RULES:
+1. Generate UNIQUE exercises each time - never repeat the same question or sentence pattern
+2. Vary the vocabulary, sentence structures, and scenarios
+3. Always respond with ONLY valid JSON (no markdown, no explanation)
+4. Track what you've generated in this conversation and avoid repetition"""
+
+        # Generate exercise via Gemini chat session
+        level = cefr_level.value if cefr_level else topic.cefr_level.value
+        prompt = f"""Generate a NEW grammar exercise (different from any previous ones).
 
 Topic: {topic.name}
 CEFR Level: {level}
 {"Rule Description: " + topic.rule_description if topic.rule_description else ""}
 
 Create an exercise that tests understanding of this grammar topic.
-Consider the student's current level and weak areas when designing the exercise.
 
 Respond with ONLY valid JSON:
 {{
@@ -216,7 +243,11 @@ Respond with ONLY valid JSON:
 }}"""
 
         try:
-            response_text = await self._gemini._generate(prompt)
+            response_text = await self._gemini.generate_in_chat(
+                session_key=session_key,
+                prompt=prompt,
+                system_instruction=system_instruction,
+            )
             data = self._gemini._parse_json(response_text)
 
             exercise_id = str(uuid.uuid4())
@@ -251,6 +282,7 @@ Respond with ONLY valid JSON:
         user_id: int,
         direction: str,  # "cr_en" or "en_cr"
         cefr_level: CEFRLevel = CEFRLevel.A1,
+        recent_sentences: list[str] | None = None,  # Kept for API compatibility, but chat handles history
     ) -> dict[str, Any]:
         """
         Generate a translation exercise.
@@ -274,15 +306,26 @@ Respond with ONLY valid JSON:
         grammar_context = await self._get_learnt_grammar_context(user_id)
         user_context = await self._get_user_context(user_id)
 
-        prompt = f"""Create a translation exercise for Croatian learners.
+        # Build session key - separate sessions for each direction
+        session_key = self._build_session_key(user_id, "translation", direction)
 
+        # System instruction for translation exercise generation
+        system_instruction = f"""You are a Croatian translation exercise generator.
 {user_context}
 {grammar_context}
 
+CRITICAL RULES:
+1. Generate UNIQUE sentences each time - NEVER repeat a sentence you've already given
+2. Vary vocabulary, topics, and sentence complexity
+3. Always respond with ONLY valid JSON (no markdown, no explanation)
+4. Remember all sentences from this conversation to avoid repetition"""
+
+        prompt = f"""Generate a NEW translation exercise (completely different from any previous ones).
+
 Direction: {source_lang} → {target_lang}
+CEFR Level: {cefr_level.value}
 
 Create a sentence appropriate for this level that will help practice common vocabulary and grammar.
-Consider the student's weak areas and vocabulary level when creating the sentence.
 
 Respond with ONLY valid JSON:
 {{
@@ -291,7 +334,11 @@ Respond with ONLY valid JSON:
 }}"""
 
         try:
-            response_text = await self._gemini._generate(prompt)
+            response_text = await self._gemini.generate_in_chat(
+                session_key=session_key,
+                prompt=prompt,
+                system_instruction=system_instruction,
+            )
             data = self._gemini._parse_json(response_text)
 
             return {
@@ -340,15 +387,26 @@ Respond with ONLY valid JSON:
         grammar_context = await self._get_learnt_grammar_context(user_id)
         user_context = await self._get_user_context(user_id)
 
-        prompt = f"""Create a sentence construction exercise for Croatian learners.
+        # Build session key for chat context
+        session_key = self._build_session_key(user_id, "sentence_construction")
 
+        # System instruction
+        system_instruction = f"""You are a Croatian sentence construction exercise generator.
 {user_context}
 {grammar_context}
 
+CRITICAL RULES:
+1. Generate UNIQUE sentences each time - never repeat
+2. Vary vocabulary, sentence structures, and topics
+3. Always respond with ONLY valid JSON (no markdown)
+4. Remember all sentences from this conversation to avoid repetition"""
+
+        prompt = f"""Generate a NEW sentence construction exercise (different from any previous ones).
+
+CEFR Level: {cefr_level.value}
 {vocab_context}
 
 Create a Croatian sentence, then provide its words in shuffled order for the learner to arrange.
-Design the sentence to reinforce grammar patterns the student has learned.
 
 Respond with ONLY valid JSON:
 {{
@@ -358,7 +416,11 @@ Respond with ONLY valid JSON:
 }}"""
 
         try:
-            response_text = await self._gemini._generate(prompt)
+            response_text = await self._gemini.generate_in_chat(
+                session_key=session_key,
+                prompt=prompt,
+                system_instruction=system_instruction,
+            )
             data = self._gemini._parse_json(response_text)
 
             return {
@@ -398,13 +460,25 @@ Respond with ONLY valid JSON:
         grammar_context = await self._get_learnt_grammar_context(user_id)
         user_context = await self._get_user_context(user_id)
 
-        prompt = f"""Create a reading comprehension exercise for Croatian learners.
+        # Build session key for chat context
+        session_key = self._build_session_key(user_id, "reading")
 
+        # System instruction
+        system_instruction = f"""You are a Croatian reading comprehension exercise generator.
 {user_context}
 {grammar_context}
 
-Create a short passage in Croatian (3-5 sentences) appropriate for the student's level, followed by 2-3 comprehension questions.
-Use vocabulary and grammar patterns the student has been learning.
+CRITICAL RULES:
+1. Generate UNIQUE passages each time - never repeat topics or scenarios
+2. Vary subjects: daily life, travel, food, work, hobbies, culture, etc.
+3. Always respond with ONLY valid JSON (no markdown)
+4. Remember all passages from this conversation to avoid repetition"""
+
+        prompt = f"""Generate a NEW reading comprehension exercise (different topic from any previous ones).
+
+CEFR Level: {cefr_level.value}
+
+Create a short passage in Croatian (3-5 sentences) followed by 2-3 comprehension questions.
 
 Respond with ONLY valid JSON:
 {{
@@ -415,7 +489,11 @@ Respond with ONLY valid JSON:
 }}"""
 
         try:
-            response_text = await self._gemini._generate(prompt)
+            response_text = await self._gemini.generate_in_chat(
+                session_key=session_key,
+                prompt=prompt,
+                system_instruction=system_instruction,
+            )
             data = self._gemini._parse_json(response_text)
 
             return {
@@ -454,19 +532,30 @@ Respond with ONLY valid JSON:
                 "suggested_phrases": [str]
             }
         """
-        scenario_prompt = f"Scenario: {scenario}" if scenario else "Choose a common everyday scenario"
+        scenario_prompt = f"Scenario: {scenario}" if scenario else "Choose a common everyday scenario (different from previous ones)"
         grammar_context = await self._get_learnt_grammar_context(user_id)
         user_context = await self._get_user_context(user_id)
 
-        prompt = f"""Create a situational dialogue exercise for Croatian learners.
+        # Build session key for chat context
+        session_key = self._build_session_key(user_id, "dialogue")
 
+        # System instruction
+        system_instruction = f"""You are a Croatian dialogue/role-play exercise generator.
 {user_context}
 {grammar_context}
 
+CRITICAL RULES:
+1. Generate UNIQUE scenarios each time - never repeat
+2. Vary settings: restaurant, shop, hotel, doctor, airport, market, etc.
+3. Always respond with ONLY valid JSON (no markdown)
+4. Remember all scenarios from this conversation to avoid repetition"""
+
+        prompt = f"""Generate a NEW situational dialogue exercise (different scenario from any previous ones).
+
+CEFR Level: {cefr_level.value}
 {scenario_prompt}
 
 Create a role-play scenario where the learner practices real-world Croatian conversation.
-Tailor the complexity and vocabulary to the student's current level and focus on areas they need practice.
 
 Respond with ONLY valid JSON:
 {{
@@ -478,7 +567,11 @@ Respond with ONLY valid JSON:
 }}"""
 
         try:
-            response_text = await self._gemini._generate(prompt)
+            response_text = await self._gemini.generate_in_chat(
+                session_key=session_key,
+                prompt=prompt,
+                system_instruction=system_instruction,
+            )
             data = self._gemini._parse_json(response_text)
 
             return {

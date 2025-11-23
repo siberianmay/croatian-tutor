@@ -118,6 +118,18 @@ export const exerciseApi = {
     );
     return response.data;
   },
+
+  // Session Management
+  async endSession(
+    exerciseType: string,
+    variant: string = ''
+  ): Promise<{ ended: boolean; message: string }> {
+    const response = await api.post<{ ended: boolean; message: string }>(
+      '/exercises/session/end',
+      { exercise_type: exerciseType, variant }
+    );
+    return response.data;
+  },
 };
 
 export const topicsApi = {

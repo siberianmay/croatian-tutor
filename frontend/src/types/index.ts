@@ -158,6 +158,7 @@ export interface GrammarExerciseResponse {
 export interface TranslationRequest {
   direction: 'cr_en' | 'en_cr';
   cefr_level?: CEFRLevel;
+  recent_sentences?: string[];
 }
 
 export interface TranslationResponse {

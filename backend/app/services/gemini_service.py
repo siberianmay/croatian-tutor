@@ -30,6 +30,8 @@ class GeminiService:
         genai.configure(api_key=settings.gemini_api_key)
         # Use gemini-2.0-flash for latest model
         self._model = genai.GenerativeModel("gemini-2.0-flash")
+        # Chat sessions keyed by session_key (e.g., "user_1_translation_cr_en")
+        self._chat_sessions: dict[str, Any] = {}
 
     async def assess_word(self, croatian_word: str) -> dict[str, Any]:
         """
@@ -302,6 +304,110 @@ Respond with ONLY valid JSON:
     async def _generate_bulk(self, prompt: str) -> str:
         """Generate content from Gemini with higher token limit for bulk operations."""
         return await self._generate(prompt, max_tokens=4096)
+
+    # -------------------------------------------------------------------------
+    # Chat Session Management
+    # -------------------------------------------------------------------------
+
+    def _get_or_create_chat(self, session_key: str, system_instruction: str = "") -> Any:
+        """
+        Get existing chat session or create a new one.
+
+        Args:
+            session_key: Unique key for this session (e.g., "user_1_grammar")
+            system_instruction: Optional system prompt to set context for the chat
+
+        Returns:
+            ChatSession object with history preserved
+        """
+        if session_key not in self._chat_sessions:
+            # Create new chat with optional system instruction as first message
+            history = []
+            if system_instruction:
+                # Add system instruction as context
+                history = [
+                    {"role": "user", "parts": [system_instruction]},
+                    {"role": "model", "parts": ["Understood. I'll follow these instructions."]},
+                ]
+            self._chat_sessions[session_key] = self._model.start_chat(history=history)
+            logger.info(f"Created new chat session: {session_key}")
+
+        return self._chat_sessions[session_key]
+
+    async def generate_in_chat(
+        self,
+        session_key: str,
+        prompt: str,
+        system_instruction: str = "",
+        max_tokens: int = 1024,
+    ) -> str:
+        """
+        Generate content within a persistent chat session.
+
+        This maintains conversation history so Gemini won't repeat itself.
+
+        Args:
+            session_key: Unique key for this session
+            prompt: The prompt to send
+            system_instruction: System instruction for new sessions
+            max_tokens: Maximum output tokens
+
+        Returns:
+            Generated text response
+        """
+        config = GenerationConfig(
+            temperature=0.7,  # Higher temperature for more variety
+            max_output_tokens=max_tokens,
+        )
+
+        chat = self._get_or_create_chat(session_key, system_instruction)
+
+        last_error: Exception | None = None
+        for attempt in range(MAX_RETRIES):
+            try:
+                response = await chat.send_message_async(
+                    prompt,
+                    generation_config=config,
+                )
+                return response.text
+            except google_exceptions.ResourceExhausted as e:
+                logger.warning(f"Gemini rate limit hit in chat (attempt {attempt + 1})")
+                raise GeminiRateLimitError() from e
+            except google_exceptions.GoogleAPIError as e:
+                last_error = e
+                logger.warning(f"Gemini chat API error (attempt {attempt + 1}/{MAX_RETRIES}): {e}")
+                if attempt < MAX_RETRIES - 1:
+                    await asyncio.sleep(RETRY_DELAY_SECONDS * (attempt + 1))
+            except Exception as e:
+                last_error = e
+                logger.error(f"Unexpected Gemini chat error (attempt {attempt + 1}): {e}")
+                if attempt < MAX_RETRIES - 1:
+                    await asyncio.sleep(RETRY_DELAY_SECONDS)
+
+        raise GeminiServiceError(
+            message="AI chat service temporarily unavailable after retries",
+            details={"error": str(last_error)},
+        )
+
+    def end_chat_session(self, session_key: str) -> bool:
+        """
+        End and clear a chat session.
+
+        Args:
+            session_key: The session key to clear
+
+        Returns:
+            True if session was found and cleared, False if not found
+        """
+        if session_key in self._chat_sessions:
+            del self._chat_sessions[session_key]
+            logger.info(f"Ended chat session: {session_key}")
+            return True
+        return False
+
+    def get_active_sessions(self) -> list[str]:
+        """Return list of active session keys."""
+        return list(self._chat_sessions.keys())
 
     def _parse_json(self, text: str) -> Any:
         """
