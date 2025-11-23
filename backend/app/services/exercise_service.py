@@ -65,10 +65,11 @@ class ExerciseService:
         if not topics_with_mastery:
             return ""
 
-        # Build explicit topic list with mastery scores
+        # Build explicit topic list with IDs and mastery scores
         # Scale: 0-1000 (shown as percentage)
         topic_lines = []
         for t in topics_with_mastery:
+            topic_id = t["topic_id"]
             mastery = t["mastery_score"]
             name = t["name"]
             pct = mastery // 10  # 0-100%
@@ -81,11 +82,47 @@ class ExerciseService:
             else:
                 level = "STRONG"
 
-            topic_lines.append(f"'{name}' - {level} ({pct}%)")
+            topic_lines.append(f"[ID:{topic_id}] '{name}' - {level} ({pct}%)")
 
         return f"""
 USER'S GRAMMAR KNOWLEDGE (use ONLY these patterns, prioritize WEAK topics):
 {chr(10).join(topic_lines)}"""
+
+    async def _get_grammar_topics_for_exercise(self, user_id: int) -> tuple[str, dict[int, str]]:
+        """
+        Get grammar topics formatted for exercise generation.
+
+        Returns:
+            Tuple of (formatted context string, dict mapping topic_id -> topic_name)
+        """
+        topics_with_mastery = await self._progress_crud.get_learnt_topics_with_mastery(user_id)
+        if not topics_with_mastery:
+            return "", {}
+
+        topic_lines = []
+        topic_map: dict[int, str] = {}
+
+        for t in topics_with_mastery:
+            topic_id = t["topic_id"]
+            name = t["name"]
+            mastery = t["mastery_score"]
+            pct = mastery // 10
+
+            if mastery < 400:
+                level = "WEAK"
+            elif mastery < 800:
+                level = "LEARNING"
+            else:
+                level = "STRONG"
+
+            topic_lines.append(f"[ID:{topic_id}] '{name}' - {level} ({pct}%)")
+            topic_map[topic_id] = name
+
+        context = f"""
+AVAILABLE GRAMMAR TOPICS (prioritize WEAK topics for practice):
+{chr(10).join(topic_lines)}"""
+
+        return context, topic_map
 
     # -------------------------------------------------------------------------
     # Conversation
@@ -184,7 +221,8 @@ Respond with ONLY valid JSON:
         """
         Generate a grammar exercise.
 
-        If topic_id is not provided, auto-selects based on user's weak areas.
+        Gemini selects which topic to test based on mastery levels (prioritizing weak topics).
+        The selected topic_id is returned for progress tracking.
 
         Returns:
             {
@@ -194,69 +232,48 @@ Respond with ONLY valid JSON:
                 "instruction": str,
                 "question": str,
                 "hints": [str] | None,
-                "expected_answer": str  # stored for evaluation
+                "expected_answer": str
             }
         """
-        # Select topic
-        if topic_id:
-            topic = await self._topic_crud.get(topic_id)
-        else:
-            # Auto-select from weak topics or unpracticed
-            weak_topics = await self._progress_crud.get_weak_topics(user_id, limit=3)
-            if weak_topics:
-                topic = await self._topic_crud.get(weak_topics[0].topic_id)
-            else:
-                unpracticed = await self._progress_crud.get_unpracticed_topics(user_id, limit=1)
-                topic = unpracticed[0] if unpracticed else None
+        # Get all learnt topics with their IDs and mastery
+        grammar_context, topic_map = await self._get_grammar_topics_for_exercise(user_id)
 
-        if not topic:
-            # Fallback: get any topic at user's level
-            topics = await self._topic_crud.get_multi(cefr_level=cefr_level, limit=1)
-            topic = topics[0] if topics else None
-
-        if not topic:
+        if not topic_map:
             return {
                 "exercise_id": "",
                 "topic_id": 0,
                 "topic_name": "No topics available",
-                "instruction": "Please add grammar topics first.",
+                "instruction": "Please add and mark some grammar topics as learnt first.",
                 "question": "",
                 "hints": None,
                 "expected_answer": "",
             }
 
-        # Get user context for personalized exercise
-        grammar_context = await self._get_learnt_grammar_context(user_id)
         user_context = await self._get_user_context(user_id)
-
-        # Build session key for chat context
         session_key = self._build_session_key(user_id, "grammar")
 
-        # System instruction for grammar exercise generation
+        # System instruction
         system_instruction = f"""You are a Croatian grammar exercise generator.
 {user_context}
 {grammar_context}
 
 CRITICAL RULES:
-1. Generate UNIQUE exercises each time - never repeat the same question or sentence pattern
-2. Vary the vocabulary, sentence structures, and scenarios
-3. Always respond with ONLY valid JSON (no markdown, no explanation)
-4. Track what you've generated in this conversation and avoid repetition"""
+1. Generate UNIQUE exercises each time - never repeat
+2. Prioritize WEAK topics - they need more practice
+3. Always respond with ONLY valid JSON
+4. Include the topic_id from the list above"""
 
-        # Generate exercise via Gemini chat session
-        level = cefr_level.value if cefr_level else topic.cefr_level.value
-        prompt = f"""Generate a NEW grammar exercise (different from any previous ones).
+        # Prompt asking Gemini to select topic and generate exercise
+        prompt = f"""Generate a NEW grammar exercise.
 
-Topic: {topic.name}
-CEFR Level: {level}
-{"Rule Description: " + topic.rule_description if topic.rule_description else ""}
-
-Create an exercise that tests understanding of this grammar topic.
+Choose ONE topic from the list above (prioritize WEAK topics) and create an exercise for it.
+You MUST return the topic_id from the list.
 
 Respond with ONLY valid JSON:
 {{
-    "instruction": "Clear instruction in English explaining what to do",
-    "question": "The exercise question (can include Croatian text to transform/complete)",
+    "topic_id": <number from the topic list>,
+    "instruction": "Clear instruction in English",
+    "question": "The exercise question in Croatian",
     "hints": ["hint1", "hint2"] or null,
     "expected_answer": "The correct answer"
 }}"""
@@ -269,12 +286,21 @@ Respond with ONLY valid JSON:
             )
             data = self._gemini._parse_json(response_text)
 
-            exercise_id = str(uuid.uuid4())
+            # Validate topic_id from Gemini's response
+            returned_topic_id = data.get("topic_id")
+            if returned_topic_id and returned_topic_id in topic_map:
+                selected_topic_id = returned_topic_id
+                selected_topic_name = topic_map[returned_topic_id]
+            else:
+                # Fallback to first (weakest) topic if Gemini returns invalid ID
+                selected_topic_id = next(iter(topic_map.keys()))
+                selected_topic_name = topic_map[selected_topic_id]
+                logger.warning(f"Gemini returned invalid topic_id {returned_topic_id}, using {selected_topic_id}")
 
             return {
-                "exercise_id": exercise_id,
-                "topic_id": topic.id,
-                "topic_name": topic.name,
+                "exercise_id": str(uuid.uuid4()),
+                "topic_id": selected_topic_id,
+                "topic_name": selected_topic_name,
                 "instruction": data.get("instruction", "Complete the exercise."),
                 "question": data.get("question", ""),
                 "hints": data.get("hints"),
@@ -282,10 +308,12 @@ Respond with ONLY valid JSON:
             }
         except Exception as e:
             logger.error(f"Grammar exercise generation failed: {e}")
+            # Fallback to first topic
+            fallback_id = next(iter(topic_map.keys()))
             return {
                 "exercise_id": "",
-                "topic_id": topic.id,
-                "topic_name": topic.name,
+                "topic_id": fallback_id,
+                "topic_name": topic_map[fallback_id],
                 "instruction": "Exercise generation failed. Please try again.",
                 "question": "",
                 "hints": None,

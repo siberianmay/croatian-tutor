@@ -291,18 +291,28 @@ class TopicProgressCRUD:
         Get all learnt topics with their mastery scores.
 
         Returns:
-            List of dicts with topic name, mastery_score (0-10), times_practiced
+            List of dicts with topic_id, name, mastery_score (0-1000), times_practiced
         """
         result = await self._db.execute(
-            select(GrammarTopic.name, TopicProgress.mastery_score, TopicProgress.times_practiced)
+            select(
+                GrammarTopic.id,
+                GrammarTopic.name,
+                TopicProgress.mastery_score,
+                TopicProgress.times_practiced,
+            )
             .join(TopicProgress, TopicProgress.topic_id == GrammarTopic.id)
             .where(TopicProgress.user_id == user_id)
             .order_by(TopicProgress.mastery_score.asc())  # Weakest first
         )
         rows = result.all()
         return [
-            {"name": name, "mastery_score": score, "times_practiced": practiced}
-            for name, score, practiced in rows
+            {
+                "topic_id": topic_id,
+                "name": name,
+                "mastery_score": score,
+                "times_practiced": practiced,
+            }
+            for topic_id, name, score, practiced in rows
         ]
 
     async def mark_as_learnt(self, user_id: int, topic_id: int) -> TopicProgress:
