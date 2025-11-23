@@ -197,12 +197,6 @@ async def generate_grammar_exercise(
         cefr_level=cefr_level,
     )
 
-    if not result.get("exercise_id"):
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to generate grammar exercise",
-        )
-
     return GrammarExerciseResponse(
         exercise_id=result["exercise_id"],
         topic_id=result["topic_id"],
@@ -237,12 +231,6 @@ async def generate_translation_exercise(
         recent_sentences=request.recent_sentences,
     )
 
-    if not result.get("exercise_id"):
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to generate translation exercise",
-        )
-
     return TranslationResponse(
         exercise_id=result["exercise_id"],
         topic_id=result.get("topic_id"),
@@ -274,12 +262,6 @@ async def generate_sentence_construction(
         cefr_level=request.cefr_level,
     )
 
-    if not result.get("exercise_id"):
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to generate sentence construction exercise",
-        )
-
     return SentenceConstructionResponse(
         exercise_id=result["exercise_id"],
         words=result["words"],
@@ -306,12 +288,6 @@ async def generate_reading_exercise(
         user_id=DEFAULT_USER_ID,
         cefr_level=request.cefr_level,
     )
-
-    if not result.get("exercise_id"):
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to generate reading exercise",
-        )
 
     return ReadingExerciseResponse(
         exercise_id=result["exercise_id"],
@@ -385,12 +361,6 @@ async def generate_dialogue_exercise(
         cefr_level=request.cefr_level,
         scenario=request.scenario,
     )
-
-    if not result.get("exercise_id"):
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to generate dialogue exercise",
-        )
 
     return DialogueExerciseResponse(
         exercise_id=result["exercise_id"],

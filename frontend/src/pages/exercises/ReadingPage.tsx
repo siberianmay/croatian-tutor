@@ -33,6 +33,7 @@ const ReadingPage: React.FC = () => {
   const [questionStates, setQuestionStates] = useState<QuestionState[]>([]);
   const [submitted, setSubmitted] = useState(false);
   const [exerciseStartTime, setExerciseStartTime] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const firstInputRef = useRef<HTMLInputElement>(null);
 
   // End chat session when leaving the page
@@ -48,9 +49,14 @@ const ReadingPage: React.FC = () => {
       setExercise(data);
       setQuestionStates(data.questions.map(() => ({ answer: '' })));
       setSubmitted(false);
+      setError(null);
       setExerciseStartTime(Date.now());
       // Focus first question input after render
       setTimeout(() => firstInputRef.current?.focus(), 0);
+    },
+    onError: (err: Error & { response?: { data?: { message?: string; detail?: string } } }) => {
+      const message = err.response?.data?.message || err.response?.data?.detail || err.message || 'Failed to generate exercise';
+      setError(message);
     },
   });
 
@@ -141,6 +147,12 @@ const ReadingPage: React.FC = () => {
           size="sm"
         />
       </Group>
+
+      {error && (
+        <Alert color="red" title="Error" icon={<IconX size={20} />} withCloseButton onClose={() => setError(null)}>
+          {error}
+        </Alert>
+      )}
 
       {!exercise ? (
         <Card shadow="sm" padding="xl" radius="md" withBorder>

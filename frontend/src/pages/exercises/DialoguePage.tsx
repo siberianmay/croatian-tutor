@@ -15,7 +15,7 @@ import {
   ActionIcon,
   Loader,
 } from '@mantine/core';
-import { IconSend, IconArrowLeft, IconRefresh, IconInfoCircle } from '@tabler/icons-react';
+import { IconSend, IconArrowLeft, IconRefresh, IconInfoCircle, IconX } from '@tabler/icons-react';
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
@@ -37,6 +37,7 @@ const DialoguePage: React.FC = () => {
   const [scenario, setScenario] = useState<DialogueExerciseResponse | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
+  const [error, setError] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // End chat session when leaving the page
@@ -52,6 +53,11 @@ const DialoguePage: React.FC = () => {
       setScenario(data);
       setMessages([{ role: 'assistant', content: data.dialogue_start }]);
       setInput('');
+      setError(null);
+    },
+    onError: (err: Error & { response?: { data?: { message?: string; detail?: string } } }) => {
+      const message = err.response?.data?.message || err.response?.data?.detail || err.message || 'Failed to generate dialogue';
+      setError(message);
     },
   });
 
@@ -114,6 +120,12 @@ const DialoguePage: React.FC = () => {
           size="sm"
         />
       </Group>
+
+      {error && (
+        <Alert color="red" title="Error" icon={<IconX size={20} />} withCloseButton onClose={() => setError(null)}>
+          {error}
+        </Alert>
+      )}
 
       {!scenario ? (
         <Card shadow="sm" padding="xl" radius="md" withBorder flex={1}>

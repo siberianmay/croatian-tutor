@@ -29,6 +29,7 @@ const SentenceConstructionPage: React.FC = () => {
     correctAnswer?: string | null;
   } | null>(null);
   const [exerciseStartTime, setExerciseStartTime] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   // End chat session when leaving the page
   useEffect(() => {
@@ -48,7 +49,12 @@ const SentenceConstructionPage: React.FC = () => {
       setExercise(data);
       setSelectedWords([]);
       setResult(null);
+      setError(null);
       setExerciseStartTime(Date.now());
+    },
+    onError: (err: Error & { response?: { data?: { message?: string; detail?: string } } }) => {
+      const message = err.response?.data?.message || err.response?.data?.detail || err.message || 'Failed to generate exercise';
+      setError(message);
     },
   });
 
@@ -127,6 +133,12 @@ const SentenceConstructionPage: React.FC = () => {
           size="sm"
         />
       </Group>
+
+      {error && (
+        <Alert color="red" title="Error" icon={<IconX size={20} />} withCloseButton onClose={() => setError(null)}>
+          {error}
+        </Alert>
+      )}
 
       {!exercise ? (
         <Card shadow="sm" padding="xl" radius="md" withBorder>

@@ -16,6 +16,7 @@ from app.models.error_log import ErrorLog
 from app.models.session import Session
 from app.services.gemini_service import GeminiService
 from app.services.progress_service import ProgressService
+from app.exceptions import GeminiServiceError
 
 logger = logging.getLogger(__name__)
 
@@ -306,19 +307,15 @@ Respond with ONLY valid JSON:
                 "hints": data.get("hints"),
                 "expected_answer": data.get("expected_answer", ""),
             }
+        except GeminiServiceError:
+            # Re-raise Gemini errors to be handled by exception handler
+            raise
         except Exception as e:
             logger.error(f"Grammar exercise generation failed: {e}")
-            # Fallback to first topic
-            fallback_id = next(iter(topic_map.keys()))
-            return {
-                "exercise_id": "",
-                "topic_id": fallback_id,
-                "topic_name": topic_map[fallback_id],
-                "instruction": "Exercise generation failed. Please try again.",
-                "question": "",
-                "hints": None,
-                "expected_answer": "",
-            }
+            raise GeminiServiceError(
+                message=f"Failed to generate grammar exercise: {str(e)}",
+                details={"error_type": type(e).__name__},
+            )
 
     # -------------------------------------------------------------------------
     # Translation Exercises
@@ -413,17 +410,14 @@ Respond with ONLY valid JSON:
                 "target_language": target_lang,
                 "expected_answer": data.get("expected_answer", ""),
             }
+        except GeminiServiceError:
+            raise
         except Exception as e:
             logger.error(f"Translation exercise generation failed: {e}")
-            return {
-                "exercise_id": "",
-                "topic_id": None,
-                "topic_name": None,
-                "source_text": "Translation generation failed.",
-                "source_language": source_lang,
-                "target_language": target_lang,
-                "expected_answer": "",
-            }
+            raise GeminiServiceError(
+                message=f"Failed to generate translation exercise: {str(e)}",
+                details={"error_type": type(e).__name__},
+            )
 
     # -------------------------------------------------------------------------
     # Sentence Construction
@@ -496,14 +490,14 @@ Respond with ONLY valid JSON:
                 "hint": data.get("hint", ""),
                 "expected_answer": data.get("expected_answer", ""),
             }
+        except GeminiServiceError:
+            raise
         except Exception as e:
             logger.error(f"Sentence construction generation failed: {e}")
-            return {
-                "exercise_id": "",
-                "words": [],
-                "hint": "Exercise generation failed.",
-                "expected_answer": "",
-            }
+            raise GeminiServiceError(
+                message=f"Failed to generate sentence construction exercise: {str(e)}",
+                details={"error_type": type(e).__name__},
+            )
 
     # -------------------------------------------------------------------------
     # Reading Comprehension
@@ -569,13 +563,14 @@ Respond with ONLY valid JSON:
                 "passage": data.get("passage", ""),
                 "questions": data.get("questions", []),
             }
+        except GeminiServiceError:
+            raise
         except Exception as e:
             logger.error(f"Reading exercise generation failed: {e}")
-            return {
-                "exercise_id": "",
-                "passage": "Exercise generation failed.",
-                "questions": [],
-            }
+            raise GeminiServiceError(
+                message=f"Failed to generate reading exercise: {str(e)}",
+                details={"error_type": type(e).__name__},
+            )
 
     # -------------------------------------------------------------------------
     # Situational Dialogue
@@ -650,16 +645,14 @@ Respond with ONLY valid JSON:
                 "ai_role": data.get("ai_role", ""),
                 "suggested_phrases": data.get("suggested_phrases", []),
             }
+        except GeminiServiceError:
+            raise
         except Exception as e:
             logger.error(f"Dialogue exercise generation failed: {e}")
-            return {
-                "exercise_id": "",
-                "scenario": "Exercise generation failed.",
-                "dialogue_start": "",
-                "user_role": "",
-                "ai_role": "",
-                "suggested_phrases": [],
-            }
+            raise GeminiServiceError(
+                message=f"Failed to generate dialogue exercise: {str(e)}",
+                details={"error_type": type(e).__name__},
+            )
 
     # -------------------------------------------------------------------------
     # Answer Evaluation
