@@ -235,7 +235,7 @@ All major design decisions finalized.
 - **8.2 Gemini Context Integration** ✅ - Context builder for AI prompts
 - **8.3 Fill-in-Blank Caching** - SKIPPED (want fresh Gemini evaluation)
 - **8.4 Data Export/Import** - SKIPPED (not needed)
-- **8.5 Advanced Analytics** ✅ - Leech detection, forecast, velocity, difficulty breakdown
+- **8.5 Advanced Analytics** ✅ - Backend: leech detection, forecast, velocity, difficulty. Frontend: AnalyticsModal on Progress page
 
 ---
 

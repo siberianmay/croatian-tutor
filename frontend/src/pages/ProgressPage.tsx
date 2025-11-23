@@ -28,9 +28,11 @@ import {
   IconBooks,
   IconClock,
   IconChartBar,
+  IconChartLine,
 } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
 import { progressApi } from '~services/progressApi';
+import AnalyticsModal from '~components/AnalyticsModal';
 import type {
   ProgressSummary,
   VocabularyStats,
@@ -73,6 +75,7 @@ const ProgressPage: React.FC = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [analyticsOpen, setAnalyticsOpen] = useState(false);
 
   const [summary, setSummary] = useState<ProgressSummary | null>(null);
   const [vocabStats, setVocabStats] = useState<VocabularyStats | null>(null);
@@ -168,14 +171,26 @@ const ProgressPage: React.FC = () => {
             Track your Croatian learning journey
           </Text>
         </div>
-        <Button
-          variant="light"
-          leftSection={<IconRefresh size={16} />}
-          onClick={fetchData}
-        >
-          Refresh
-        </Button>
+        <Group>
+          <Button
+            variant="light"
+            color="violet"
+            leftSection={<IconChartLine size={16} />}
+            onClick={() => setAnalyticsOpen(true)}
+          >
+            Analytics
+          </Button>
+          <Button
+            variant="light"
+            leftSection={<IconRefresh size={16} />}
+            onClick={fetchData}
+          >
+            Refresh
+          </Button>
+        </Group>
       </Group>
+
+      <AnalyticsModal opened={analyticsOpen} onClose={() => setAnalyticsOpen(false)} />
 
       {/* Summary Stats */}
       <SimpleGrid cols={{ base: 2, sm: 3, lg: 6 }} spacing="md">

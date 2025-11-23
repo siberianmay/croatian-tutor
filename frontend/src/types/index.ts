@@ -294,3 +294,66 @@ export interface ErrorPatterns {
   recent_errors: RecentError[];
   weak_areas: WeakArea[];
 }
+
+// Analytics types
+export interface LeechWord {
+  id: number;
+  croatian: string;
+  english: string;
+  correct_count: number;
+  wrong_count: number;
+  failure_rate: number;
+  cefr_level: CEFRLevel;
+  part_of_speech: PartOfSpeech;
+}
+
+export interface LeechesResponse {
+  leeches: LeechWord[];
+  total_leeches: number;
+  threshold: {
+    min_attempts: number;
+    failure_rate: number;
+  };
+}
+
+export interface ForecastDay {
+  date: string;
+  count: number;
+  is_today: boolean;
+}
+
+export interface ForecastResponse {
+  forecast: ForecastDay[];
+  total_upcoming: number;
+  overdue: number;
+}
+
+export interface VelocityResponse {
+  words_added_this_week: number;
+  words_added_last_week: number;
+  words_mastered_this_week: number;
+  words_mastered_total: number;
+  retention_rate: number;
+  avg_ease_factor: number;
+  velocity_trend: 'improving' | 'stable' | 'declining';
+}
+
+export interface DifficultyStats {
+  count: number;
+  avg_mastery: number;
+  failure_rate: number;
+}
+
+export interface DifficultyResponse {
+  by_pos: Record<PartOfSpeech, DifficultyStats>;
+  by_level: Record<CEFRLevel, DifficultyStats>;
+  hardest_pos: PartOfSpeech | null;
+  hardest_level: CEFRLevel | null;
+}
+
+export interface FullAnalytics {
+  leeches: LeechesResponse;
+  forecast: ForecastResponse;
+  velocity: VelocityResponse;
+  difficulty: DifficultyResponse;
+}
