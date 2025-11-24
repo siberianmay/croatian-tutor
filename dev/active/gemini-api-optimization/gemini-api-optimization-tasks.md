@@ -35,13 +35,13 @@
 
 ## Phase 2: Extend to Other Exercise Types
 
-### 2.1 Grammar Exercise Batching [M]
-- [ ] Design batch request/response schemas
-- [ ] Add `generate_grammar_exercises_batch()` to `ExerciseService`
-- [ ] Add `evaluate_grammar_answers_batch()` to `ExerciseService`
-- [ ] Add endpoints
-- [ ] Update frontend
-- [ ] Test topic_id selection (Gemini picks from weak topics)
+### 2.1 Grammar Exercise Batching [M] ✅
+- [x] Design batch request/response schemas
+- [x] Add `generate_grammar_exercises_batch()` to `ExerciseService`
+- [x] Add `evaluate_grammar_answers_batch()` to `ExerciseService`
+- [x] Add endpoints (`POST /exercises/grammar/batch`, `POST /exercises/grammar/batch-evaluate`)
+- [x] Update frontend GrammarPage.tsx for batch mode
+- [x] Topic progress tracking preserved
 
 ### 2.2 Sentence Construction Batching [M]
 - [ ] Design batch request/response schemas
@@ -108,9 +108,9 @@ After each phase, verify:
 | Phase | Status | RPD Savings |
 |-------|--------|-------------|
 | 1.1 Fill-in-blank | ✅ Complete | ~90% for drills |
-| 1.2 Translation Gen | ✅ Complete | ~80% |
-| 1.3 Translation Eval | ✅ Complete | ~80% |
-| 2.1 Grammar | Not Started | ~80% |
+| 1.2 Translation Gen | ✅ Complete | ~90% |
+| 1.3 Translation Eval | ✅ Complete | ~90% |
+| 2.1 Grammar | ✅ Complete | ~90% |
 | 2.2 Sentence | Not Started | ~80% |
 | 3.1 Client-side | Not Started | Variable |
 | 3.2 Optional AI | Not Started | Variable |
@@ -137,3 +137,23 @@ After each phase, verify:
 ### Expected RPD Reduction
 - **Translation exercises**: 20 API calls → 2 API calls per 10 exercises (90% reduction)
 - **Fill-in-blank drills**: 10 API calls → 1 API call per 10 words (90% reduction)
+
+## Implementation Notes (Phase 2.1 - Grammar)
+
+### Files Modified
+
+**Backend:**
+- `backend/app/services/exercise_service.py` - Added `generate_grammar_exercises_batch()` and `evaluate_grammar_answers_batch()`
+- `backend/app/api/exercises.py` - Added grammar batch schemas and endpoints
+
+**Frontend:**
+- `frontend/src/types/index.ts` - Added grammar batch types
+- `frontend/src/services/exerciseApi.ts` - Added grammar batch API methods
+- `frontend/src/pages/exercises/GrammarPage.tsx` - Complete rewrite for batch mode
+
+### New Endpoints
+- `POST /exercises/grammar/batch` - Generate 10 exercises in 1 API call
+- `POST /exercises/grammar/batch-evaluate` - Evaluate all answers in 1 API call
+
+### Expected RPD Reduction
+- **Grammar exercises**: 20 API calls → 2 API calls per 10 exercises (90% reduction)

@@ -9,13 +9,15 @@ Free tier Gemini API has limited RPD (requests per day) but generous token limit
 **User Quote:**
 > "We make many small api calls (practically, most exercises are single-sentence based, which means that we have to use one call to get this assignment, then the second to check the answer). We could ask Gemini to give an exercise with chunk of exercises, that the user would do. And then submit a chunk of answers and make Gemini to check all of them in one request."
 
-## Current Status: Phase 1 Complete ✅
+## Current Status: Phase 1 + Phase 2.1 Complete ✅
 
-Phase 1 batching optimizations are implemented and working:
+Batching optimizations implemented and working:
 - Fill-in-blank exercises now batch all words in 1 API call
 - Translation exercises batch 10 exercises per generation call
 - Translation evaluation batches all answers in 1 API call
-- Expected RPD reduction: ~90% for translation and fill-in-blank exercises
+- Grammar exercises batch 10 exercises per generation call
+- Grammar evaluation batches all answers in 1 API call
+- Expected RPD reduction: ~90% for translation, grammar, and fill-in-blank exercises
 
 ## Key Files
 
@@ -51,7 +53,9 @@ Phase 1 batching optimizations are implemented and working:
 | Method | Call Type | Batching Status |
 |--------|-----------|-----------------|
 | `conversation_turn` | `_generate` | N/A (conversational) |
-| `generate_grammar_exercise` | `generate_in_chat` | NOT BATCHED |
+| `generate_grammar_exercise` | `generate_in_chat` | Legacy single-exercise |
+| `generate_grammar_exercises_batch` | `_generate_bulk` | ✅ **BATCHED (Phase 2.1)** |
+| `evaluate_grammar_answers_batch` | `_generate_bulk` | ✅ **BATCHED (Phase 2.1)** |
 | `generate_translation_exercise` | `generate_in_chat` | Legacy single-exercise |
 | `generate_translation_exercises_batch` | `_generate_bulk` | ✅ **BATCHED (Phase 1)** |
 | `evaluate_translation_answers_batch` | `_generate_bulk` | ✅ **BATCHED (Phase 1)** |
@@ -121,8 +125,14 @@ The system tracks grammar topic mastery via `TopicProgress`. When exercises are 
 - [x] Updated frontend TranslationPage for batch mode
 - [x] All TypeScript and Python syntax checks pass
 
-### Next Steps (Phase 2+)
-- [ ] Extend batching to grammar exercises
+### Phase 2.1 - Grammar Batching - Completed ✅
+- [x] Added `generate_grammar_exercises_batch()` to ExerciseService
+- [x] Added `evaluate_grammar_answers_batch()` to ExerciseService
+- [x] Added batch endpoints to exercises.py
+- [x] Added grammar batch types to frontend
+- [x] Rewrote GrammarPage.tsx for batch mode
+
+### Next Steps (Phase 2.2+)
 - [ ] Extend batching to sentence construction
 - [ ] Add client-side simple evaluation option
 - [ ] Measure actual RPD reduction in production
@@ -158,10 +168,30 @@ async def evaluate_translation_answers_batch(
     # Single API call evaluates all, updates TopicProgress for each
 ```
 
+### Grammar Batch Generation (IMPLEMENTED ✅)
+```python
+# exercise_service.py:320-407
+async def generate_grammar_exercises_batch(
+    self, user_id: int, count: int = 10, cefr_level: CEFRLevel | None = None
+) -> list[dict[str, Any]]:
+    # Single API call generates all exercises with topic_ids
+```
+
+### Grammar Batch Evaluation (IMPLEMENTED ✅)
+```python
+# exercise_service.py:409-529
+async def evaluate_grammar_answers_batch(
+    self, user_id: int, answers: list[dict[str, Any]]
+) -> list[dict[str, Any]]:
+    # Single API call evaluates all, updates TopicProgress for each
+```
+
 ### New API Endpoints
 ```
 POST /exercises/translate/batch          -> TranslationBatchResponse
 POST /exercises/translate/batch-evaluate -> TranslationBatchEvaluateResponse
+POST /exercises/grammar/batch            -> GrammarBatchResponse
+POST /exercises/grammar/batch-evaluate   -> GrammarBatchEvaluateResponse
 ```
 
 ## Notes

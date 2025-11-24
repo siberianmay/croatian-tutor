@@ -153,6 +153,64 @@ class TranslationBatchEvaluateResponse(BaseModel):
     results: list[TranslationEvaluationResult]
 
 
+# Grammar Batch Models
+class GrammarBatchRequest(BaseModel):
+    """Request for batch grammar exercises."""
+
+    cefr_level: CEFRLevel | None = None
+    count: int = Field(default=10, ge=1, le=20)
+
+
+class GrammarBatchItem(BaseModel):
+    """Single grammar exercise in a batch."""
+
+    exercise_id: str
+    topic_id: int
+    topic_name: str
+    instruction: str
+    question: str
+    hints: list[str] | None
+    expected_answer: str
+
+
+class GrammarBatchResponse(BaseModel):
+    """Response with batch of grammar exercises."""
+
+    exercises: list[GrammarBatchItem]
+
+
+class GrammarAnswerItem(BaseModel):
+    """Single answer to evaluate in grammar batch."""
+
+    user_answer: str
+    expected_answer: str
+    question: str
+    topic_id: int
+
+
+class GrammarBatchEvaluateRequest(BaseModel):
+    """Request to evaluate multiple grammar answers."""
+
+    answers: list[GrammarAnswerItem]
+    duration_minutes: int = Field(default=0, ge=0)
+
+
+class GrammarEvaluationResult(BaseModel):
+    """Evaluation result for a single grammar answer."""
+
+    correct: bool
+    score: float
+    feedback: str
+    error_category: str | None = None
+    topic_id: int | None = None
+
+
+class GrammarBatchEvaluateResponse(BaseModel):
+    """Response with all grammar evaluations."""
+
+    results: list[GrammarEvaluationResult]
+
+
 class ReadingExerciseRequest(BaseModel):
     """Request for reading exercise."""
 
@@ -269,6 +327,85 @@ async def generate_grammar_exercise(
         instruction=result["instruction"],
         question=result["question"],
         hints=result.get("hints"),
+    )
+
+
+@router.post("/grammar/batch", response_model=GrammarBatchResponse)
+async def generate_grammar_exercises_batch(
+    request: GrammarBatchRequest,
+    service: Annotated[ExerciseService, Depends(get_exercise_service)],
+) -> GrammarBatchResponse:
+    """
+    Generate multiple grammar exercises in a single API call.
+
+    Returns a list of exercises that can be completed by the user,
+    then submitted together for batch evaluation.
+    """
+    results = await service.generate_grammar_exercises_batch(
+        user_id=DEFAULT_USER_ID,
+        count=request.count,
+        cefr_level=request.cefr_level,
+    )
+
+    exercises = [
+        GrammarBatchItem(
+            exercise_id=r["exercise_id"],
+            topic_id=r["topic_id"],
+            topic_name=r["topic_name"],
+            instruction=r["instruction"],
+            question=r["question"],
+            hints=r.get("hints"),
+            expected_answer=r["expected_answer"],
+        )
+        for r in results
+    ]
+
+    return GrammarBatchResponse(exercises=exercises)
+
+
+@router.post("/grammar/batch-evaluate", response_model=GrammarBatchEvaluateResponse)
+async def evaluate_grammar_batch(
+    request: GrammarBatchEvaluateRequest,
+    service: Annotated[ExerciseService, Depends(get_exercise_service)],
+) -> GrammarBatchEvaluateResponse:
+    """
+    Evaluate multiple grammar answers in a single API call.
+
+    Updates topic progress for each answer.
+    """
+    answers = [
+        {
+            "user_answer": a.user_answer,
+            "expected_answer": a.expected_answer,
+            "question": a.question,
+            "topic_id": a.topic_id,
+        }
+        for a in request.answers
+    ]
+
+    results = await service.evaluate_grammar_answers_batch(
+        user_id=DEFAULT_USER_ID,
+        answers=answers,
+    )
+
+    await service.log_exercise_activity(
+        user_id=DEFAULT_USER_ID,
+        exercise_type=ExerciseType.GRAMMAR,
+        duration_minutes=request.duration_minutes,
+        exercises_completed=len(request.answers),
+    )
+
+    return GrammarBatchEvaluateResponse(
+        results=[
+            GrammarEvaluationResult(
+                correct=r["correct"],
+                score=r["score"],
+                feedback=r["feedback"],
+                error_category=r.get("error_category"),
+                topic_id=r.get("topic_id"),
+            )
+            for r in results
+        ]
     )
 
 

@@ -155,6 +155,50 @@ export interface GrammarExerciseResponse {
   hints: string[] | null;
 }
 
+// Batch Grammar types
+export interface GrammarBatchRequest {
+  cefr_level?: CEFRLevel;
+  count: number;
+}
+
+export interface GrammarBatchItem {
+  exercise_id: string;
+  topic_id: number;
+  topic_name: string;
+  instruction: string;
+  question: string;
+  hints: string[] | null;
+  expected_answer: string;
+}
+
+export interface GrammarBatchResponse {
+  exercises: GrammarBatchItem[];
+}
+
+export interface GrammarAnswerItem {
+  user_answer: string;
+  expected_answer: string;
+  question: string;
+  topic_id: number;
+}
+
+export interface GrammarBatchEvaluateRequest {
+  answers: GrammarAnswerItem[];
+  duration_minutes: number;
+}
+
+export interface GrammarEvaluationResult {
+  correct: boolean;
+  score: number;
+  feedback: string;
+  error_category: string | null;
+  topic_id: number | null;
+}
+
+export interface GrammarBatchEvaluateResponse {
+  results: GrammarEvaluationResult[];
+}
+
 // Translation types
 export interface TranslationRequest {
   direction: 'cr_en' | 'en_cr';

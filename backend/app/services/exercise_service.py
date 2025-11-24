@@ -317,6 +317,217 @@ Respond with ONLY valid JSON:
                 details={"error_type": type(e).__name__},
             )
 
+    async def generate_grammar_exercises_batch(
+        self,
+        user_id: int,
+        count: int = 10,
+        cefr_level: CEFRLevel | None = None,
+    ) -> list[dict[str, Any]]:
+        """
+        Generate multiple grammar exercises in a single API call.
+
+        Args:
+            user_id: User ID
+            count: Number of exercises to generate (default 10)
+            cefr_level: Optional CEFR level filter
+
+        Returns:
+            List of exercise dicts with topic_id, instruction, question, hints, expected_answer
+        """
+        grammar_context, topic_map = await self._get_grammar_topics_for_exercise(user_id)
+
+        if not topic_map:
+            return []
+
+        user_context = await self._get_user_context(user_id)
+        topic_ids_str = ", ".join(str(tid) for tid in topic_map.keys())
+
+        prompt = f"""Generate {count} unique grammar exercises for Croatian language learning.
+
+{user_context}
+{grammar_context}
+
+Available topic IDs: [{topic_ids_str}]
+
+CRITICAL RULES:
+1. Generate EXACTLY {count} unique exercises - NO REPETITION
+2. Each exercise should test a DIFFERENT grammar concept
+3. Prioritize WEAK topics from the list above
+4. Include the topic_id for each exercise
+5. Vary the exercise types (fill-in-blank, transformation, correction, etc.)
+
+Respond with ONLY a valid JSON array (no markdown):
+[
+    {{
+        "topic_id": <number from available IDs>,
+        "instruction": "Clear instruction in English",
+        "question": "The exercise question in Croatian",
+        "hints": ["hint1", "hint2"] or null,
+        "expected_answer": "The correct answer"
+    }}
+]
+
+Return exactly {count} objects."""
+
+        try:
+            response_text = await self._gemini._generate_bulk(prompt)
+            data = self._gemini._parse_json(response_text)
+
+            if not isinstance(data, list):
+                raise ValueError("Expected JSON array")
+
+            results = []
+            for item in data[:count]:
+                returned_topic_id = item.get("topic_id")
+                if returned_topic_id and returned_topic_id in topic_map:
+                    selected_topic_id = returned_topic_id
+                    selected_topic_name = topic_map[returned_topic_id]
+                else:
+                    selected_topic_id = next(iter(topic_map.keys()))
+                    selected_topic_name = topic_map[selected_topic_id]
+
+                results.append({
+                    "exercise_id": str(uuid.uuid4()),
+                    "topic_id": selected_topic_id,
+                    "topic_name": selected_topic_name,
+                    "instruction": item.get("instruction", "Complete the exercise."),
+                    "question": item.get("question", ""),
+                    "hints": item.get("hints"),
+                    "expected_answer": item.get("expected_answer", ""),
+                })
+
+            return results
+        except GeminiServiceError:
+            raise
+        except Exception as e:
+            logger.error(f"Grammar batch generation failed: {e}")
+            raise GeminiServiceError(
+                message=f"Failed to generate grammar exercises batch: {str(e)}",
+                details={"error_type": type(e).__name__},
+            )
+
+    async def evaluate_grammar_answers_batch(
+        self,
+        user_id: int,
+        answers: list[dict[str, Any]],
+    ) -> list[dict[str, Any]]:
+        """
+        Evaluate multiple grammar answers in a single API call.
+
+        Args:
+            user_id: User ID
+            answers: List of dicts with user_answer, expected_answer, question, topic_id
+
+        Returns:
+            List of evaluation results with correct, score, feedback, error_category, topic_id
+        """
+        if not answers:
+            return []
+
+        user_context = await self._get_user_context(user_id)
+
+        answers_text = "\n".join(
+            f"{i+1}. Question: {a['question']}\n"
+            f"   Expected: {a['expected_answer']}\n"
+            f"   User answered: {a['user_answer']}"
+            for i, a in enumerate(answers)
+        )
+
+        prompt = f"""Evaluate these Croatian grammar exercise answers.
+
+{user_context}
+
+ANSWERS TO EVALUATE:
+{answers_text}
+
+Consider for each:
+- Grammar accuracy (cases, conjugations, agreements)
+- Spelling (including Croatian diacritics: č, ć, š, ž, đ)
+- Alternative valid forms
+- Partial credit for mostly correct answers
+
+Respond with ONLY valid JSON - an array with one evaluation object per answer:
+[
+    {{
+        "correct": true/false,
+        "score": 0.0 to 1.0,
+        "feedback": "Brief, encouraging feedback",
+        "error_category": "case_error|gender_agreement|verb_conjugation|word_order|spelling|vocabulary|accent|other|null"
+    }}
+]
+
+Return exactly {len(answers)} objects in the same order."""
+
+        try:
+            response_text = await self._gemini._generate_bulk(prompt)
+            data = self._gemini._parse_json(response_text)
+
+            if not isinstance(data, list):
+                data = [data]
+
+            results = []
+            for i, answer in enumerate(answers):
+                if i < len(data):
+                    item = data[i]
+                    correct = bool(item.get("correct", False))
+                    score = float(item.get("score", 1.0 if correct else 0.0))
+                    error_cat = item.get("error_category")
+                    if error_cat == "null":
+                        error_cat = None
+
+                    topic_id = answer.get("topic_id")
+                    if error_cat and not correct and topic_id:
+                        try:
+                            category = ErrorCategory(error_cat)
+                        except ValueError:
+                            category = ErrorCategory.OTHER
+
+                        await self._log_error(
+                            user_id=user_id,
+                            category=category,
+                            topic_id=topic_id,
+                            details=answer["user_answer"],
+                            correction=answer["expected_answer"],
+                        )
+
+                    if topic_id:
+                        await self._progress_crud.update_progress(
+                            user_id=user_id,
+                            topic_id=topic_id,
+                            correct=correct,
+                        )
+
+                    results.append({
+                        "correct": correct,
+                        "score": score,
+                        "feedback": item.get("feedback", ""),
+                        "error_category": error_cat,
+                        "topic_id": topic_id,
+                    })
+                else:
+                    is_correct = answer["expected_answer"].lower().strip() == answer["user_answer"].lower().strip()
+                    results.append({
+                        "correct": is_correct,
+                        "score": 1.0 if is_correct else 0.0,
+                        "feedback": "Correct!" if is_correct else f"Expected: {answer['expected_answer']}",
+                        "error_category": None,
+                        "topic_id": answer.get("topic_id"),
+                    })
+
+            return results
+        except Exception as e:
+            logger.error(f"Grammar batch evaluation failed: {e}")
+            return [
+                {
+                    "correct": a["expected_answer"].lower().strip() == a["user_answer"].lower().strip(),
+                    "score": 1.0 if a["expected_answer"].lower().strip() == a["user_answer"].lower().strip() else 0.0,
+                    "feedback": "Correct!" if a["expected_answer"].lower().strip() == a["user_answer"].lower().strip() else f"Expected: {a['expected_answer']}",
+                    "error_category": None,
+                    "topic_id": a.get("topic_id"),
+                }
+                for a in answers
+            ]
+
     # -------------------------------------------------------------------------
     # Translation Exercises
     # -------------------------------------------------------------------------

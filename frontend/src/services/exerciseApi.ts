@@ -5,6 +5,10 @@ import type {
   ConversationResponse,
   GrammarExerciseRequest,
   GrammarExerciseResponse,
+  GrammarBatchRequest,
+  GrammarBatchResponse,
+  GrammarBatchEvaluateRequest,
+  GrammarBatchEvaluateResponse,
   TranslationRequest,
   TranslationResponse,
   TranslationBatchRequest,
@@ -46,6 +50,28 @@ export const exerciseApi = {
     const params = cefrLevel ? `?cefr_level=${cefrLevel}` : '';
     const response = await api.post<GrammarExerciseResponse>(
       `/exercises/grammar${params}`,
+      request
+    );
+    return response.data;
+  },
+
+  // Grammar Batch - Generate multiple exercises at once
+  async generateGrammarBatch(
+    request: GrammarBatchRequest
+  ): Promise<GrammarBatchResponse> {
+    const response = await api.post<GrammarBatchResponse>(
+      '/exercises/grammar/batch',
+      request
+    );
+    return response.data;
+  },
+
+  // Grammar Batch - Evaluate all answers at once
+  async evaluateGrammarBatch(
+    request: GrammarBatchEvaluateRequest
+  ): Promise<GrammarBatchEvaluateResponse> {
+    const response = await api.post<GrammarBatchEvaluateResponse>(
+      '/exercises/grammar/batch-evaluate',
       request
     );
     return response.data;
