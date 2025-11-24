@@ -14,6 +14,7 @@ from app.models.topic_progress import TopicProgress
 from app.models.exercise_log import ExerciseLog
 from app.models.error_log import ErrorLog
 from app.models.session import Session
+from app.models.app_settings import AppSettings
 
 __all__ = [
     # Enums
@@ -30,4 +31,5 @@ __all__ = [
     "ExerciseLog",
     "ErrorLog",
     "Session",
+    "AppSettings",
 ]

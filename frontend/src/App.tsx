@@ -18,6 +18,7 @@ const TranslationPage = lazy(() => import('./pages/exercises/TranslationPage'));
 const SentenceConstructionPage = lazy(() => import('./pages/exercises/SentenceConstructionPage'));
 const ReadingPage = lazy(() => import('./pages/exercises/ReadingPage'));
 const DialoguePage = lazy(() => import('./pages/exercises/DialoguePage'));
+const SettingsPage = lazy(() => import('./pages/SettingsPage'));
 
 const App: React.FC = () => {
   return (
@@ -36,6 +37,7 @@ const App: React.FC = () => {
             <Route path="/grammar" element={<GrammarTopicsPage />} />
             <Route path="/flashcards" element={<PracticePage />} />
             <Route path="/progress" element={<ProgressPage />} />
+            <Route path="/settings" element={<SettingsPage />} />
           </Routes>
         </Suspense>
       </AppLayout>

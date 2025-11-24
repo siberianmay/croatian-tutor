@@ -20,6 +20,7 @@ from app.schemas.exercise import (
 )
 from app.services.gemini_service import get_gemini_service
 from app.services.exercise_service import ExerciseService
+from app.crud.app_settings import AppSettingsCRUD
 
 router = APIRouter(prefix="/exercises", tags=["exercises"])
 
@@ -27,9 +28,16 @@ router = APIRouter(prefix="/exercises", tags=["exercises"])
 DEFAULT_USER_ID = 1
 
 
-def get_exercise_service(db: Annotated[AsyncSession, Depends(get_db)]) -> ExerciseService:
-    """Dependency for ExerciseService."""
-    return ExerciseService(db, get_gemini_service())
+async def get_exercise_service(db: Annotated[AsyncSession, Depends(get_db)]) -> ExerciseService:
+    """Dependency for ExerciseService with settings-configured Gemini."""
+    gemini = get_gemini_service()
+
+    # Configure Gemini with settings
+    settings_crud = AppSettingsCRUD(db)
+    settings = await settings_crud.get()
+    gemini.set_model(settings.gemini_model)
+
+    return ExerciseService(db, gemini)
 
 
 # -----------------------------------------------------------------------------
@@ -568,15 +576,22 @@ async def generate_sentence_construction(
 async def generate_reading_exercise(
     request: ReadingExerciseRequest,
     service: Annotated[ExerciseService, Depends(get_exercise_service)],
+    db: Annotated[AsyncSession, Depends(get_db)],
 ) -> ReadingExerciseResponse:
     """
     Generate a reading comprehension exercise.
 
     Returns a passage in Croatian with comprehension questions.
+    Passage length is controlled by app settings.
     """
+    # Get passage length from settings
+    settings_crud = AppSettingsCRUD(db)
+    settings = await settings_crud.get()
+
     result = await service.generate_reading_exercise(
         user_id=DEFAULT_USER_ID,
         cefr_level=request.cefr_level,
+        passage_length=settings.reading_passage_length,
     )
 
     return ReadingExerciseResponse(

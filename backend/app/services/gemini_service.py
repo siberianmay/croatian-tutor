@@ -12,7 +12,6 @@ from app.exceptions import GeminiParseError, GeminiRateLimitError, GeminiService
 from app.models.enums import CEFRLevel, Gender, PartOfSpeech
 from google.api_core import exceptions as google_exceptions
 from google.generativeai.types import GenerationConfig
-import random
 
 logger = logging.getLogger(__name__)
 
@@ -39,6 +38,8 @@ class GeminiModel(str, Enum):
 class GeminiService:
     """Service for interacting with Google Gemini API."""
 
+    DEFAULT_MODEL = GeminiModel.gemini_2_5_fl
+
     def __init__(self):
         if not settings.gemini_api_key:
             raise ValueError("GEMINI_API_KEY not configured")
@@ -46,12 +47,31 @@ class GeminiService:
         genai.configure(api_key=settings.gemini_api_key)
         # Chat sessions keyed by session_key (e.g., "user_1_translation_cr_en")
         self._chat_sessions: dict[str, Any] = {}
+        # Configured model name (can be set via set_model)
+        self._configured_model: str | None = None
+
+    def set_model(self, model_name: str) -> None:
+        """Set the model to use for generation."""
+        self._configured_model = model_name
+
+    def _get_model(self, model_name: str | None = None) -> Any:
+        """
+        Get a GenerativeModel instance.
+
+        Args:
+            model_name: Optional model name override. If not provided,
+                       uses configured model or default.
+        """
+        if model_name:
+            return genai.GenerativeModel(model_name)
+        if self._configured_model:
+            return genai.GenerativeModel(self._configured_model)
+        return genai.GenerativeModel(self.DEFAULT_MODEL.value)
 
     @property
-    def _model(self):
-        # Use gemini-2.0-flash for latest model
-        model = random.choice([m for m in GeminiModel])
-        return genai.GenerativeModel(model)
+    def _model(self) -> Any:
+        """Get the default model instance."""
+        return self._get_model()
 
     async def assess_word(self, croatian_word: str) -> dict[str, Any]:
         """

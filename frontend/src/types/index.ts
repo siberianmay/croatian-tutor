@@ -474,3 +474,26 @@ export interface FullAnalytics {
   velocity: VelocityResponse;
   difficulty: DifficultyResponse;
 }
+
+// App Settings types
+export type GeminiModel =
+  | 'gemini-2.0-flash'
+  | 'gemini-2.0-flash-lite'
+  | 'gemini-2.5-flash-lite'
+  | 'gemini-2.5-flash'
+  | 'gemini-2.5-pro';
+
+export interface AppSettings {
+  grammar_batch_size: number;
+  translation_batch_size: number;
+  reading_passage_length: number;
+  gemini_model: GeminiModel;
+  updated_at: string;
+}
+
+export interface AppSettingsUpdate {
+  grammar_batch_size?: number;
+  translation_batch_size?: number;
+  reading_passage_length?: number;
+  gemini_model?: GeminiModel;
+}

@@ -1,7 +1,7 @@
 import React from 'react';
 import { AppShell, Group, NavLink, Title, Container, Burger, useMantineTheme } from '@mantine/core';
 import { useDisclosure, useMediaQuery } from '@mantine/hooks';
-import { IconBook, IconVocabulary, IconPencil, IconChartBar, IconSchool } from '@tabler/icons-react';
+import { IconBook, IconVocabulary, IconPencil, IconChartBar, IconSchool, IconSettings } from '@tabler/icons-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 interface AppLayoutProps {
@@ -14,6 +14,7 @@ const navItems = [
   { label: 'Vocabulary', path: '/vocabulary', icon: IconVocabulary },
   { label: 'Grammar', path: '/grammar', icon: IconSchool },
   { label: 'Progress', path: '/progress', icon: IconChartBar },
+  { label: 'Settings', path: '/settings', icon: IconSettings },
 ];
 
 export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {

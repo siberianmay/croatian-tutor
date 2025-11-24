@@ -958,9 +958,15 @@ Respond with ONLY valid JSON:
         self,
         user_id: int,
         cefr_level: CEFRLevel = CEFRLevel.A1,
+        passage_length: int = 350,
     ) -> dict[str, Any]:
         """
         Generate a reading comprehension exercise.
+
+        Args:
+            user_id: User ID
+            cefr_level: CEFR level for the exercise
+            passage_length: Approximate passage length in characters (default 350)
 
         Returns:
             {
@@ -974,6 +980,10 @@ Respond with ONLY valid JSON:
 
         # Build session key for chat context
         session_key = self._build_session_key(user_id, "reading")
+
+        # Calculate range around target length
+        min_length = max(100, int(passage_length * 0.7))
+        max_length = min(1500, int(passage_length * 1.3))
 
         # System instruction
         system_instruction = f"""You are a Croatian reading comprehension exercise generator.
@@ -990,12 +1000,12 @@ CRITICAL RULES:
 
 CEFR Level: {cefr_level.value}
 
-Create a passage in Croatian (200-500 characters) followed by 5-10 comprehension questions.
+Create a passage in Croatian ({min_length}-{max_length} characters) followed by 5-10 comprehension questions.
 Questions should test understanding of the passage content - facts, details, and inferences.
 
 Respond with ONLY valid JSON:
 {{
-    "passage": "Croatian text passage (200-500 characters)",
+    "passage": "Croatian text passage ({min_length}-{max_length} characters)",
     "questions": [
         {{"question": "Comprehension question in English or Croatian", "expected_answer": "Expected answer"}}
     ]
