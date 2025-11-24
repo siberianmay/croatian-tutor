@@ -95,7 +95,7 @@ async def get_fill_in_blank_exercises(
     Generate fill-in-the-blank exercises using Gemini AI.
 
     Selects words due for review and generates contextual sentences
-    with blanks for the target words.
+    with blanks for the target words. Uses batch API call for efficiency.
     """
     gemini = get_gemini_service()
     word_crud = WordCRUD(db)
@@ -112,21 +112,29 @@ async def get_fill_in_blank_exercises(
     if not words:
         return []
 
-    # Generate fill-in-blank for each word
-    items = []
-    for word in words:
-        result = await gemini.generate_fill_in_blank(
-            word=word.croatian,
-            english=word.english,
-            cefr_level=word.cefr_level.value,
+    # Prepare batch input
+    batch_input = [
+        {
+            "word_id": word.id,
+            "croatian": word.croatian,
+            "english": word.english,
+            "cefr_level": word.cefr_level.value,
+        }
+        for word in words
+    ]
+
+    # Generate all fill-in-blank exercises in a single API call
+    results = await gemini.generate_fill_in_blank_batch(batch_input)
+
+    # Convert to response model
+    items = [
+        FillInBlankItem(
+            word_id=r["word_id"],
+            sentence=r["sentence"],
+            answer=r["answer"],
+            hint=r["hint"],
         )
-        items.append(
-            FillInBlankItem(
-                word_id=word.id,
-                sentence=result["sentence"],
-                answer=result["answer"],
-                hint=result["hint"],
-            )
-        )
+        for r in results
+    ]
 
     return items

@@ -7,6 +7,10 @@ import type {
   GrammarExerciseResponse,
   TranslationRequest,
   TranslationResponse,
+  TranslationBatchRequest,
+  TranslationBatchResponse,
+  TranslationBatchEvaluateRequest,
+  TranslationBatchEvaluateResponse,
   SentenceConstructionRequest,
   SentenceConstructionResponse,
   ReadingExerciseRequest,
@@ -53,6 +57,28 @@ export const exerciseApi = {
   ): Promise<TranslationResponse> {
     const response = await api.post<TranslationResponse>(
       '/exercises/translate',
+      request
+    );
+    return response.data;
+  },
+
+  // Translation Batch - Generate multiple exercises at once
+  async generateTranslationBatch(
+    request: TranslationBatchRequest
+  ): Promise<TranslationBatchResponse> {
+    const response = await api.post<TranslationBatchResponse>(
+      '/exercises/translate/batch',
+      request
+    );
+    return response.data;
+  },
+
+  // Translation Batch - Evaluate all answers at once
+  async evaluateTranslationBatch(
+    request: TranslationBatchEvaluateRequest
+  ): Promise<TranslationBatchEvaluateResponse> {
+    const response = await api.post<TranslationBatchEvaluateResponse>(
+      '/exercises/translate/batch-evaluate',
       request
     );
     return response.data;

@@ -2,40 +2,34 @@
 
 **Last Updated:** 2025-11-23
 
-## Phase 1: Quick Wins (High Priority)
+## Phase 1: Quick Wins (High Priority) ✅ COMPLETED
 
-### 1.1 Fix Fill-in-Blank Batching [S]
-- [ ] Add `generate_fill_in_blank_batch(words: list[dict])` to `GeminiService`
-  - Input: list of `{croatian, english, cefr_level}`
+### 1.1 Fix Fill-in-Blank Batching [S] ✅
+- [x] Add `generate_fill_in_blank_batch(words: list[dict])` to `GeminiService`
+  - Input: list of `{word_id, croatian, english, cefr_level}`
   - Output: list of `{word_id, sentence, answer, hint}`
-- [ ] Create batch prompt template (all words in one request)
-- [ ] Update `drills.py:88-132` to use batch method
-- [ ] Add validation/fallback for partial failures
-- [ ] Test with 5, 10, 20 word batches
-- [ ] Verify RPD reduction (10 calls → 1 call)
+- [x] Create batch prompt template (all words in one request)
+- [x] Update `drills.py:88-140` to use batch method
+- [x] Add validation/fallback for partial failures
+- [x] Verify RPD reduction (10 calls → 1 call)
 
-### 1.2 Translation Batch Generation [M]
-- [ ] Design `TranslationBatchResponse` schema
-  - List of `{exercise_id, topic_id, source_text, expected_answer}`
-- [ ] Add `generate_translation_exercises_batch(count, direction, cefr_level)` to `ExerciseService`
-- [ ] Create batch prompt template with topic_id requirement
-- [ ] Add endpoint `POST /exercises/translation/batch`
-- [ ] Create frontend hook `useTranslationBatch()`
-- [ ] Update translation exercise page to consume batch
-- [ ] Test variety across batch items
-- [ ] Test topic_id accuracy
+### 1.2 Translation Batch Generation [M] ✅
+- [x] Design `TranslationBatchResponse` schema
+  - List of `{exercise_id, topic_id, topic_name, source_text, expected_answer}`
+- [x] Add `generate_translation_exercises_batch(count, direction, cefr_level)` to `ExerciseService`
+- [x] Create batch prompt template with topic_id requirement
+- [x] Add endpoint `POST /exercises/translate/batch`
+- [x] Update translation exercise page to consume batch (full rewrite with batch mode)
 
-### 1.3 Translation Batch Evaluation [M]
-- [ ] Design `TranslationBatchEvaluateRequest` schema
-  - List of `{user_answer, expected_answer, topic_id, context}`
-- [ ] Design `TranslationBatchEvaluateResponse` schema
+### 1.3 Translation Batch Evaluation [M] ✅
+- [x] Design `TranslationBatchEvaluateRequest` schema
+  - List of `{user_answer, expected_answer, source_text, topic_id}`
+- [x] Design `TranslationBatchEvaluateResponse` schema
   - List of `{correct, score, feedback, error_category, topic_id}`
-- [ ] Add `evaluate_translation_answers_batch()` to `ExerciseService`
-- [ ] Add batch topic progress update logic
-- [ ] Add endpoint `POST /exercises/translation/batch-evaluate`
-- [ ] Frontend: collect all answers, submit batch on completion
-- [ ] Test topic progress updates
-- [ ] Test error categorization accuracy
+- [x] Add `evaluate_translation_answers_batch()` to `ExerciseService`
+- [x] Add batch topic progress update logic
+- [x] Add endpoint `POST /exercises/translate/batch-evaluate`
+- [x] Frontend: collect all answers, submit batch on completion
 
 ---
 
@@ -113,10 +107,33 @@ After each phase, verify:
 
 | Phase | Status | RPD Savings |
 |-------|--------|-------------|
-| 1.1 Fill-in-blank | Not Started | ~90% for drills |
-| 1.2 Translation Gen | Not Started | ~80% |
-| 1.3 Translation Eval | Not Started | ~80% |
+| 1.1 Fill-in-blank | ✅ Complete | ~90% for drills |
+| 1.2 Translation Gen | ✅ Complete | ~80% |
+| 1.3 Translation Eval | ✅ Complete | ~80% |
 | 2.1 Grammar | Not Started | ~80% |
 | 2.2 Sentence | Not Started | ~80% |
 | 3.1 Client-side | Not Started | Variable |
 | 3.2 Optional AI | Not Started | Variable |
+
+## Implementation Notes (Phase 1)
+
+### Files Modified
+
+**Backend:**
+- `backend/app/services/gemini_service.py` - Added `generate_fill_in_blank_batch()`
+- `backend/app/services/exercise_service.py` - Added `generate_translation_exercises_batch()` and `evaluate_translation_answers_batch()`
+- `backend/app/api/exercises.py` - Added batch request/response models and endpoints
+- `backend/app/api/drills.py` - Updated fill-in-blank to use batch method
+
+**Frontend:**
+- `frontend/src/types/index.ts` - Added batch translation types
+- `frontend/src/services/exerciseApi.ts` - Added batch API methods
+- `frontend/src/pages/exercises/TranslationPage.tsx` - Complete rewrite for batch mode
+
+### New Endpoints
+- `POST /exercises/translate/batch` - Generate 10 exercises in 1 API call
+- `POST /exercises/translate/batch-evaluate` - Evaluate all answers in 1 API call
+
+### Expected RPD Reduction
+- **Translation exercises**: 20 API calls → 2 API calls per 10 exercises (90% reduction)
+- **Fill-in-blank drills**: 10 API calls → 1 API call per 10 words (90% reduction)

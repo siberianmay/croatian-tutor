@@ -88,6 +88,71 @@ class SentenceConstructionRequest(BaseModel):
     cefr_level: CEFRLevel = CEFRLevel.A1
 
 
+# -----------------------------------------------------------------------------
+# Batch Exercise Models
+# -----------------------------------------------------------------------------
+
+
+class TranslationBatchRequest(BaseModel):
+    """Request for batch translation exercises."""
+
+    direction: str = Field(..., pattern="^(cr_en|en_cr)$")
+    cefr_level: CEFRLevel = CEFRLevel.A1
+    count: int = Field(default=10, ge=1, le=20)
+
+
+class TranslationBatchItem(BaseModel):
+    """Single translation exercise in a batch."""
+
+    exercise_id: str
+    topic_id: int | None
+    topic_name: str | None
+    source_text: str
+    source_language: str
+    target_language: str
+    expected_answer: str
+
+
+class TranslationBatchResponse(BaseModel):
+    """Response with batch of translation exercises."""
+
+    exercises: list[TranslationBatchItem]
+    direction: str
+    cefr_level: CEFRLevel
+
+
+class TranslationAnswerItem(BaseModel):
+    """Single answer to evaluate in batch."""
+
+    user_answer: str
+    expected_answer: str
+    source_text: str
+    topic_id: int | None = None
+
+
+class TranslationBatchEvaluateRequest(BaseModel):
+    """Request to evaluate multiple translation answers."""
+
+    answers: list[TranslationAnswerItem]
+    duration_minutes: int = Field(default=0, ge=0)
+
+
+class TranslationEvaluationResult(BaseModel):
+    """Evaluation result for a single translation."""
+
+    correct: bool
+    score: float
+    feedback: str
+    error_category: str | None = None
+    topic_id: int | None = None
+
+
+class TranslationBatchEvaluateResponse(BaseModel):
+    """Response with all translation evaluations."""
+
+    results: list[TranslationEvaluationResult]
+
+
 class ReadingExerciseRequest(BaseModel):
     """Request for reading exercise."""
 
@@ -239,6 +304,94 @@ async def generate_translation_exercise(
         source_language=result["source_language"],
         target_language=result["target_language"],
         expected_answer=result["expected_answer"],
+    )
+
+
+@router.post("/translate/batch", response_model=TranslationBatchResponse)
+async def generate_translation_exercises_batch(
+    request: TranslationBatchRequest,
+    service: Annotated[ExerciseService, Depends(get_exercise_service)],
+) -> TranslationBatchResponse:
+    """
+    Generate multiple translation exercises in a single API call.
+
+    This endpoint batches exercise generation to reduce API calls.
+    Returns a list of exercises that can be completed by the user,
+    then submitted together for batch evaluation.
+    """
+    results = await service.generate_translation_exercises_batch(
+        user_id=DEFAULT_USER_ID,
+        direction=request.direction,
+        count=request.count,
+        cefr_level=request.cefr_level,
+    )
+
+    exercises = [
+        TranslationBatchItem(
+            exercise_id=r["exercise_id"],
+            topic_id=r.get("topic_id"),
+            topic_name=r.get("topic_name"),
+            source_text=r["source_text"],
+            source_language=r["source_language"],
+            target_language=r["target_language"],
+            expected_answer=r["expected_answer"],
+        )
+        for r in results
+    ]
+
+    return TranslationBatchResponse(
+        exercises=exercises,
+        direction=request.direction,
+        cefr_level=request.cefr_level,
+    )
+
+
+@router.post("/translate/batch-evaluate", response_model=TranslationBatchEvaluateResponse)
+async def evaluate_translation_batch(
+    request: TranslationBatchEvaluateRequest,
+    service: Annotated[ExerciseService, Depends(get_exercise_service)],
+) -> TranslationBatchEvaluateResponse:
+    """
+    Evaluate multiple translation answers in a single API call.
+
+    Submit all answers from a batch session for evaluation.
+    Updates topic progress for each answer with a topic_id.
+    """
+    # Convert request to service format
+    answers = [
+        {
+            "user_answer": a.user_answer,
+            "expected_answer": a.expected_answer,
+            "source_text": a.source_text,
+            "topic_id": a.topic_id,
+        }
+        for a in request.answers
+    ]
+
+    results = await service.evaluate_translation_answers_batch(
+        user_id=DEFAULT_USER_ID,
+        answers=answers,
+    )
+
+    # Log activity (count all as one session)
+    await service.log_exercise_activity(
+        user_id=DEFAULT_USER_ID,
+        exercise_type=ExerciseType.TRANSLATION_EN_CR,  # Generic translation type
+        duration_minutes=request.duration_minutes,
+        exercises_completed=len(request.answers),
+    )
+
+    return TranslationBatchEvaluateResponse(
+        results=[
+            TranslationEvaluationResult(
+                correct=r["correct"],
+                score=r["score"],
+                feedback=r["feedback"],
+                error_category=r.get("error_category"),
+                topic_id=r.get("topic_id"),
+            )
+            for r in results
+        ]
     )
 
 

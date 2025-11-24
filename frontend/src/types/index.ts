@@ -172,6 +172,53 @@ export interface TranslationResponse {
   expected_answer: string;
 }
 
+// Batch Translation types
+export interface TranslationBatchRequest {
+  direction: 'cr_en' | 'en_cr';
+  cefr_level: CEFRLevel;
+  count: number;
+}
+
+export interface TranslationBatchItem {
+  exercise_id: string;
+  topic_id: number | null;
+  topic_name: string | null;
+  source_text: string;
+  source_language: string;
+  target_language: string;
+  expected_answer: string;
+}
+
+export interface TranslationBatchResponse {
+  exercises: TranslationBatchItem[];
+  direction: string;
+  cefr_level: CEFRLevel;
+}
+
+export interface TranslationAnswerItem {
+  user_answer: string;
+  expected_answer: string;
+  source_text: string;
+  topic_id: number | null;
+}
+
+export interface TranslationBatchEvaluateRequest {
+  answers: TranslationAnswerItem[];
+  duration_minutes: number;
+}
+
+export interface TranslationEvaluationResult {
+  correct: boolean;
+  score: number;
+  feedback: string;
+  error_category: string | null;
+  topic_id: number | null;
+}
+
+export interface TranslationBatchEvaluateResponse {
+  results: TranslationEvaluationResult[];
+}
+
 // Sentence Construction types
 export interface SentenceConstructionRequest {
   cefr_level?: CEFRLevel;

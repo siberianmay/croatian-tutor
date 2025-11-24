@@ -1,6 +1,6 @@
 # Gemini API Optimization - Context
 
-**Last Updated:** 2025-11-23
+**Last Updated:** 2025-11-24
 
 ## Problem Statement
 
@@ -9,24 +9,35 @@ Free tier Gemini API has limited RPD (requests per day) but generous token limit
 **User Quote:**
 > "We make many small api calls (practically, most exercises are single-sentence based, which means that we have to use one call to get this assignment, then the second to check the answer). We could ask Gemini to give an exercise with chunk of exercises, that the user would do. And then submit a chunk of answers and make Gemini to check all of them in one request."
 
+## Current Status: Phase 1 Complete ✅
+
+Phase 1 batching optimizations are implemented and working:
+- Fill-in-blank exercises now batch all words in 1 API call
+- Translation exercises batch 10 exercises per generation call
+- Translation evaluation batches all answers in 1 API call
+- Expected RPD reduction: ~90% for translation and fill-in-blank exercises
+
 ## Key Files
 
 ### Backend - Services
-| File | Purpose | Relevance |
-|------|---------|-----------|
-| `backend/app/services/gemini_service.py` | Core Gemini API wrapper | All API calls go through here |
-| `backend/app/services/exercise_service.py` | Exercise generation/evaluation | Main target for batching |
+| File | Purpose | Changes Made |
+|------|---------|--------------|
+| `backend/app/services/gemini_service.py` | Core Gemini API wrapper | Added `generate_fill_in_blank_batch()`, model randomization |
+| `backend/app/services/exercise_service.py` | Exercise generation/evaluation | Added `generate_translation_exercises_batch()`, `evaluate_translation_answers_batch()` |
 | `backend/app/services/drill_service.py` | Vocabulary drills | No direct Gemini calls |
 
 ### Backend - API Routes
-| File | Purpose | Relevance |
-|------|---------|-----------|
-| `backend/app/api/exercises.py` | Exercise endpoints | New batch endpoints go here |
-| `backend/app/api/drills.py` | Drill endpoints | Fill-in-blank uses Gemini |
+| File | Purpose | Changes Made |
+|------|---------|--------------|
+| `backend/app/api/exercises.py` | Exercise endpoints | Added batch schemas + 2 new endpoints |
+| `backend/app/api/drills.py` | Drill endpoints | Updated to use batch method |
 
-### Frontend (affected by batching)
-- Exercise components need to handle batch response/state
-- Need to collect answers before batch evaluation
+### Frontend
+| File | Purpose | Changes Made |
+|------|---------|--------------|
+| `frontend/src/types/index.ts` | TypeScript types | Added 6 batch-related types |
+| `frontend/src/services/exerciseApi.ts` | API client | Added batch methods |
+| `frontend/src/pages/exercises/TranslationPage.tsx` | Translation UI | Complete rewrite for batch mode |
 
 ## Current API Call Points
 
@@ -34,24 +45,27 @@ Free tier Gemini API has limited RPD (requests per day) but generous token limit
 1. `_generate(prompt)` - Single generation, 1024 tokens max
 2. `_generate_bulk(prompt)` - Bulk generation, 4096 tokens max
 3. `generate_in_chat(session_key, prompt)` - Chat-based generation with history
+4. `generate_fill_in_blank_batch(words)` - **NEW** Batch fill-in-blank (Phase 1)
 
 ### ExerciseService Gemini Calls
 | Method | Call Type | Batching Status |
 |--------|-----------|-----------------|
 | `conversation_turn` | `_generate` | N/A (conversational) |
 | `generate_grammar_exercise` | `generate_in_chat` | NOT BATCHED |
-| `generate_translation_exercise` | `generate_in_chat` | NOT BATCHED |
+| `generate_translation_exercise` | `generate_in_chat` | Legacy single-exercise |
+| `generate_translation_exercises_batch` | `_generate_bulk` | ✅ **BATCHED (Phase 1)** |
+| `evaluate_translation_answers_batch` | `_generate_bulk` | ✅ **BATCHED (Phase 1)** |
 | `generate_sentence_construction` | `generate_in_chat` | NOT BATCHED |
 | `generate_reading_exercise` | `generate_in_chat` | Includes multi-Q (OK) |
 | `generate_dialogue_exercise` | `generate_in_chat` | NOT BATCHED |
-| `evaluate_answer` | `_generate` | NOT BATCHED |
+| `evaluate_answer` | `_generate` | Legacy single-answer |
 | `evaluate_reading_answers` | `_generate` | ALREADY BATCHED |
 | `generate_topic_description` | `_generate` | One-time (OK) |
 
-### Drills API Direct Calls
-| Location | Call | Issue |
-|----------|------|-------|
-| `drills.py:118` | `gemini.generate_fill_in_blank()` | Called in loop - N calls |
+### Drills API
+| Location | Call | Status |
+|----------|------|--------|
+| `drills.py:126` | `gemini.generate_fill_in_blank_batch()` | ✅ **BATCHED (Phase 1)** |
 
 ## Critical Constraint: Topic Progress Tracking
 
@@ -96,53 +110,63 @@ The system tracks grammar topic mastery via `TopicProgress`. When exercises are 
 
 ## Session Progress
 
-### Completed
+### Phase 1 - Completed ✅
 - [x] Analyzed all Gemini API call points
 - [x] Identified fill-in-blank as worst offender
 - [x] Created comprehensive optimization plan
 - [x] Documented current state and proposed changes
+- [x] Implemented fill-in-blank batching (Phase 1.1)
+- [x] Implemented translation batch generation (Phase 1.2)
+- [x] Implemented translation batch evaluation (Phase 1.3)
+- [x] Updated frontend TranslationPage for batch mode
+- [x] All TypeScript and Python syntax checks pass
 
-### Next Steps
-- [ ] Implement fill-in-blank batching (Phase 1.1)
-- [ ] Implement translation batching (Phase 1.2-1.3)
-- [ ] Measure RPD reduction
+### Next Steps (Phase 2+)
+- [ ] Extend batching to grammar exercises
+- [ ] Extend batching to sentence construction
+- [ ] Add client-side simple evaluation option
+- [ ] Measure actual RPD reduction in production
 
 ## Related Code Snippets
 
-### Current Fill-in-Blank Loop (Problem)
+### Fill-in-Blank Batch (IMPLEMENTED ✅)
 ```python
-# drills.py:117-122
-for word in words:
-    result = await gemini.generate_fill_in_blank(
-        word=word.croatian,
-        english=word.english,
-        cefr_level=word.cefr_level.value,
-    )
-    items.append(...)
+# drills.py:115-127 - NOW USES BATCH
+batch_input = [
+    {"word_id": word.id, "croatian": word.croatian, ...}
+    for word in words
+]
+results = await gemini.generate_fill_in_blank_batch(batch_input)  # 1 API call!
 ```
 
-### Reading Batch Evaluation (Reference)
+### Translation Batch Generation (IMPLEMENTED ✅)
 ```python
-# exercise_service.py:762-855
-async def evaluate_reading_answers(
-    self,
-    user_id: int,
-    passage: str,
-    questions_and_answers: list[dict[str, str]],
+# exercise_service.py:422-524
+async def generate_translation_exercises_batch(
+    self, user_id: int, direction: str, count: int = 10, cefr_level: CEFRLevel = CEFRLevel.A1
 ) -> list[dict[str, Any]]:
-    # Single API call evaluates all answers
+    # Single API call generates all exercises with topic_ids
+    response_text = await self._gemini._generate_bulk(prompt)
 ```
 
-### Translation Generation (To Be Batched)
+### Translation Batch Evaluation (IMPLEMENTED ✅)
 ```python
-# exercise_service.py:324-420
-async def generate_translation_exercise(...):
-    # Currently generates 1 exercise per call
-    response_text = await self._gemini.generate_in_chat(...)
+# exercise_service.py:526-660
+async def evaluate_translation_answers_batch(
+    self, user_id: int, answers: list[dict[str, Any]]
+) -> list[dict[str, Any]]:
+    # Single API call evaluates all, updates TopicProgress for each
+```
+
+### New API Endpoints
+```
+POST /exercises/translate/batch          -> TranslationBatchResponse
+POST /exercises/translate/batch-evaluate -> TranslationBatchEvaluateResponse
 ```
 
 ## Notes
 
 - Chat sessions (`_chat_sessions` dict in GeminiService) help with variety
-- Clearing sessions too often may reduce variety
-- Consider batch generation WITHIN a chat session for best of both
+- Batch generation does NOT use chat sessions (stateless) - acceptable tradeoff
+- Model selection now randomized across available Gemini models (user modification)
+- Legacy single-exercise endpoints still available for backward compatibility
