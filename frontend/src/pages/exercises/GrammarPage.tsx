@@ -28,8 +28,6 @@ interface UserAnswer {
   userAnswer: string;
 }
 
-const BATCH_SIZE = 10;
-
 const GrammarPage: React.FC = () => {
   const navigate = useNavigate();
   const [cefrLevel, setCefrLevel] = useState<CEFRLevel>('A1');
@@ -60,7 +58,6 @@ const GrammarPage: React.FC = () => {
     mutationFn: () =>
       exerciseApi.generateGrammarBatch({
         cefr_level: cefrLevel,
-        count: BATCH_SIZE,
       }),
     onSuccess: (data) => {
       setExercises(data.exercises);
@@ -179,7 +176,7 @@ const GrammarPage: React.FC = () => {
             <div>
               <Title order={2}>Grammar (Batch Mode)</Title>
               <Text c="dimmed" size="sm">
-                Complete {BATCH_SIZE} grammar exercises, then get all results at once
+                Complete grammar exercises, then get all results at once
               </Text>
             </div>
           </Group>
@@ -202,7 +199,7 @@ const GrammarPage: React.FC = () => {
           <Stack align="center" gap="lg">
             <Text size="lg">Ready to practice grammar?</Text>
             <Text size="sm" c="dimmed" ta="center">
-              You'll get {BATCH_SIZE} exercises covering different grammar topics.<br />
+              You'll get exercises covering different grammar topics.<br />
               Weak topics are prioritized for more practice.
             </Text>
             <Button

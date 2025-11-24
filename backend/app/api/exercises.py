@@ -106,7 +106,7 @@ class TranslationBatchRequest(BaseModel):
 
     direction: str = Field(..., pattern="^(cr_en|en_cr)$")
     cefr_level: CEFRLevel = CEFRLevel.A1
-    count: int = Field(default=10, ge=1, le=20)
+    count: int | None = Field(default=None, ge=1, le=20, description="Uses settings default if not provided")
 
 
 class TranslationBatchItem(BaseModel):
@@ -166,7 +166,7 @@ class GrammarBatchRequest(BaseModel):
     """Request for batch grammar exercises."""
 
     cefr_level: CEFRLevel | None = None
-    count: int = Field(default=10, ge=1, le=20)
+    count: int | None = Field(default=None, ge=1, le=20, description="Uses settings default if not provided")
 
 
 class GrammarBatchItem(BaseModel):
@@ -342,6 +342,7 @@ async def generate_grammar_exercise(
 async def generate_grammar_exercises_batch(
     request: GrammarBatchRequest,
     service: Annotated[ExerciseService, Depends(get_exercise_service)],
+    db: Annotated[AsyncSession, Depends(get_db)],
 ) -> GrammarBatchResponse:
     """
     Generate multiple grammar exercises in a single API call.
@@ -349,9 +350,16 @@ async def generate_grammar_exercises_batch(
     Returns a list of exercises that can be completed by the user,
     then submitted together for batch evaluation.
     """
+    # Use settings default if count not specified
+    count = request.count
+    if count is None:
+        settings_crud = AppSettingsCRUD(db)
+        settings = await settings_crud.get()
+        count = settings.grammar_batch_size
+
     results = await service.generate_grammar_exercises_batch(
         user_id=DEFAULT_USER_ID,
-        count=request.count,
+        count=count,
         cefr_level=request.cefr_level,
     )
 
@@ -456,6 +464,7 @@ async def generate_translation_exercise(
 async def generate_translation_exercises_batch(
     request: TranslationBatchRequest,
     service: Annotated[ExerciseService, Depends(get_exercise_service)],
+    db: Annotated[AsyncSession, Depends(get_db)],
 ) -> TranslationBatchResponse:
     """
     Generate multiple translation exercises in a single API call.
@@ -464,10 +473,17 @@ async def generate_translation_exercises_batch(
     Returns a list of exercises that can be completed by the user,
     then submitted together for batch evaluation.
     """
+    # Use settings default if count not specified
+    count = request.count
+    if count is None:
+        settings_crud = AppSettingsCRUD(db)
+        settings = await settings_crud.get()
+        count = settings.translation_batch_size
+
     results = await service.generate_translation_exercises_batch(
         user_id=DEFAULT_USER_ID,
         direction=request.direction,
-        count=request.count,
+        count=count,
         cefr_level=request.cefr_level,
     )
 

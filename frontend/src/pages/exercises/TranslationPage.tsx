@@ -31,8 +31,6 @@ interface UserAnswer {
   userAnswer: string;
 }
 
-const BATCH_SIZE = 10;
-
 const TranslationPage: React.FC = () => {
   const navigate = useNavigate();
   const [cefrLevel, setCefrLevel] = useState<CEFRLevel>('A1');
@@ -65,7 +63,6 @@ const TranslationPage: React.FC = () => {
       exerciseApi.generateTranslationBatch({
         direction,
         cefr_level: cefrLevel,
-        count: BATCH_SIZE,
       }),
     onSuccess: (data) => {
       setExercises(data.exercises);
@@ -184,7 +181,7 @@ const TranslationPage: React.FC = () => {
             <div>
               <Title order={2}>Translation (Batch Mode)</Title>
               <Text c="dimmed" size="sm">
-                Complete {BATCH_SIZE} translations, then get all results at once
+                Complete translations, then get all results at once
               </Text>
             </div>
           </Group>
@@ -216,7 +213,7 @@ const TranslationPage: React.FC = () => {
               size="md"
             />
             <Text size="sm" c="dimmed" ta="center">
-              You'll get {BATCH_SIZE} sentences to translate.<br />
+              You'll get sentences to translate.<br />
               Complete all, then see your results.
             </Text>
             <Button

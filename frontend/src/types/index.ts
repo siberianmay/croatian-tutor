@@ -158,7 +158,7 @@ export interface GrammarExerciseResponse {
 // Batch Grammar types
 export interface GrammarBatchRequest {
   cefr_level?: CEFRLevel;
-  count: number;
+  count?: number;
 }
 
 export interface GrammarBatchItem {
@@ -220,7 +220,7 @@ export interface TranslationResponse {
 export interface TranslationBatchRequest {
   direction: 'cr_en' | 'en_cr';
   cefr_level: CEFRLevel;
-  count: number;
+  count?: number;
 }
 
 export interface TranslationBatchItem {

@@ -71,7 +71,10 @@ const LearnPage: React.FC = () => {
   return (
     <Stack gap="xl">
       <div>
-        <Title order={1}>Learn Croatian</Title>
+        <Group gap="sm" align="center">
+          <Title order={1}>Learn Croatian</Title>
+          <Badge size="lg" variant="light" color="blue">AI TUTOR</Badge>
+        </Group>
         <Text c="dimmed" mt="sm">
           Choose an exercise type to practice your Croatian skills
         </Text>
@@ -84,7 +87,6 @@ const LearnPage: React.FC = () => {
           icon={<IconMessageCircle size={28} />}
           color="blue"
           path="/conversation"
-          badge="AI Tutor"
         />
 
         <ExerciseCard
