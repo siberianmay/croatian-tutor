@@ -3,11 +3,10 @@
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import DateTime, Float, ForeignKey, Integer, String, func
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-
 from app.database import Base
 from app.models.enums import CEFRLevel, Gender, PartOfSpeech
+from sqlalchemy import DateTime, Float, ForeignKey, Integer, String, func
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 if TYPE_CHECKING:
     from app.models.user import User
@@ -19,9 +18,7 @@ class Word(Base):
     __tablename__ = "word"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
-    user_id: Mapped[int] = mapped_column(
-        Integer, ForeignKey("user.id"), nullable=False, index=True
-    )
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("user.id"), nullable=False, index=True)
 
     # Word content
     croatian: Mapped[str] = mapped_column(String(200), nullable=False, index=True)
@@ -38,12 +35,8 @@ class Word(Base):
     correct_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     wrong_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     correct_streak: Mapped[int] = mapped_column(Integer, default=0, nullable=False)  # Consecutive correct
-    next_review_at: Mapped[datetime | None] = mapped_column(
-        DateTime(timezone=True), nullable=True
-    )
-    last_reviewed_at: Mapped[datetime | None] = mapped_column(
-        DateTime(timezone=True), nullable=True
-    )
+    next_review_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    last_reviewed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     # Timestamps
     created_at: Mapped[datetime] = mapped_column(
@@ -54,3 +47,9 @@ class Word(Base):
 
     # Relationships
     user: Mapped["User"] = relationship(back_populates="words")
+
+    def __str__(self):
+        return self.croatian
+
+    def __repr__(self):
+        return self.__str__()

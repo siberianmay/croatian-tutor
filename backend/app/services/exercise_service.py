@@ -125,6 +125,57 @@ AVAILABLE GRAMMAR TOPICS (prioritize WEAK topics for practice):
 
         return context, topic_map
 
+    async def _get_vocabulary_for_exercise(
+        self,
+        user_id: int,
+        count: int = 15,
+    ) -> str:
+        """
+        Get mixed vocabulary for exercise generation using SRS-aware sampling.
+
+        Combines:
+        - Words due for review (priority)
+        - Words with low mastery (reinforcement)
+        - Random words (variety)
+
+        Returns formatted string for Gemini prompt.
+        """
+        collected_ids: list[int] = []
+        collected_words: list[str] = []
+
+        # 1. Words due for review (highest priority)
+        due_limit = count // 3
+        due_words = await self._word_crud.get_due_words(user_id, limit=due_limit)
+        for w in due_words:
+            collected_ids.append(w.id)
+            collected_words.append(f"{w.croatian} ({w.english})")
+
+        # 2. Low mastery words (reinforcement)
+        low_mastery_limit = count // 3
+        low_mastery_words = await self._word_crud.get_low_mastery_words(
+            user_id, limit=low_mastery_limit, exclude_ids=collected_ids
+        )
+        for w in low_mastery_words:
+            collected_ids.append(w.id)
+            collected_words.append(f"{w.croatian} ({w.english})")
+
+        # 3. Random words for variety (fill remaining)
+        remaining = count - len(collected_words)
+        if remaining > 0:
+            random_words = await self._word_crud.get_random_words(
+                user_id, limit=remaining, exclude_ids=collected_ids
+            )
+            for w in random_words:
+                collected_words.append(f"{w.croatian} ({w.english})")
+
+        print(f"\n{due_words=}\n{low_mastery_words=}\n{random_words=}\n")
+        if not collected_words:
+            return ""
+
+        return f"""
+USER'S VOCABULARY TO PRACTICE (try to use some of these words in sentences):
+{', '.join(collected_words)}"""
+
     # -------------------------------------------------------------------------
     # Conversation
     # -------------------------------------------------------------------------
@@ -563,6 +614,7 @@ Return exactly {len(answers)} objects in the same order."""
         # Get grammar topics for progress tracking
         grammar_context, topic_map = await self._get_grammar_topics_for_exercise(user_id)
         user_context = await self._get_user_context(user_id)
+        vocab_context = await self._get_vocabulary_for_exercise(user_id, count=6)
 
         # Build session key - separate sessions for each direction
         session_key = self._build_session_key(user_id, "translation", direction)
@@ -571,6 +623,7 @@ Return exactly {len(answers)} objects in the same order."""
         system_instruction = f"""You are a Croatian translation exercise generator.
 {user_context}
 {grammar_context}
+{vocab_context}
 
 CRITICAL RULES:
 1. Generate UNIQUE sentences each time - NEVER repeat a sentence you've already given
@@ -665,6 +718,7 @@ Respond with ONLY valid JSON:
         # Get grammar topics for progress tracking
         grammar_context, topic_map = await self._get_grammar_topics_for_exercise(user_id)
         user_context = await self._get_user_context(user_id)
+        vocab_context = await self._get_vocabulary_for_exercise(user_id, count=15)
 
         # Format topic IDs for the prompt
         topic_ids_str = ", ".join(str(tid) for tid in topic_map.keys()) if topic_map else "none"
@@ -673,6 +727,7 @@ Respond with ONLY valid JSON:
 
 {user_context}
 {grammar_context}
+{vocab_context}
 
 Direction: {source_lang} → {target_lang}
 CEFR Level: {cefr_level.value}
@@ -890,14 +945,9 @@ Return exactly {len(answers)} objects in the same order."""
                 "expected_answer": str
             }
         """
-        # Try to use user's vocabulary
-        user_words = await self._word_crud.get_multi(user_id=user_id, limit=10)
-        vocab_context = ""
-        if user_words:
-            vocab_context = f"Try to use some of these words the user knows: {', '.join(w.croatian for w in user_words[:5])}"
-
         grammar_context = await self._get_learnt_grammar_context(user_id)
         user_context = await self._get_user_context(user_id)
+        vocab_context = await self._get_vocabulary_for_exercise(user_id, count=12)
 
         # Build session key for chat context
         session_key = self._build_session_key(user_id, "sentence_construction")
@@ -906,17 +956,16 @@ Return exactly {len(answers)} objects in the same order."""
         system_instruction = f"""You are a Croatian sentence construction exercise generator.
 {user_context}
 {grammar_context}
+{vocab_context}
 
 CRITICAL RULES:
 1. Generate UNIQUE sentences each time - never repeat
 2. Vary vocabulary, sentence structures, and topics
-3. Always respond with ONLY valid JSON (no markdown)
-4. Remember all sentences from this conversation to avoid repetition"""
+3. Always respond with ONLY valid JSON (no markdown)"""
 
         prompt = f"""Generate a NEW sentence construction exercise (different from any previous ones).
 
 CEFR Level: {cefr_level.value}
-{vocab_context}
 
 Create a Croatian sentence, then provide its words in shuffled order for the learner to arrange.
 
@@ -977,6 +1026,7 @@ Respond with ONLY valid JSON:
         """
         grammar_context = await self._get_learnt_grammar_context(user_id)
         user_context = await self._get_user_context(user_id)
+        vocab_context = await self._get_vocabulary_for_exercise(user_id, count=30)
 
         # Build session key for chat context
         session_key = self._build_session_key(user_id, "reading")
@@ -989,6 +1039,7 @@ Respond with ONLY valid JSON:
         system_instruction = f"""You are a Croatian reading comprehension exercise generator.
 {user_context}
 {grammar_context}
+{vocab_context}
 
 CRITICAL RULES:
 1. Generate UNIQUE passages each time - never repeat topics or scenarios

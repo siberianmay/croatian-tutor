@@ -3,12 +3,11 @@
 from datetime import datetime, timedelta, timezone
 from typing import Sequence
 
-from sqlalchemy import select, func
-from sqlalchemy.ext.asyncio import AsyncSession
-
-from app.models.word import Word
 from app.models.enums import CEFRLevel, PartOfSpeech
+from app.models.word import Word
 from app.schemas.word import WordCreate, WordUpdate
+from sqlalchemy import Date, func, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class WordCRUD:
@@ -150,8 +149,8 @@ class WordCRUD:
             .where(Word.user_id == user_id)
             .where((Word.next_review_at <= now) | (Word.next_review_at.is_(None)))
             .order_by(
-                Word.next_review_at.asc().nullsfirst(),
-                Word.mastery_score.asc(),
+                Word.next_review_at.cast(Date).asc().nullsfirst(),
+                func.random(),
             )
             .limit(limit)
         )
@@ -254,3 +253,40 @@ class WordCRUD:
             for _ in range(correct_streak - 2):
                 base_interval = base_interval * ease_factor
             return min(base_interval, 365)  # Cap at 1 year
+
+    async def get_low_mastery_words(
+        self,
+        user_id: int,
+        *,
+        limit: int = 10,
+        exclude_ids: list[int] | None = None,
+    ) -> Sequence[Word]:
+        """Get words with low mastery scores for reinforcement practice."""
+        query = (
+            select(Word)
+            .where(Word.user_id == user_id)
+            .order_by(
+                Word.mastery_score.asc(),
+                func.random(),
+            )
+        )
+        if exclude_ids:
+            query = query.where(Word.id.notin_(exclude_ids))
+        query = query.limit(limit)
+        result = await self._db.execute(query)
+        return result.scalars().all()
+
+    async def get_random_words(
+        self,
+        user_id: int,
+        *,
+        limit: int = 10,
+        exclude_ids: list[int] | None = None,
+    ) -> Sequence[Word]:
+        """Get random words for variety in exercises."""
+        query = select(Word).where(Word.user_id == user_id)
+        if exclude_ids:
+            query = query.where(Word.id.notin_(exclude_ids))
+        query = query.order_by(func.random()).limit(limit)
+        result = await self._db.execute(query)
+        return result.scalars().all()
