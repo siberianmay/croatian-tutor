@@ -289,6 +289,7 @@ Respond with ONLY valid JSON:
         """
         # Get all learnt topics with their IDs and mastery
         grammar_context, topic_map = await self._get_grammar_topics_for_exercise(user_id)
+        vocab_context = await self._get_vocabulary_for_exercise(user_id, count=5)
 
         if not topic_map:
             return {
@@ -308,6 +309,7 @@ Respond with ONLY valid JSON:
         system_instruction = f"""You are a Croatian grammar exercise generator.
 {user_context}
 {grammar_context}
+{vocab_context}
 
 CRITICAL RULES:
 1. Generate UNIQUE exercises each time - never repeat
@@ -386,6 +388,7 @@ Respond with ONLY valid JSON:
             List of exercise dicts with topic_id, instruction, question, hints, expected_answer
         """
         grammar_context, topic_map = await self._get_grammar_topics_for_exercise(user_id)
+        vocab_context = await self._get_vocabulary_for_exercise(user_id, count=15)
 
         if not topic_map:
             return []
@@ -397,6 +400,7 @@ Respond with ONLY valid JSON:
 
 {user_context}
 {grammar_context}
+{vocab_context}
 
 Available topic IDs: [{topic_ids_str}]
 
