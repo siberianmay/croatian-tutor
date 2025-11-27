@@ -110,6 +110,8 @@ export interface GrammarTopic {
   rule_description: string | null;
   display_order: number;
   is_learnt: boolean;
+  mastery_score: number;
+  times_practiced: number;
 }
 
 export interface TopicProgress {

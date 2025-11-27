@@ -33,6 +33,14 @@ const CEFR_COLORS: Record<CEFRLevel, string> = {
   C2: 'grape',
 };
 
+const getMasteryColor = (score: number): string => {
+  // Score is 0-1000, convert thresholds accordingly
+  if (score >= 800) return 'green';
+  if (score >= 500) return 'yellow';
+  if (score >= 200) return 'orange';
+  return 'red';
+};
+
 const GrammarTopicsPage: React.FC = () => {
   const queryClient = useQueryClient();
   const [opened, { open, close }] = useDisclosure(false);
@@ -150,12 +158,13 @@ const GrammarTopicsPage: React.FC = () => {
                       {levelTopics.filter((t) => t.is_learnt).length} / {levelTopics.length} learned
                     </Text>
                   </Group>
-                  <Table.ScrollContainer minWidth={600}>
+                  <Table.ScrollContainer minWidth={700}>
                     <Table striped highlightOnHover>
                       <Table.Thead>
                         <Table.Tr>
                           <Table.Th>Topic</Table.Th>
                           <Table.Th>Status</Table.Th>
+                          <Table.Th>Mastery</Table.Th>
                           <Table.Th>Actions</Table.Th>
                         </Table.Tr>
                       </Table.Thead>
@@ -172,6 +181,15 @@ const GrammarTopicsPage: React.FC = () => {
                                 <Badge color="gray" variant="light">
                                   Not learned
                                 </Badge>
+                              )}
+                            </Table.Td>
+                            <Table.Td>
+                              {topic.times_practiced > 0 ? (
+                                <Badge color={getMasteryColor(topic.mastery_score)} size="sm">
+                                  {Math.round(topic.mastery_score / 100)}/10
+                                </Badge>
+                              ) : (
+                                <Text size="sm" c="dimmed">—</Text>
                               )}
                             </Table.Td>
                             <Table.Td>
@@ -229,6 +247,11 @@ const GrammarTopicsPage: React.FC = () => {
               {selectedTopic.is_learnt && (
                 <Badge color="green" leftSection={<IconCheck size={12} />}>
                   Learned
+                </Badge>
+              )}
+              {selectedTopic.times_practiced > 0 && (
+                <Badge color={getMasteryColor(selectedTopic.mastery_score)} size="sm">
+                  Mastery: {Math.round(selectedTopic.mastery_score / 100)}/10
                 </Badge>
               )}
             </Group>

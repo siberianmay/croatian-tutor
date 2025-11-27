@@ -48,7 +48,7 @@ async def list_topics(
 ) -> list[GrammarTopicResponse]:
     """List grammar topics with pagination and optional CEFR level filter."""
     topics = await crud.get_multi(skip=skip, limit=limit, cefr_level=cefr_level)
-    learnt_ids = await progress_crud.get_learnt_topic_ids(DEFAULT_USER_ID)
+    progress_map = await progress_crud.get_progress_map(DEFAULT_USER_ID)
 
     return [
         GrammarTopicResponse(
@@ -58,7 +58,9 @@ async def list_topics(
             prerequisite_ids=t.prerequisite_ids,
             rule_description=t.rule_description,
             display_order=t.display_order,
-            is_learnt=t.id in learnt_ids,
+            is_learnt=t.id in progress_map,
+            mastery_score=progress_map[t.id].mastery_score if t.id in progress_map else 0,
+            times_practiced=progress_map[t.id].times_practiced if t.id in progress_map else 0,
         )
         for t in topics
     ]
@@ -132,7 +134,8 @@ async def get_topic(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Topic not found",
         )
-    learnt_ids = await progress_crud.get_learnt_topic_ids(DEFAULT_USER_ID)
+    progress_map = await progress_crud.get_progress_map(DEFAULT_USER_ID)
+    progress = progress_map.get(topic_id)
     return GrammarTopicResponse(
         id=topic.id,
         name=topic.name,
@@ -140,7 +143,9 @@ async def get_topic(
         prerequisite_ids=topic.prerequisite_ids,
         rule_description=topic.rule_description,
         display_order=topic.display_order,
-        is_learnt=topic.id in learnt_ids,
+        is_learnt=topic_id in progress_map,
+        mastery_score=progress.mastery_score if progress else 0,
+        times_practiced=progress.times_practiced if progress else 0,
     )
 
 
@@ -188,7 +193,7 @@ async def mark_topic_learnt(
             detail="Topic not found",
         )
 
-    await progress_crud.mark_as_learnt(DEFAULT_USER_ID, topic_id)
+    progress = await progress_crud.mark_as_learnt(DEFAULT_USER_ID, topic_id)
 
     return GrammarTopicResponse(
         id=topic.id,
@@ -198,6 +203,8 @@ async def mark_topic_learnt(
         rule_description=topic.rule_description,
         display_order=topic.display_order,
         is_learnt=True,
+        mastery_score=progress.mastery_score,
+        times_practiced=progress.times_practiced,
     )
 
 
@@ -223,7 +230,8 @@ async def generate_topic_description(
             detail="Failed to generate description",
         )
 
-    learnt_ids = await progress_crud.get_learnt_topic_ids(DEFAULT_USER_ID)
+    progress_map = await progress_crud.get_progress_map(DEFAULT_USER_ID)
+    progress = progress_map.get(topic_id)
 
     # Refresh topic from DB
     topic = await crud.get(topic_id)
@@ -234,5 +242,7 @@ async def generate_topic_description(
         prerequisite_ids=topic.prerequisite_ids,
         rule_description=topic.rule_description,
         display_order=topic.display_order,
-        is_learnt=topic.id in learnt_ids,
+        is_learnt=topic_id in progress_map,
+        mastery_score=progress.mastery_score if progress else 0,
+        times_practiced=progress.times_practiced if progress else 0,
     )

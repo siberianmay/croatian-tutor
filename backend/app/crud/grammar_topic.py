@@ -318,3 +318,10 @@ class TopicProgressCRUD:
     async def mark_as_learnt(self, user_id: int, topic_id: int) -> TopicProgress:
         """Mark a topic as learnt by creating a TopicProgress record."""
         return await self.get_or_create(user_id, topic_id)
+
+    async def get_progress_map(self, user_id: int) -> dict[int, TopicProgress]:
+        """Get all progress records for a user as a dict keyed by topic_id."""
+        result = await self._db.execute(
+            select(TopicProgress).where(TopicProgress.user_id == user_id)
+        )
+        return {p.topic_id: p for p in result.scalars().all()}

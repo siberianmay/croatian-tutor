@@ -36,6 +36,8 @@ class GrammarTopicResponse(GrammarTopicBase):
 
     id: int
     is_learnt: bool = False
+    mastery_score: int = 0
+    times_practiced: int = 0
 
     model_config = {"from_attributes": True}
 
