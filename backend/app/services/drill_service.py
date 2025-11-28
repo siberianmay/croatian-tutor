@@ -1,6 +1,7 @@
 """Drill service for vocabulary practice sessions."""
 
 import random
+import re
 from typing import Annotated
 
 from fastapi import Depends
@@ -103,6 +104,11 @@ class DrillService:
             for w in words
         ]
 
+    @staticmethod
+    def _strip_parentheses(text: str) -> str:
+        """Remove parenthetical content from text, e.g., 'chicken (meat)' -> 'chicken'."""
+        return re.sub(r"\s*\([^)]*\)", "", text).strip()
+
     async def check_answer(
         self,
         user_id: int,
@@ -113,6 +119,9 @@ class DrillService:
         """
         Check if user's answer is correct.
 
+        For CR->EN: accepts any one of multiple translations separated by , or /
+        For EN->CR: exact match required
+
         Returns {correct, expected_answer, word}
         """
         word = await self._word_crud.get(word_id, user_id)
@@ -122,13 +131,24 @@ class DrillService:
         # Determine expected answer based on exercise type
         if exercise_type == ExerciseType.VOCABULARY_CR_EN:
             expected = word.english
+            # Split by comma or slash and check if user answer matches any
+            alternatives = [alt.strip().lower() for alt in expected.replace("/", ",").split(",")]
+            user_normalized = user_answer.strip().lower()
+            # Also accept answers without parenthetical content
+            # e.g., "chicken" matches "chicken (meat)"
+            alternatives_no_parens = [
+                self._strip_parentheses(alt) for alt in alternatives
+            ]
+            correct = (
+                user_normalized in alternatives
+                or user_normalized in alternatives_no_parens
+            )
         elif exercise_type == ExerciseType.VOCABULARY_EN_CR:
             expected = word.croatian
+            # Croatian answers: exact match (case-insensitive)
+            correct = user_answer.strip().lower() == expected.strip().lower()
         else:
             return {"error": "Invalid exercise type for vocabulary drill"}
-
-        # Case-insensitive comparison, strip whitespace
-        correct = user_answer.strip().lower() == expected.strip().lower()
 
         return {
             "correct": correct,
