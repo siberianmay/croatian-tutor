@@ -1,0 +1,142 @@
+[
+  {
+    "display_order": 1,
+    "name": "Italian Alphabet & Pronunciation",
+    "cefr_level": "A1",
+    "prerequisite_ids": null,
+    "rule_description": "## 21 Letters + 5 Foreign\n\n### Standard Alphabet\n| Letter | Name | Sound |\n|--------|------|-------|\n| A a | a | ah (casa) |\n| B b | bi | b (bene) |\n| C c | ci | k or ch |\n| D d | di | d (dove) |\n| E e | e | open/closed |\n| F f | effe | f (fare) |\n| G g | gi | g or j |\n| H h | acca | silent |\n| I i | i | ee (vino) |\n| L l | elle | l (libro) |\n| M m | emme | m (madre) |\n| N n | enne | n (nome) |\n| O o | o | open/closed |\n| P p | pi | p (padre) |\n| Q q | cu | kw (questo) |\n| R r | erre | rolled r |\n| S s | esse | s or z |\n| T t | ti | t (tutto) |\n| U u | u | oo (uno) |\n| V v | vu | v (vero) |\n| Z z | zeta | ts or dz |\n\n### Key Rules\n| Pattern | Sound | Example |\n|---------|-------|--------|\n| **c** + e/i | ch (cheese) | **c**iao, **c**ena |\n| **c** + a/o/u | k | **c**asa, **c**ome |\n| **ch** + e/i | k | **ch**e, per**ch**é |\n| **g** + e/i | j (gem) | **g**ente, **g**iro |\n| **g** + a/o/u | g (go) | **g**atto, **g**usto |\n| **gh** + e/i | g (go) | spa**gh**etti |\n| **gn** | ny (canyon) | la**gn**a, o**gn**i |\n| **gl** + i | ly (million) | fi**gl**io, a**gl**io |\n| **sc** + e/i | sh | pe**sc**e, u**sc**ita |\n\n### Double Consonants\nPronounced longer/stronger: **pp**, **tt**, **cc**, **ff**, **ss**, **rr**, **ll**, **mm**, **nn**\n- pala (shovel) vs palla (ball)\n- nono (ninth) vs nonno (grandfather)"
+  },
+  {
+    "display_order": 2,
+    "name": "Subject Pronouns",
+    "cefr_level": "A1",
+    "prerequisite_ids": [1],
+    "rule_description": "## Subject Pronouns (Pronomi Soggetto)\n\n| Person | Singular | Plural |\n|--------|----------|--------|\n| 1st | **io** (I) | **noi** (we) |\n| 2nd informal | **tu** (you) | **voi** (you all) |\n| 2nd formal | **Lei** (You) | **Loro** (You all) |\n| 3rd masc | **lui** (he) | **loro** (they) |\n| 3rd fem | **lei** (she) | **loro** (they) |\n\n### Usage Notes\n- Pronouns often **omitted** (verb endings show person)\n- **Tu** = informal, friends/family/peers\n- **Lei** = formal, strangers/elders/professional (always capitalized)\n- **Voi** = plural \"you\" (informal & formal)\n- **Loro** (formal plural) rarely used; **voi** preferred\n\n### Examples\n| With Pronoun | Without (common) |\n|--------------|------------------|\n| **Io** parlo | Parlo italiano. |\n| **Tu** mangi | Mangi la pizza? |\n| **Lei** parla | Parla inglese? (formal) |\n| **Noi** andiamo | Andiamo al cinema. |\n\n**Pro-drop language:** Italian drops subject pronouns when context is clear."
+  },
+  {
+    "display_order": 3,
+    "name": "Noun Gender",
+    "cefr_level": "A1",
+    "prerequisite_ids": [1],
+    "rule_description": "## Two Genders: Masculine & Feminine\n\n### General Rules\n| Ending | Gender | Examples |\n|--------|--------|----------|\n| **-o** | Masculine | libr**o**, vin**o**, ragazz**o** |\n| **-a** | Feminine | cas**a**, pizz**a**, ragazz**a** |\n| **-e** | Either | padre (m), madre (f) |\n\n### Common Exceptions\n| Word | Gender | Note |\n|------|--------|------|\n| la mano | Feminine | ends in -o but feminine |\n| la foto | Feminine | shortened from fotografia |\n| la moto | Feminine | shortened from motocicletta |\n| la radio | Feminine | shortened from radiofonia |\n| il problema | Masculine | Greek origin (-ma words) |\n| il tema | Masculine | Greek origin |\n| il programma | Masculine | Greek origin |\n| il cinema | Masculine | Greek origin |\n\n### Foreign Words\nUsually **masculine**: il computer, il bar, il film, il weekend\n\n### -ista Words\nSame form, gender follows referent:\n- **il** dentista (male dentist)\n- **la** dentista (female dentist)\n\n**Tip:** Always learn nouns WITH their article!"
+  },
+  {
+    "display_order": 4,
+    "name": "Noun Plurals",
+    "cefr_level": "A1",
+    "prerequisite_ids": [3],
+    "rule_description": "## Plural Formation\n\n### Regular Patterns\n| Singular | Plural | Example |\n|----------|--------|--------|\n| -**o** (m) | -**i** | libro → libr**i** |\n| -**a** (f) | -**e** | casa → cas**e** |\n| -**e** (m/f) | -**i** | padre → padr**i**, madre → madr**i** |\n\n### Spelling Changes\n| Singular | Plural | Rule |\n|----------|--------|------|\n| amic**o** | amic**i** | -co → -ci (after vowel) |\n| gioc**o** | gioc**hi** | -co → -chi (after consonant) |\n| alberg**o** | alberg**hi** | preserve /k/ sound |\n| lung**o** | lung**hi** | -go → -ghi |\n| grec**o** | grec**i** | exception: -ci |\n\n### Feminine -ca/-ga\n| Singular | Plural | Rule |\n|----------|--------|------|\n| amic**a** | amic**he** | -ca → -che |\n| colleg**a** | collegh**e** | -ga → -ghe |\n\n### Invariable Nouns (No Change)\n- Stressed final vowel: città, caffè, università\n- Foreign words: bar, film, sport\n- Abbreviations: foto, moto, auto\n- One-syllable: re, tè\n\n### Irregular\n| Singular | Plural |\n|----------|--------|\n| uomo | **uomini** |\n| uovo | **uova** (f!) |"
+  },
+  {
+    "display_order": 5,
+    "name": "Definite Articles",
+    "cefr_level": "A1",
+    "prerequisite_ids": [3, 4],
+    "rule_description": "## The Definite Article (The)\n\n### Masculine Articles\n| Article | Before | Example |\n|---------|--------|--------|\n| **il** | most consonants | **il** libro, **il** ragazzo |\n| **lo** | s+cons, z, gn, ps, x, y | **lo** studente, **lo** zaino |\n| **l'** | vowel | **l'**amico, **l'**italiano |\n\n### Feminine Articles\n| Article | Before | Example |\n|---------|--------|--------|\n| **la** | consonant | **la** casa, **la** ragazza |\n| **l'** | vowel | **l'**amica, **l'**italiana |\n\n### Plural Articles\n| Singular | Plural | Example |\n|----------|--------|--------|\n| il | **i** | i libri, i ragazzi |\n| lo | **gli** | gli studenti, gli zaini |\n| l' (m) | **gli** | gli amici |\n| la | **le** | le case, le ragazze |\n| l' (f) | **le** | le amiche |\n\n### When to Use\n- Specific items: **Il** libro è sul tavolo.\n- Generalizations: **I** cani sono fedeli.\n- Languages: Parlo **l'**italiano.\n- Countries: **L'**Italia è bella.\n- Possessives (usually): **il** mio libro\n\n### Memory Tip\n**LO/GLI** before \"impure s\" (s + consonant), z, gn, ps, x, y"
+  },
+  {
+    "display_order": 6,
+    "name": "Indefinite Articles",
+    "cefr_level": "A1",
+    "prerequisite_ids": [3],
+    "rule_description": "## The Indefinite Article (A/An)\n\n### Masculine\n| Article | Before | Example |\n|---------|--------|--------|\n| **un** | most consonants & vowels | **un** libro, **un** amico |\n| **uno** | s+cons, z, gn, ps, x, y | **uno** studente, **uno** zaino |\n\n### Feminine\n| Article | Before | Example |\n|---------|--------|--------|\n| **una** | consonant | **una** casa, **una** ragazza |\n| **un'** | vowel | **un'**amica, **un'**italiana |\n\n### Summary Table\n| Gender | Before Consonant | Before Vowel | Before s+C, z, etc. |\n|--------|-----------------|--------------|---------------------|\n| Masc | un | un | uno |\n| Fem | una | un' | una |\n\n### Examples\n| Italian | English |\n|---------|---------|\n| **un** ragazzo | a boy |\n| **una** ragazza | a girl |\n| **un** albero | a tree |\n| **un'**arancia | an orange |\n| **uno** studente | a student |\n| **uno** psicologo | a psychologist |\n\n### No Plural\nUse **alcuni/alcune** (some) or no article:\n- Ho **alcuni** libri. (I have some books)\n- Ho libri. (I have books)"
+  },
+  {
+    "display_order": 7,
+    "name": "Present Tense: Essere (To Be)",
+    "cefr_level": "A1",
+    "prerequisite_ids": [2],
+    "rule_description": "## Essere (To Be) - Present Tense\n\n| Person | Conjugation |\n|--------|-------------|\n| io | **sono** |\n| tu | **sei** |\n| lui/lei/Lei | **è** |\n| noi | **siamo** |\n| voi | **siete** |\n| loro | **sono** |\n\n### Key Uses\n| Use | Example |\n|-----|--------|\n| Identity | **Sono** Marco. (I am Marco) |\n| Nationality | **Sei** italiano? (Are you Italian?) |\n| Profession | Maria **è** dottoressa. |\n| Origin | **Siamo** di Roma. |\n| Description | La casa **è** grande. |\n| Location | Il libro **è** sul tavolo. |\n| Time | **Sono** le tre. (It's 3 o'clock) |\n| Date | Oggi **è** lunedì. |\n\n### Common Expressions\n| Italian | English |\n|---------|---------|\n| Come **sei**? | How are you? |\n| **È** vero. | It's true. |\n| **Sono** stanco/a. | I'm tired. |\n| **È** possibile. | It's possible. |\n| Chi **è**? | Who is it? |\n| Dov'**è**? | Where is it? |\n\n### Negation\n**non** + essere: Non **sono** italiano. (I'm not Italian)"
+  },
+  {
+    "display_order": 8,
+    "name": "Present Tense: Avere (To Have)",
+    "cefr_level": "A1",
+    "prerequisite_ids": [2, 7],
+    "rule_description": "## Avere (To Have) - Present Tense\n\n| Person | Conjugation |\n|--------|-------------|\n| io | **ho** |\n| tu | **hai** |\n| lui/lei/Lei | **ha** |\n| noi | **abbiamo** |\n| voi | **avete** |\n| loro | **hanno** |\n\n### Key Uses\n| Use | Example |\n|-----|--------|\n| Possession | **Ho** una macchina. |\n| Age | **Ho** 25 anni. (I'm 25 years old) |\n| Physical states | **Ho** fame. (I'm hungry) |\n| Auxiliary verb | **Ho** mangiato. (I have eaten) |\n\n### Idiomatic Expressions (avere + noun)\n| Italian | Literal | Meaning |\n|---------|---------|--------|\n| avere fame | have hunger | to be hungry |\n| avere sete | have thirst | to be thirsty |\n| avere sonno | have sleep | to be sleepy |\n| avere caldo | have heat | to be hot |\n| avere freddo | have cold | to be cold |\n| avere paura | have fear | to be afraid |\n| avere ragione | have reason | to be right |\n| avere torto | have wrong | to be wrong |\n| avere fretta | have hurry | to be in a hurry |\n| avere bisogno di | have need of | to need |\n\n### Examples\n- Quanti anni **hai**? (How old are you?)\n- **Abbiamo** tempo. (We have time)\n- Non **ho** soldi. (I don't have money)"
+  },
+  {
+    "display_order": 9,
+    "name": "Present Tense: Regular -are Verbs",
+    "cefr_level": "A1",
+    "prerequisite_ids": [2, 7],
+    "rule_description": "## -ARE Verbs - Present Tense\n\n### Conjugation Pattern: PARLARE (to speak)\n| Person | Stem + Ending | Result |\n|--------|---------------|--------|\n| io | parl + **o** | parl**o** |\n| tu | parl + **i** | parl**i** |\n| lui/lei | parl + **a** | parl**a** |\n| noi | parl + **iamo** | parl**iamo** |\n| voi | parl + **ate** | parl**ate** |\n| loro | parl + **ano** | parl**ano** |\n\n### Endings Summary\n| Person | Ending |\n|--------|--------|\n| io | **-o** |\n| tu | **-i** |\n| lui/lei/Lei | **-a** |\n| noi | **-iamo** |\n| voi | **-ate** |\n| loro | **-ano** |\n\n### Common -ARE Verbs\n| Verb | Meaning | io form |\n|------|---------|--------|\n| abitare | to live | abito |\n| amare | to love | amo |\n| arrivare | to arrive | arrivo |\n| ascoltare | to listen | ascolto |\n| aspettare | to wait | aspetto |\n| chiamare | to call | chiamo |\n| comprare | to buy | compro |\n| guardare | to watch | guardo |\n| lavorare | to work | lavoro |\n| mangiare | to eat | mangio |\n| studiare | to study | studio |\n| tornare | to return | torno |\n\n### Spelling Note\n**-care/-gare** add **h** before **i**:\n- cercare → cerc**h**i, cerc**h**iamo\n- pagare → pag**h**i, pag**h**iamo"
+  },
+  {
+    "display_order": 10,
+    "name": "Present Tense: Regular -ere Verbs",
+    "cefr_level": "A1",
+    "prerequisite_ids": [9],
+    "rule_description": "## -ERE Verbs - Present Tense\n\n### Conjugation Pattern: SCRIVERE (to write)\n| Person | Stem + Ending | Result |\n|--------|---------------|--------|\n| io | scriv + **o** | scriv**o** |\n| tu | scriv + **i** | scriv**i** |\n| lui/lei | scriv + **e** | scriv**e** |\n| noi | scriv + **iamo** | scriv**iamo** |\n| voi | scriv + **ete** | scriv**ete** |\n| loro | scriv + **ono** | scriv**ono** |\n\n### Endings Summary\n| Person | Ending |\n|--------|--------|\n| io | **-o** |\n| tu | **-i** |\n| lui/lei/Lei | **-e** |\n| noi | **-iamo** |\n| voi | **-ete** |\n| loro | **-ono** |\n\n### Common -ERE Verbs\n| Verb | Meaning | io form |\n|------|---------|--------|\n| chiedere | to ask | chiedo |\n| chiudere | to close | chiudo |\n| conoscere | to know (person) | conosco |\n| correre | to run | corro |\n| credere | to believe | credo |\n| leggere | to read | leggo |\n| mettere | to put | metto |\n| prendere | to take | prendo |\n| ricevere | to receive | ricevo |\n| rispondere | to answer | rispondo |\n| vedere | to see | vedo |\n| vivere | to live | vivo |\n\n### Note\n-ERE verbs are less predictable; some have irregular stems. Watch for stem changes in common verbs."
+  },
+  {
+    "display_order": 11,
+    "name": "Present Tense: Regular -ire Verbs",
+    "cefr_level": "A1",
+    "prerequisite_ids": [10],
+    "rule_description": "## -IRE Verbs - Two Patterns\n\n### Pattern 1: Standard (DORMIRE - to sleep)\n| Person | Stem + Ending | Result |\n|--------|---------------|--------|\n| io | dorm + **o** | dorm**o** |\n| tu | dorm + **i** | dorm**i** |\n| lui/lei | dorm + **e** | dorm**e** |\n| noi | dorm + **iamo** | dorm**iamo** |\n| voi | dorm + **ite** | dorm**ite** |\n| loro | dorm + **ono** | dorm**ono** |\n\n### Pattern 2: -ISC- (CAPIRE - to understand)\n| Person | Stem + Ending | Result |\n|--------|---------------|--------|\n| io | cap + **isco** | cap**isco** |\n| tu | cap + **isci** | cap**isci** |\n| lui/lei | cap + **isce** | cap**isce** |\n| noi | cap + **iamo** | cap**iamo** |\n| voi | cap + **ite** | cap**ite** |\n| loro | cap + **iscono** | cap**iscono** |\n\n### Standard -IRE Verbs\n| Verb | Meaning |\n|------|--------|\n| aprire | to open |\n| dormire | to sleep |\n| partire | to leave |\n| sentire | to hear/feel |\n| servire | to serve |\n| offrire | to offer |\n\n### -ISC- Verbs (Must Memorize)\n| Verb | Meaning |\n|------|--------|\n| capire | to understand |\n| finire | to finish |\n| preferire | to prefer |\n| pulire | to clean |\n| spedire | to send |\n| costruire | to build |\n\n**Note:** -ISC- only in io, tu, lui/lei, loro forms. Noi/voi are regular."
+  },
+  {
+    "display_order": 12,
+    "name": "Basic Questions",
+    "cefr_level": "A1",
+    "prerequisite_ids": [7, 8],
+    "rule_description": "## Question Words (Interrogativi)\n\n| Italian | English | Example |\n|---------|---------|--------|\n| **Chi?** | Who? | **Chi** è? (Who is it?) |\n| **Che cosa? / Cosa? / Che?** | What? | **Cosa** fai? |\n| **Dove?** | Where? | **Dove** abiti? |\n| **Quando?** | When? | **Quando** parti? |\n| **Come?** | How? | **Come** stai? |\n| **Perché?** | Why? | **Perché** studi? |\n| **Quanto/a/i/e?** | How much/many? | **Quanto** costa? |\n| **Quale/Quali?** | Which? | **Quale** preferisci? |\n\n### Yes/No Questions\nThree ways to form:\n\n1. **Intonation only** (voice rises):\n   - Parli italiano? (Do you speak Italian?)\n\n2. **Inversion** (less common):\n   - Parla Lei inglese? (Do you speak English?)\n\n3. **Question tags**:\n   - Parli italiano, **no**? / **vero**? / **giusto**?\n\n### Common Question Patterns\n| Question | Answer |\n|----------|--------|\n| Come ti chiami? | Mi chiamo... |\n| Di dove sei? | Sono di... |\n| Quanti anni hai? | Ho ... anni. |\n| Che lavoro fai? | Sono / Faccio... |\n| A che ora...? | Alle... |\n\n### Note\n**Perché** = both \"why\" and \"because\""
+  },
+  {
+    "display_order": 13,
+    "name": "Negation",
+    "cefr_level": "A1",
+    "prerequisite_ids": [7, 9],
+    "rule_description": "## Negation with NON\n\n### Basic Rule\n**non** + verb\n\n| Positive | Negative |\n|----------|----------|\n| Parlo italiano. | **Non** parlo italiano. |\n| Ho tempo. | **Non** ho tempo. |\n| Capisco. | **Non** capisco. |\n\n### Negative Words\n| Positive | Negative |\n|----------|----------|\n| qualcuno (someone) | **nessuno** (no one) |\n| qualcosa (something) | **niente/nulla** (nothing) |\n| sempre (always) | **mai** (never) |\n| ancora (still/yet) | **non...più** (no longer) |\n| anche (also) | **neanche/nemmeno** (not even) |\n| già (already) | **non...ancora** (not yet) |\n\n### Double Negative (Required)\n| Italian | English |\n|---------|---------|\n| **Non** vedo **nessuno**. | I don't see anyone. |\n| **Non** mangio **niente**. | I don't eat anything. |\n| **Non** vado **mai**. | I never go. |\n| **Non** lavora **più**. | He doesn't work anymore. |\n\n### Word Order\n- **Non** comes directly before verb\n- Negative word after verb (or at start for emphasis)\n\n| Standard | Emphatic |\n|----------|----------|\n| Non capisco niente. | Niente! Non capisco niente! |\n| Non viene nessuno. | Nessuno viene. |\n\n**Note:** Unlike English, Italian REQUIRES double negatives."
+  },
+  {
+    "display_order": 14,
+    "name": "Cardinal Numbers 0-100",
+    "cefr_level": "A1",
+    "prerequisite_ids": [1],
+    "rule_description": "## Numbers 0-20\n\n| # | Italian | # | Italian |\n|---|---------|---|--------|\n| 0 | zero | 11 | undici |\n| 1 | uno | 12 | dodici |\n| 2 | due | 13 | tredici |\n| 3 | tre | 14 | quattordici |\n| 4 | quattro | 15 | quindici |\n| 5 | cinque | 16 | sedici |\n| 6 | sei | 17 | diciassette |\n| 7 | sette | 18 | diciotto |\n| 8 | otto | 19 | diciannove |\n| 9 | nove | 20 | venti |\n| 10 | dieci | | |\n\n## Tens (20-100)\n| # | Italian | # | Italian |\n|---|---------|---|--------|\n| 20 | venti | 60 | sessanta |\n| 30 | trenta | 70 | settanta |\n| 40 | quaranta | 80 | ottanta |\n| 50 | cinquanta | 90 | novanta |\n| | | 100 | cento |\n\n## Combining Numbers (21-99)\n| Rule | Example |\n|------|--------|\n| Tens + units (one word) | ventuno (21), trentadue (32) |\n| Drop final vowel before 1/8 | vent**uno**, vent**otto** |\n| Accent on 3 compounds | ventitr**è** (23), trentatr**è** |\n\n### Examples\n| # | Italian |\n|---|---------|\n| 21 | vent**uno** |\n| 28 | vent**otto** |\n| 33 | trentatré |\n| 45 | quarantacinque |\n| 99 | novantanove |\n\n### UNO Agrees with Noun\n- **un** libro, **una** casa\n- ventuno → ventun libri, ventuna ragazze"
+  },
+  {
+    "display_order": 15,
+    "name": "Basic Adjective Agreement",
+    "cefr_level": "A1",
+    "prerequisite_ids": [3, 4],
+    "rule_description": "## Adjectives Must Agree\n\n### Type 1: Four Endings (-o/-a/-i/-e)\n| | Singular | Plural |\n|---|----------|--------|\n| Masc | alt**o** | alt**i** |\n| Fem | alt**a** | alt**e** |\n\nExamples: alto, bello, italiano, nuovo, piccolo, rosso\n\n### Type 2: Two Endings (-e/-i)\n| | Singular | Plural |\n|---|----------|--------|\n| Masc | grand**e** | grand**i** |\n| Fem | grand**e** | grand**i** |\n\nExamples: grande, intelligente, interessante, felice, triste, verde\n\n### Position\n**Most adjectives come AFTER the noun:**\n- una casa **grande** (a big house)\n- un libro **interessante** (an interesting book)\n- il vino **rosso** (red wine)\n\n**Common adjectives BEFORE noun:**\n| Adjective | Example |\n|-----------|--------|\n| bello | un **bel** ragazzo |\n| buono | un **buon** caffè |\n| grande | un **gran** problema |\n| piccolo | un **piccolo** errore |\n| nuovo | una **nuova** casa |\n| vecchio | un **vecchio** amico |\n| brutto | un **brutto** giorno |\n\n### Meaning Changes by Position\n| Before Noun | After Noun |\n|-------------|------------|\n| un **grande** uomo (great) | un uomo **grande** (tall) |\n| un **povero** ragazzo (unfortunate) | un ragazzo **povero** (not rich) |\n| un **vecchio** amico (long-time) | un amico **vecchio** (elderly) |"
+  },
+  {
+    "display_order": 16,
+    "name": "Possessive Adjectives",
+    "cefr_level": "A1",
+    "prerequisite_ids": [5, 15],
+    "rule_description": "## Possessive Adjectives\n\n### Forms (Agree with POSSESSED noun)\n| Owner | Masc Sing | Fem Sing | Masc Pl | Fem Pl |\n|-------|-----------|----------|---------|--------|\n| io | **mio** | **mia** | **miei** | **mie** |\n| tu | **tuo** | **tua** | **tuoi** | **tue** |\n| lui/lei/Lei | **suo** | **sua** | **suoi** | **sue** |\n| noi | **nostro** | **nostra** | **nostri** | **nostre** |\n| voi | **vostro** | **vostra** | **vostri** | **vostre** |\n| loro | **loro** | **loro** | **loro** | **loro** |\n\n### Key Rule: Use WITH Definite Article\n| Italian | English |\n|---------|---------|\n| **il** mio libro | my book |\n| **la** tua casa | your house |\n| **i** suoi amici | his/her friends |\n| **le** nostre macchine | our cars |\n\n### Exception: Family Members (Singular, No Article)\n| No Article | With Article |\n|------------|-------------|\n| mio padre | i miei genitori (plural) |\n| tua madre | la tua mamma (informal) |\n| suo fratello | il suo fratellino (diminutive) |\n| nostra sorella | le nostre sorelle (plural) |\n\n**LORO always takes article:** **il loro** padre\n\n### SUO Ambiguity\n**suo/sua** = his, her, its, your (formal)\n- Context clarifies: La sua macchina (his/her/your car)\n- Clarify with: La macchina di lui/di lei"
+  },
+  {
+    "display_order": 17,
+    "name": "Demonstrative Adjectives",
+    "cefr_level": "A1",
+    "prerequisite_ids": [3],
+    "rule_description": "## Demonstratives: This & That\n\n### QUESTO (This - Near Speaker)\n| | Singular | Plural |\n|---|----------|--------|\n| Masc | **questo** | **questi** |\n| Fem | **questa** | **queste** |\n\nBefore vowel: **quest'** (optional)\n- quest'anno, quest'amica\n\n### QUELLO (That - Far from Speaker)\nFollows article patterns!\n\n| Before | Masc Sing | Masc Pl | Fem Sing | Fem Pl |\n|--------|-----------|---------|----------|--------|\n| consonant | **quel** | **quei** | **quella** | **quelle** |\n| vowel | **quell'** | **quegli** | **quell'** | **quelle** |\n| s+cons, z | **quello** | **quegli** | **quella** | **quelle** |\n\n### Examples\n| Italian | English |\n|---------|---------|\n| **questo** libro | this book |\n| **questa** casa | this house |\n| **questi** ragazzi | these boys |\n| **queste** ragazze | these girls |\n| **quel** ragazzo | that boy |\n| **quella** donna | that woman |\n| **quell'**uomo | that man |\n| **quello** studente | that student |\n| **quegli** amici | those friends |\n| **quei** libri | those books |\n\n### As Pronouns\n- **Questo** è bello. (This one is beautiful)\n- **Quello** costa troppo. (That one costs too much)\n- Preferisco **questi**. (I prefer these)"
+  },
+  {
+    "display_order": 18,
+    "name": "C'è / Ci sono",
+    "cefr_level": "A1",
+    "prerequisite_ids": [7],
+    "rule_description": "## There Is / There Are\n\n### Forms\n| Singular | Plural |\n|----------|--------|\n| **c'è** (there is) | **ci sono** (there are) |\n\n### Basic Usage\n| Italian | English |\n|---------|---------|\n| **C'è** un libro sul tavolo. | There's a book on the table. |\n| **Ci sono** molti studenti. | There are many students. |\n| **C'è** tempo. | There's time. |\n| **Ci sono** problemi. | There are problems. |\n\n### Questions\n| Question | Answer |\n|----------|--------|\n| **C'è** un bagno qui? | Sì, c'è. / No, non c'è. |\n| **Ci sono** posti liberi? | Sì, ci sono. / No, non ci sono. |\n| Cosa **c'è**? | What's there? / What's wrong? |\n\n### Negation\n| Positive | Negative |\n|----------|----------|\n| C'è un bar. | **Non c'è** un bar. |\n| Ci sono taxi. | **Non ci sono** taxi. |\n\n### Common Expressions\n| Italian | English |\n|---------|---------|\n| C'è qualcuno? | Is anyone there? |\n| Non c'è nessuno. | There's no one. |\n| Cosa c'è da fare? | What is there to do? |\n| C'è da aspettare. | There's waiting to do. |\n| Che c'è? | What's up? / What's wrong? |\n\n### With Ecco (Here is/are)\n| Ecco (presenting) | C'è (existing) |\n|-------------------|----------------|\n| **Ecco** il libro! | **C'è** un libro. |\n| **Ecco** i tuoi amici! | **Ci sono** amici qui. |"
+  },
+  {
+    "display_order": 19,
+    "name": "Prepositions (Simple)",
+    "cefr_level": "A1",
+    "prerequisite_ids": null,
+    "rule_description": "## Simple Prepositions\n\n### The 8 Main Prepositions\n| Prep | Core Meaning | Examples |\n|------|-------------|----------|\n| **di** | of, from, about | il libro **di** Marco, sono **di** Roma |\n| **a** | to, at, in | vado **a** casa, sono **a** Roma |\n| **da** | from, by, at (someone's), since | vengo **da** Milano, vado **da** Maria |\n| **in** | in, to, by | vivo **in** Italia, vado **in** macchina |\n| **con** | with | vado **con** te, caffè **con** latte |\n| **su** | on, about, upon | il libro è **su**l tavolo |\n| **per** | for, through, by | questo è **per** te |\n| **tra/fra** | between, among, in (time) | **tra** un'ora, **fra** noi |\n\n### DI - Uses\n| Use | Example |\n|-----|--------|\n| Possession | il libro **di** Marco |\n| Origin | Sono **di** Roma. |\n| Material | una tavola **di** legno |\n| Contents | un bicchiere **di** vino |\n| Topic | parliamo **di** politica |\n\n### A - Uses\n| Use | Example |\n|-----|--------|\n| Destination | Vado **a** Roma. |\n| Location (cities) | Abito **a** Milano. |\n| Time | **A** che ora? **A**lle tre. |\n| Indirect object | Do il libro **a** Marco. |\n\n### DA - Uses\n| Use | Example |\n|-----|--------|\n| Origin/source | Vengo **da** Napoli. |\n| At someone's | Vado **da** Maria. |\n| Since (time) | **Da** due anni. |\n| By (agent) | Fatto **da** me. |\n\n### IN - Uses\n| Use | Example |\n|-----|--------|\n| Location (countries) | Vivo **in** Italia. |\n| Transport | Vado **in** macchina/treno/aereo. |\n| Rooms/places | Sono **in** cucina. |"
+  },
+  {
+    "display_order": 20,
+    "name": "Prepositions + Articles (Contractions)",
+    "cefr_level": "A1",
+    "prerequisite_ids": [5, 19],
+    "rule_description": "## Articulated Prepositions\n\nPreposition + definite article = contraction (mandatory)\n\n### Contraction Table\n| | il | lo | la | l' | i | gli | le |\n|---|----|----|----|----|---|-----|----|\n| **di** | del | dello | della | dell' | dei | degli | delle |\n| **a** | al | allo | alla | all' | ai | agli | alle |\n| **da** | dal | dallo | dalla | dall' | dai | dagli | dalle |\n| **in** | nel | nello | nella | nell' | nei | negli | nelle |\n| **su** | sul | sullo | sulla | sull' | sui | sugli | sulle |\n\n### No Contraction\n**con, per, tra/fra** usually don't contract:\n- con il → con il (or colloquially \"col\")\n- per il → per il\n- tra le → tra le\n\n### Examples by Preposition\n| Preposition | Example |\n|-------------|--------|\n| di + il = **del** | Il libro **del** ragazzo. |\n| a + la = **alla** | Vado **alla** stazione. |\n| da + gli = **dagli** | Vengo **dagli** Stati Uniti. |\n| in + il = **nel** | È **nel** cassetto. |\n| su + i = **sui** | I libri sono **sui** tavoli. |\n\n### Common Patterns\n| Italian | English |\n|---------|---------|\n| **al** cinema | to the movies |\n| **alla** fine | in the end |\n| **dal** dottore | at the doctor's |\n| **nella** vita | in life |\n| **sul** giornale | in the newspaper |\n| **dell'**Italia | of Italy |\n| **agli** amici | to the friends |\n\n### Memory Tip\nThink: **d**i→**d**el, **a**→**a**l, **d**a→**d**al, i**n**→**n**el, **su**→**su**l"
+  }
+]
