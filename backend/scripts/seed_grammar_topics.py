@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 """
-Seed script for Italian grammar topics.
+Seed script for grammar grammar topics.
 
-This script loads Italian grammar topics from JSON files (A1-C1) and inserts
+This script loads grammar grammar topics from JSON files (A1-C1) and inserts
 them into the database. It handles the prerequisite_ids mapping by:
 1. First inserting all topics without prerequisites
 2. Then updating prerequisites using a display_order -> database_id mapping
@@ -12,8 +12,8 @@ Usage:
     python -m scripts.seed_italian_topics [options]
 
 Options:
-    --force     Delete existing Italian topics and re-seed (non-interactive)
-    --skip      Skip if Italian topics exist (non-interactive)
+    --force     Delete existing grammar topics and re-seed (non-interactive)
+    --skip      Skip if grammar topics exist (non-interactive)
     --help      Show this help message
 """
 
@@ -27,17 +27,15 @@ from pathlib import Path
 backend_dir = Path(__file__).parent.parent
 sys.path.insert(0, str(backend_dir))
 
-from sqlalchemy import select, func
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from app.database import async_session_maker
-from app.models.grammar_topic import GrammarTopic
-from app.models.language import Language
 from app.models.enums import CEFRLevel
-
+from app.models.grammar_topic import GrammarTopic
+from sqlalchemy import func, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 # JSON files to load, in order
 JSON_FILES = [
+    # "croatian_grammar_topics.json",
     "italian_grammar_topics_a1.json",
     "italian_grammar_topics_a2.json",
     "italian_grammar_topics_b1.json",
@@ -45,49 +43,23 @@ JSON_FILES = [
     "italian_grammar_topics_c1.json",
 ]
 
-ITALIAN_LANGUAGE_CODE = "it"
+LANGUAGE_CODE = "it"
 DEV_DIR = backend_dir / "content"
-
-
-async def ensure_italian_language(db: AsyncSession) -> None:
-    """Ensure Italian language exists in the database."""
-    result = await db.execute(
-        select(Language).where(Language.code == ITALIAN_LANGUAGE_CODE)
-    )
-    language = result.scalar_one_or_none()
-
-    if not language:
-        print(f"Creating Italian language entry...")
-        language = Language(
-            code=ITALIAN_LANGUAGE_CODE,
-            name="Italian",
-            native_name="Italiano",
-            is_active=True,
-        )
-        db.add(language)
-        await db.flush()
-        print(f"✓ Created Italian language (code: {ITALIAN_LANGUAGE_CODE})")
-    else:
-        print(f"✓ Italian language already exists (code: {ITALIAN_LANGUAGE_CODE})")
 
 
 async def get_existing_italian_topics(db: AsyncSession) -> dict[int, int]:
     """
-    Get existing Italian topics and return mapping of display_order -> id.
+    Get existing grammar topics and return mapping of display_order -> id.
     """
     result = await db.execute(
-        select(GrammarTopic.display_order, GrammarTopic.id)
-        .where(GrammarTopic.language == ITALIAN_LANGUAGE_CODE)
+        select(GrammarTopic.display_order, GrammarTopic.id).where(GrammarTopic.language == LANGUAGE_CODE)
     )
     return {row[0]: row[1] for row in result.all()}
 
 
 async def count_italian_topics(db: AsyncSession) -> int:
-    """Count existing Italian topics."""
-    result = await db.execute(
-        select(func.count(GrammarTopic.id))
-        .where(GrammarTopic.language == ITALIAN_LANGUAGE_CODE)
-    )
+    """Count existing grammar topics."""
+    result = await db.execute(select(func.count(GrammarTopic.id)).where(GrammarTopic.language == LANGUAGE_CODE))
     return result.scalar_one()
 
 
@@ -117,30 +89,26 @@ def parse_cefr_level(level_str: str) -> CEFRLevel:
 
 async def seed_topics(db: AsyncSession, *, force: bool = False, skip_existing: bool = False) -> None:
     """
-    Seed Italian grammar topics into the database.
+    Seed grammar grammar topics into the database.
 
     Args:
         db: Async database session
-        force: Delete existing Italian topics and re-seed
-        skip_existing: Skip seeding if Italian topics exist
+        force: Delete existing grammar topics and re-seed
+        skip_existing: Skip seeding if grammar topics exist
     """
     # Check existing topics
     existing_count = await count_italian_topics(db)
     if existing_count > 0:
-        print(f"\n⚠ Found {existing_count} existing Italian topics.")
+        print(f"\n⚠ Found {existing_count} existing grammar topics.")
 
         if skip_existing:
             print("Skipping seed operation (--skip flag).")
             return
 
         if force:
-            await db.execute(
-                GrammarTopic.__table__.delete().where(
-                    GrammarTopic.language == ITALIAN_LANGUAGE_CODE
-                )
-            )
+            await db.execute(GrammarTopic.__table__.delete().where(GrammarTopic.language == LANGUAGE_CODE))
             await db.flush()
-            print(f"✓ Deleted {existing_count} existing Italian topics (--force flag).")
+            print(f"✓ Deleted {existing_count} existing grammar topics (--force flag).")
         else:
             # Interactive mode
             response = input("Do you want to skip seeding? (y/n): ").strip().lower()
@@ -148,15 +116,11 @@ async def seed_topics(db: AsyncSession, *, force: bool = False, skip_existing: b
                 print("Skipping seed operation.")
                 return
 
-            response = input("Do you want to DELETE existing Italian topics and re-seed? (y/n): ").strip().lower()
+            response = input("Do you want to DELETE existing grammar topics and re-seed? (y/n): ").strip().lower()
             if response == "y":
-                await db.execute(
-                    GrammarTopic.__table__.delete().where(
-                        GrammarTopic.language == ITALIAN_LANGUAGE_CODE
-                    )
-                )
+                await db.execute(GrammarTopic.__table__.delete().where(GrammarTopic.language == LANGUAGE_CODE))
                 await db.flush()
-                print(f"✓ Deleted {existing_count} existing Italian topics.")
+                print(f"✓ Deleted {existing_count} existing grammar topics.")
             else:
                 print("Aborting seed operation.")
                 return
@@ -187,7 +151,7 @@ async def seed_topics(db: AsyncSession, *, force: bool = False, skip_existing: b
     print("\nPhase 1: Inserting topics...")
     for topic_data in all_topics:
         topic = GrammarTopic(
-            language=ITALIAN_LANGUAGE_CODE,
+            language=LANGUAGE_CODE,
             name=topic_data["name"],
             cefr_level=parse_cefr_level(topic_data["cefr_level"]),
             prerequisite_ids=None,  # Will set in phase 2
@@ -222,9 +186,7 @@ async def seed_topics(db: AsyncSession, *, force: bool = False, skip_existing: b
 
         if db_prerequisites:
             topic_id = display_order_to_id[topic_data["display_order"]]
-            result = await db.execute(
-                select(GrammarTopic).where(GrammarTopic.id == topic_id)
-            )
+            result = await db.execute(select(GrammarTopic).where(GrammarTopic.id == topic_id))
             topic = result.scalar_one()
             topic.prerequisite_ids = db_prerequisites
             await db.flush()
@@ -237,18 +199,18 @@ async def seed_topics(db: AsyncSession, *, force: bool = False, skip_existing: b
 def parse_args() -> argparse.Namespace:
     """Parse command-line arguments."""
     parser = argparse.ArgumentParser(
-        description="Seed Italian grammar topics into the database.",
+        description="Seed grammar grammar topics into the database.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument(
         "--force",
         action="store_true",
-        help="Delete existing Italian topics and re-seed (non-interactive)",
+        help="Delete existing grammar topics and re-seed (non-interactive)",
     )
     parser.add_argument(
         "--skip",
         action="store_true",
-        help="Skip if Italian topics exist (non-interactive)",
+        help="Skip if grammar topics exist (non-interactive)",
     )
     return parser.parse_args()
 
@@ -262,14 +224,11 @@ async def main() -> None:
         sys.exit(1)
 
     print("=" * 60)
-    print("Italian Grammar Topics Seeder")
+    print("grammar Grammar Topics Seeder")
     print("=" * 60)
 
     async with async_session_maker() as db:
         try:
-            # Ensure Italian language exists
-            await ensure_italian_language(db)
-
             # Seed topics
             await seed_topics(db, force=args.force, skip_existing=args.skip)
 
