@@ -12,6 +12,7 @@ from app.core.security import (
     verify_password,
 )
 from app.api.dependencies import get_current_user
+from app.config import settings
 from app.crud.user import UserCRUD
 from app.database import get_db
 from app.models.user import User
@@ -34,8 +35,15 @@ async def register(
     """
     Register a new user account.
 
-    Creates the user and returns access/refresh tokens.
+    Requires valid referral code. Creates the user and returns access/refresh tokens.
     """
+    # Validate referral code
+    if not settings.referral_code or user_in.referral_code != settings.referral_code:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Invalid referral code",
+        )
+
     # Check if email already exists
     existing_user = await crud.get_by_email(user_in.email)
     if existing_user:

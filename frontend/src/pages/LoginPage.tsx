@@ -31,6 +31,7 @@ const LoginPage: React.FC = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [name, setName] = useState('');
+  const [referralCode, setReferralCode] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -52,7 +53,7 @@ const LoginPage: React.FC = () => {
 
     try {
       if (isRegister) {
-        await register({ email, password, name: name || undefined });
+        await register({ email, password, name: name || undefined, referral_code: referralCode });
       } else {
         await login({ email, password });
       }
@@ -70,6 +71,7 @@ const LoginPage: React.FC = () => {
     setIsRegister(!isRegister);
     setError(null);
     setConfirmPassword('');
+    setReferralCode('');
   };
 
   return (
@@ -129,6 +131,16 @@ const LoginPage: React.FC = () => {
                 required
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.currentTarget.value)}
+              />
+            )}
+
+            {isRegister && (
+              <TextInput
+                label="Referral Code"
+                placeholder="Enter your referral code"
+                required
+                value={referralCode}
+                onChange={(e) => setReferralCode(e.currentTarget.value)}
               />
             )}
 
