@@ -1,20 +1,15 @@
 """SQLAlchemy models for the Croatian Tutor application."""
 
-from app.models.enums import (
-    CEFRLevel,
-    ErrorCategory,
-    ExerciseType,
-    Gender,
-    PartOfSpeech,
-)
-from app.models.user import User
-from app.models.word import Word
-from app.models.grammar_topic import GrammarTopic
-from app.models.topic_progress import TopicProgress
-from app.models.exercise_log import ExerciseLog
-from app.models.error_log import ErrorLog
-from app.models.session import Session
-from app.models.app_settings import AppSettings
+from .app_settings import AppSettings
+from .enums import CEFRLevel, ErrorCategory, ExerciseType, Gender, PartOfSpeech
+from .error_log import ErrorLog
+from .exercise_log import ExerciseLog
+from .grammar_topic import GrammarTopic
+from .language import Language
+from .session import Session
+from .topic_progress import TopicProgress
+from .user import User
+from .word import Word
 
 __all__ = [
     # Enums
@@ -32,4 +27,5 @@ __all__ = [
     "ErrorLog",
     "Session",
     "AppSettings",
+    "Language",
 ]
