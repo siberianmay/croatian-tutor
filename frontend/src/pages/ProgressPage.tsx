@@ -33,6 +33,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { progressApi } from '~services/progressApi';
 import AnalyticsModal from '~components/AnalyticsModal';
+import { useLanguage } from '~contexts/LanguageContext';
 import type {
   ProgressSummary,
   VocabularyStats,
@@ -73,6 +74,7 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, subtitle, icon, color
 
 const ProgressPage: React.FC = () => {
   const navigate = useNavigate();
+  const { language } = useLanguage();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [analyticsOpen, setAnalyticsOpen] = useState(false);
@@ -168,7 +170,7 @@ const ProgressPage: React.FC = () => {
         <div>
           <Title order={1}>Your Progress</Title>
           <Text c="dimmed" mt="sm">
-            Track your Croatian learning journey
+            Track your {language?.name ?? 'language'} learning journey
           </Text>
         </div>
         <Group>

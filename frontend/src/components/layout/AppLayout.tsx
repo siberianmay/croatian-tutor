@@ -1,8 +1,9 @@
 import React from 'react';
-import { AppShell, Group, NavLink, Title, Container, Burger, useMantineTheme } from '@mantine/core';
+import { AppShell, Group, NavLink, Title, Container, Burger, useMantineTheme, Badge, Tooltip } from '@mantine/core';
 import { useDisclosure, useMediaQuery } from '@mantine/hooks';
-import { IconBook, IconVocabulary, IconPencil, IconChartBar, IconSchool, IconSettings } from '@tabler/icons-react';
+import { IconBook, IconVocabulary, IconPencil, IconChartBar, IconSchool, IconSettings, IconLanguage } from '@tabler/icons-react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useLanguage } from '~contexts/LanguageContext';
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -23,6 +24,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const [opened, { toggle, close }] = useDisclosure();
   const theme = useMantineTheme();
   const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
+  const { language } = useLanguage();
 
   const handleNavClick = (path: string) => {
     navigate(path);
@@ -50,8 +52,20 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
               hiddenFrom="sm"
               size="sm"
             />
-            <Title order={3}>Croatian Tutor</Title>
+            <Title order={3}>{language?.name ?? 'Language'} Tutor</Title>
           </Group>
+          <Tooltip label="Change language in Settings" position="bottom">
+            <Badge
+              size="lg"
+              variant="light"
+              color="blue"
+              leftSection={<IconLanguage size={14} />}
+              style={{ cursor: 'pointer' }}
+              onClick={() => navigate('/settings')}
+            >
+              {language?.native_name ?? language?.name ?? 'Loading...'}
+            </Badge>
+          </Tooltip>
         </Group>
       </AppShell.Header>
 

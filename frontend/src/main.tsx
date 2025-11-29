@@ -7,6 +7,7 @@ import { BrowserRouter } from 'react-router-dom';
 
 import App from './App';
 import { theme } from '~config/theme';
+import { LanguageProvider } from '~contexts/LanguageContext';
 
 import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
@@ -26,7 +27,9 @@ createRoot(document.getElementById('root')!).render(
       <MantineProvider theme={theme}>
         <Notifications position="top-right" />
         <BrowserRouter>
-          <App />
+          <LanguageProvider>
+            <App />
+          </LanguageProvider>
         </BrowserRouter>
       </MantineProvider>
     </QueryClientProvider>

@@ -155,53 +155,58 @@
   - [x] Accept language parameter
   - [x] Pass language to CRUD calls
 
-## Phase 6: Frontend Language Selection
+## Phase 6: Frontend Language Selection ✅ COMPLETE
 
-- [ ] 6.1 Add Language types (`frontend/src/types/index.ts`)
-  - [ ] Add Language interface
-  - [ ] Update Word interface (add language)
-  - [ ] Update relevant request/response types
+- [x] 6.1 Add Language types (`frontend/src/types/index.ts`)
+  - [x] Add Language interface
+  - [x] Add LanguageSetting, LanguageSettingUpdate interfaces
 
-- [ ] 6.2 Create languageApi service
-  - [ ] Create `frontend/src/services/languageApi.ts`
-  - [ ] Implement `getLanguages()`
-  - [ ] Implement `getUserLanguage()`
-  - [ ] Implement `setUserLanguage()`
+- [x] 6.2 Create languageApi service
+  - [x] Create `frontend/src/services/languageApi.ts`
+  - [x] Implement `getLanguages()`
+  - [x] Implement `getLanguage(code)`
+  - [x] Implement `getUserLanguage()`
+  - [x] Implement `setUserLanguage()`
 
-- [ ] 6.3 Create LanguageContext
-  - [ ] Create `frontend/src/contexts/LanguageContext.tsx`
-  - [ ] Provider with selected language state
-  - [ ] Hook: `useLanguage()`
+- [x] 6.3 Create LanguageContext
+  - [x] Create `frontend/src/contexts/LanguageContext.tsx`
+  - [x] Add `~contexts` alias to tsconfig.json and vite.config.ts
+  - [x] Provider with language state from TanStack Query
+  - [x] Hook: `useLanguage()` returns languageCode, language, availableLanguages, setLanguage
+  - [x] Wrap app with LanguageProvider in main.tsx
 
-- [ ] 6.4 Update SettingsPage (`frontend/src/pages/SettingsPage.tsx`)
-  - [ ] Add language selector card
-  - [ ] Fetch available languages
-  - [ ] Save language selection
-  - [ ] Update context on change
+- [x] 6.4 Update SettingsPage (`frontend/src/pages/SettingsPage.tsx`)
+  - [x] Add language selector card
+  - [x] Fetch available languages via useLanguage hook
+  - [x] Save language selection
+  - [x] Success alert on language change
 
-## Phase 7: Frontend UI Updates
+## Phase 7: Frontend UI Updates ✅ COMPLETE
 
-- [ ] 7.1 Update VocabularyPage
-  - [ ] Replace hardcoded "Croatian" with context language
-  - [ ] Update column headers dynamically
+- [x] 7.1 Update VocabularyPage
+  - [x] Replace hardcoded "Croatian" with context language
+  - [x] Update column headers dynamically
+  - [x] Update modal labels dynamically
+  - [x] Update bulk import description
 
-- [ ] 7.2 Update GrammarTopicsPage
-  - [ ] Replace hardcoded "Croatian" with context language
-  - [ ] Update page title/description dynamically
+- [x] 7.2 Update GrammarTopicsPage
+  - [x] No hardcoded "Croatian" text - no changes needed
 
-- [ ] 7.3 Update PracticePage
-  - [ ] Replace hardcoded "Croatian" with context language
-  - [ ] Update exercise descriptions
+- [x] 7.3 Update PracticePage
+  - [x] Replace hardcoded "Croatian" in segmented control
+  - [x] Update session mode text dynamically
 
-- [ ] 7.4 Update LearnPage
-  - [ ] Replace hardcoded "Croatian" with context language
+- [x] 7.4 Update LearnPage
+  - [x] Replace hardcoded "Croatian" in title and description
+  - [x] Update exercise card descriptions dynamically
 
-- [ ] 7.5 Update ProgressPage
-  - [ ] Replace hardcoded "Croatian" with context language
+- [x] 7.5 Update ProgressPage
+  - [x] Replace hardcoded "Croatian" in description
 
-- [ ] 7.6 Add language indicator to header/nav
-  - [ ] Show current language name
-  - [ ] Quick link to settings
+- [x] 7.6 Add language indicator to header/nav
+  - [x] Show current language native_name in header badge
+  - [x] Dynamic app title (e.g., "Croatian Tutor" → "{Language} Tutor")
+  - [x] Clicking badge navigates to settings
 
 ## Phase 8: Testing & Polish
 

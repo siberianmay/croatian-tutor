@@ -29,6 +29,7 @@ import {
 } from '@tabler/icons-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { wordApi, type SortField, type SortDirection } from '~services/wordApi';
+import { useLanguage } from '~contexts/LanguageContext';
 import type { Word, WordCreate, WordUpdate, PartOfSpeech, Gender, CEFRLevel } from '~types';
 
 const PART_OF_SPEECH_OPTIONS: { value: PartOfSpeech; label: string }[] = [
@@ -75,6 +76,7 @@ interface WordFormData {
 
 const VocabularyPage: React.FC = () => {
   const queryClient = useQueryClient();
+  const { language } = useLanguage();
   const [opened, { open, close }] = useDisclosure(false);
   const [bulkOpened, { open: openBulk, close: closeBulk }] = useDisclosure(false);
   const [editingWord, setEditingWord] = useState<Word | null>(null);
@@ -220,7 +222,7 @@ const VocabularyPage: React.FC = () => {
       <div>
         <Title order={1}>Vocabulary</Title>
         <Text c="dimmed" mt="sm">
-          Manage your Croatian vocabulary words
+          Manage your {language?.name ?? 'target language'} vocabulary words
         </Text>
       </div>
 
@@ -272,7 +274,7 @@ const VocabularyPage: React.FC = () => {
                   style={{ cursor: 'pointer', userSelect: 'none' }}
                 >
                   <Group gap={4}>
-                    Croatian {getSortIcon('croatian')}
+                    {language?.name ?? 'Target'} {getSortIcon('croatian')}
                   </Group>
                 </Table.Th>
                 <Table.Th
@@ -370,8 +372,8 @@ const VocabularyPage: React.FC = () => {
       >
         <Stack gap="md">
           <TextInput
-            label="Croatian"
-            placeholder="Enter Croatian word"
+            label={language?.name ?? 'Target Language'}
+            placeholder={`Enter ${language?.name ?? 'target language'} word`}
             required
             value={formData.croatian}
             onChange={(e) => setFormData({ ...formData, croatian: e.target.value })}
@@ -431,7 +433,7 @@ const VocabularyPage: React.FC = () => {
       >
         <Stack gap="md">
           <Text size="sm" c="dimmed">
-            Enter Croatian words (one per line). AI will automatically detect:
+            Enter {language?.name ?? 'target language'} words (one per line). AI will automatically detect:
             English translation, part of speech, gender, and difficulty level.
           </Text>
           <Textarea

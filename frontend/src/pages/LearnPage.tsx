@@ -19,6 +19,7 @@ import {
   IconUsers,
 } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
+import { useLanguage } from '~contexts/LanguageContext';
 
 interface ExerciseCardProps {
   title: string;
@@ -68,22 +69,25 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
 };
 
 const LearnPage: React.FC = () => {
+  const { language } = useLanguage();
+  const langName = language?.name ?? 'your target language';
+
   return (
     <Stack gap="xl">
       <div>
         <Group gap="sm" align="center">
-          <Title order={1}>Learn Croatian</Title>
+          <Title order={1}>Learn {language?.name ?? 'Language'}</Title>
           <Badge size="lg" variant="light" color="blue">AI TUTOR</Badge>
         </Group>
         <Text c="dimmed" mt="sm">
-          Choose an exercise type to practice your Croatian skills
+          Choose an exercise type to practice your {langName} skills
         </Text>
       </div>
 
       <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="lg">
         <ExerciseCard
           title="Conversation"
-          description="Chat freely with the AI tutor in Croatian. Get corrections and suggestions as you go."
+          description={`Chat freely with the AI tutor in ${langName}. Get corrections and suggestions as you go.`}
           icon={<IconMessageCircle size={28} />}
           color="blue"
           path="/conversation"
@@ -99,7 +103,7 @@ const LearnPage: React.FC = () => {
 
         <ExerciseCard
           title="Translation"
-          description="Translate sentences between Croatian and English."
+          description={`Translate sentences between ${langName} and English.`}
           icon={<IconLanguage size={28} />}
           color="orange"
           path="/translation"
@@ -107,7 +111,7 @@ const LearnPage: React.FC = () => {
 
         <ExerciseCard
           title="Sentence Construction"
-          description="Arrange shuffled words to form correct Croatian sentences."
+          description={`Arrange shuffled words to form correct ${langName} sentences.`}
           icon={<IconBlockquote size={28} />}
           color="violet"
           path="/sentence"
@@ -115,7 +119,7 @@ const LearnPage: React.FC = () => {
 
         <ExerciseCard
           title="Reading Comprehension"
-          description="Read Croatian passages and answer comprehension questions."
+          description={`Read ${langName} passages and answer comprehension questions.`}
           icon={<IconBook2 size={28} />}
           color="teal"
           path="/reading"

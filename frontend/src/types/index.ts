@@ -499,3 +499,21 @@ export interface AppSettingsUpdate {
   reading_passage_length?: number;
   gemini_model?: GeminiModel;
 }
+
+// Language types
+export interface Language {
+  code: string;
+  name: string;
+  native_name: string;
+  is_active: boolean;
+  created_at: string;
+}
+
+export interface LanguageSetting {
+  language_code: string;
+  language: Language;
+}
+
+export interface LanguageSettingUpdate {
+  language_code: string;
+}

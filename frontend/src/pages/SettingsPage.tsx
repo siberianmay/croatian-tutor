@@ -15,9 +15,10 @@ import {
   Badge,
   SimpleGrid,
 } from '@mantine/core';
-import { IconSettings, IconCheck, IconAlertCircle, IconRefresh } from '@tabler/icons-react';
+import { IconSettings, IconCheck, IconAlertCircle, IconRefresh, IconLanguage } from '@tabler/icons-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { settingsApi } from '~services/settingsApi';
+import { useLanguage } from '~contexts/LanguageContext';
 import type { AppSettings, AppSettingsUpdate, GeminiModel } from '~types';
 
 const GEMINI_MODELS: { value: GeminiModel; label: string }[] = [
@@ -40,6 +41,15 @@ const SettingsPage: React.FC = () => {
   const [formValues, setFormValues] = useState<AppSettingsUpdate>({});
   const [hasChanges, setHasChanges] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [languageSuccess, setLanguageSuccess] = useState(false);
+
+  const {
+    languageCode,
+    language,
+    availableLanguages,
+    setLanguage,
+    isChanging: isLanguageChanging,
+  } = useLanguage();
 
   const { data: settings, isLoading, error } = useQuery({
     queryKey: ['settings'],
@@ -87,6 +97,17 @@ const SettingsPage: React.FC = () => {
     setSaveSuccess(false);
   };
 
+  const handleLanguageChange = async (code: string | null) => {
+    if (!code) return;
+    try {
+      await setLanguage(code);
+      setLanguageSuccess(true);
+      setTimeout(() => setLanguageSuccess(false), 3000);
+    } catch (err) {
+      console.error('Failed to change language:', err);
+    }
+  };
+
   if (isLoading) {
     return (
       <Stack gap="lg" align="center" mt="xl">
@@ -131,6 +152,40 @@ const SettingsPage: React.FC = () => {
           Failed to save settings. Please try again.
         </Alert>
       )}
+
+      {languageSuccess && (
+        <Alert color="green" icon={<IconCheck />} title="Language changed">
+          Your learning language has been changed to {language?.name}.
+        </Alert>
+      )}
+
+      <Card shadow="sm" padding="lg" withBorder>
+        <Stack gap="md">
+          <Group gap="xs">
+            <IconLanguage size={20} />
+            <Text fw={600} size="lg">Learning Language</Text>
+          </Group>
+          <Text size="sm" c="dimmed">
+            Select the language you want to learn. Your vocabulary, exercises, and progress
+            are tracked separately for each language.
+          </Text>
+          <Divider />
+
+          <Select
+            label="Language"
+            description="Choose your target learning language"
+            data={availableLanguages.map((lang) => ({
+              value: lang.code,
+              label: `${lang.name} (${lang.native_name})`,
+            }))}
+            value={languageCode}
+            onChange={handleLanguageChange}
+            allowDeselect={false}
+            disabled={isLanguageChanging}
+            rightSection={isLanguageChanging ? <Loader size="xs" /> : undefined}
+          />
+        </Stack>
+      </Card>
 
       <Card shadow="sm" padding="lg" withBorder>
         <Stack gap="md">

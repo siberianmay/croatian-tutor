@@ -172,9 +172,23 @@ CREATE TABLE language (
   - ✅ DrillService: Already done in Phase 4.3
 
 ### Next Steps
-1. Phase 6: Frontend Language Selection (types, API, context)
-2. Phase 7: Frontend UI Updates (dynamic labels)
-3. Phase 8: Testing & Polish
+1. Phase 8: Testing & Polish
+
+### Completed This Session
+- ✅ Phase 6: Frontend Language Selection
+  - Added Language types to `frontend/src/types/index.ts`
+  - Created `frontend/src/services/languageApi.ts`
+  - Created `frontend/src/contexts/LanguageContext.tsx` with `useLanguage()` hook
+  - Added `~contexts` alias to tsconfig and vite.config
+  - Wrapped app with `LanguageProvider` in main.tsx
+  - Updated SettingsPage with language selector card
+
+- ✅ Phase 7: Frontend UI Updates
+  - Updated VocabularyPage (description, column header, modal labels, bulk import text)
+  - Updated PracticePage (segmented control labels, session mode text)
+  - Updated LearnPage (title, description, exercise card descriptions)
+  - Updated ProgressPage (description text)
+  - Updated AppLayout (dynamic title, language indicator badge in header)
 
 ### Blockers
 None currently identified.

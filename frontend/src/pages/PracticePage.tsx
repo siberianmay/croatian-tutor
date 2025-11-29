@@ -20,12 +20,14 @@ import { IconCheck, IconX, IconArrowRight, IconRefresh } from '@tabler/icons-rea
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { drillApi } from '~services/drillApi';
 import { wordApi } from '~services/wordApi';
+import { useLanguage } from '~contexts/LanguageContext';
 import type { DrillItem, DrillSessionResponse } from '~types';
 
 type DrillMode = 'vocabulary_cr_en' | 'vocabulary_en_cr';
 
 const PracticePage: React.FC = () => {
   const queryClient = useQueryClient();
+  const { language } = useLanguage();
   const [mode, setMode] = useState<DrillMode>('vocabulary_en_cr');
   const [session, setSession] = useState<DrillSessionResponse | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -163,8 +165,8 @@ const PracticePage: React.FC = () => {
                   value={mode}
                   onChange={(v) => setMode(v as DrillMode)}
                   data={[
-                    { label: 'Croatian → English', value: 'vocabulary_cr_en' },
-                    { label: 'English → Croatian', value: 'vocabulary_en_cr' },
+                    { label: `${language?.name ?? 'Target'} → English`, value: 'vocabulary_cr_en' },
+                    { label: `English → ${language?.name ?? 'Target'}`, value: 'vocabulary_en_cr' },
                   ]}
                   size="md"
                 />
@@ -194,7 +196,7 @@ const PracticePage: React.FC = () => {
         <div>
           <Title order={1}>Flashcards</Title>
           <Text c="dimmed">
-            {mode === 'vocabulary_cr_en' ? 'Croatian → English' : 'English → Croatian'}
+            {mode === 'vocabulary_cr_en' ? `${language?.name ?? 'Target'} → English` : `English → ${language?.name ?? 'Target'}`}
           </Text>
         </div>
         <Badge size="lg">
