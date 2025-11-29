@@ -1,24 +1,19 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import { resolve } from 'path';
-import { existsSync } from 'fs';
-
-// Detect Docker (/app/package.json exists) vs local dev
-const root = existsSync('/app/package.json') ? '/app' : __dirname;
-const src = resolve(root, 'src');
+import path from 'path';
 
 export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      '@': src,
-      '~components': resolve(src, 'components'),
-      '~contexts': resolve(src, 'contexts'),
-      '~features': resolve(src, 'features'),
-      '~services': resolve(src, 'services'),
-      '~types': resolve(src, 'types'),
-      '~hooks': resolve(src, 'hooks'),
-      '~config': resolve(src, 'config'),
+      '@': path.resolve(__dirname, 'src'),
+      '~components': path.resolve(__dirname, 'src/components'),
+      '~contexts': path.resolve(__dirname, 'src/contexts'),
+      '~features': path.resolve(__dirname, 'src/features'),
+      '~services': path.resolve(__dirname, 'src/services'),
+      '~types': path.resolve(__dirname, 'src/types'),
+      '~hooks': path.resolve(__dirname, 'src/hooks'),
+      '~config': path.resolve(__dirname, 'src/config'),
     },
   },
   server: {
