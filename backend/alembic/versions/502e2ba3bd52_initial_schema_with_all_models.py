@@ -28,7 +28,6 @@ def upgrade() -> None:
     sa.Column('rule_description', sa.Text(), nullable=True),
     sa.Column('display_order', sa.Integer(), nullable=False),
     sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('name')
     )
     op.create_index(op.f('ix_grammar_topic_id'), 'grammar_topic', ['id'], unique=False)
     op.create_table('user',
