@@ -205,6 +205,7 @@ async def mark_topic_learnt(
 
     return GrammarTopicResponse(
         id=topic.id,
+        language=topic.language,
         name=topic.name,
         cefr_level=topic.cefr_level,
         prerequisite_ids=topic.prerequisite_ids,
