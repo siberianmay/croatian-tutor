@@ -17,10 +17,13 @@ class SessionCRUD:
     def __init__(self, db: AsyncSession):
         self._db = db
 
-    async def create(self, user_id: int, session_in: SessionCreate) -> Session:
+    async def create(
+        self, user_id: int, session_in: SessionCreate, *, language: str = "hr"
+    ) -> Session:
         """Create a new session (start a learning session)."""
         session = Session(
             user_id=user_id,
+            language=language,
             exercise_type=session_in.exercise_type,
             started_at=datetime.now(timezone.utc),
         )
@@ -36,15 +39,25 @@ class SessionCRUD:
         )
         return result.scalar_one_or_none()
 
-    async def get_active(self, user_id: int, exercise_type: ExerciseType | None = None) -> Session | None:
+    async def get_active(
+        self,
+        user_id: int,
+        exercise_type: ExerciseType | None = None,
+        *,
+        language: str | None = None,
+    ) -> Session | None:
         """Get the most recent active (not ended) session for a user."""
         query = (
             select(Session)
             .where(Session.user_id == user_id)
             .where(Session.ended_at.is_(None))
         )
+
+        if language:
+            query = query.where(Session.language == language)
         if exercise_type:
             query = query.where(Session.exercise_type == exercise_type)
+
         query = query.order_by(Session.started_at.desc()).limit(1)
 
         result = await self._db.execute(query)
@@ -54,6 +67,7 @@ class SessionCRUD:
         self,
         user_id: int,
         *,
+        language: str | None = None,
         skip: int = 0,
         limit: int = 50,
         exercise_type: ExerciseType | None = None,
@@ -65,6 +79,8 @@ class SessionCRUD:
             .order_by(Session.started_at.desc())
         )
 
+        if language:
+            query = query.where(Session.language == language)
         if exercise_type:
             query = query.where(Session.exercise_type == exercise_type)
 
@@ -76,11 +92,14 @@ class SessionCRUD:
         self,
         user_id: int,
         *,
+        language: str | None = None,
         exercise_type: ExerciseType | None = None,
     ) -> int:
         """Count sessions matching filters."""
         query = select(func.count(Session.id)).where(Session.user_id == user_id)
 
+        if language:
+            query = query.where(Session.language == language)
         if exercise_type:
             query = query.where(Session.exercise_type == exercise_type)
 
@@ -112,7 +131,7 @@ class SessionCRUD:
         return session
 
     async def get_or_create_active(
-        self, user_id: int, exercise_type: ExerciseType
+        self, user_id: int, exercise_type: ExerciseType, *, language: str = "hr"
     ) -> tuple[Session, bool]:
         """
         Get an active session or create a new one.
@@ -120,10 +139,10 @@ class SessionCRUD:
         Returns:
             Tuple of (session, created) where created is True if a new session was created.
         """
-        existing = await self.get_active(user_id, exercise_type)
+        existing = await self.get_active(user_id, exercise_type, language=language)
         if existing:
             return existing, False
 
         session_in = SessionCreate(exercise_type=exercise_type)
-        new_session = await self.create(user_id, session_in)
+        new_session = await self.create(user_id, session_in, language=language)
         return new_session, True

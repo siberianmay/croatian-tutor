@@ -18,9 +18,12 @@ class GrammarTopicCRUD:
     def __init__(self, db: AsyncSession):
         self._db = db
 
-    async def create(self, topic_in: GrammarTopicCreate) -> GrammarTopic:
+    async def create(
+        self, topic_in: GrammarTopicCreate, *, language: str = "hr"
+    ) -> GrammarTopic:
         """Create a new grammar topic."""
         topic = GrammarTopic(
+            language=language,
             name=topic_in.name,
             cefr_level=topic_in.cefr_level,
             prerequisite_ids=topic_in.prerequisite_ids,
@@ -39,16 +42,24 @@ class GrammarTopicCRUD:
         )
         return result.scalar_one_or_none()
 
-    async def get_by_name(self, name: str) -> GrammarTopic | None:
-        """Get a topic by name."""
-        result = await self._db.execute(
-            select(GrammarTopic).where(func.lower(GrammarTopic.name) == name.lower())
+    async def get_by_name(
+        self, name: str, *, language: str | None = None
+    ) -> GrammarTopic | None:
+        """Get a topic by name, optionally filtered by language."""
+        query = select(GrammarTopic).where(
+            func.lower(GrammarTopic.name) == name.lower()
         )
+
+        if language:
+            query = query.where(GrammarTopic.language == language)
+
+        result = await self._db.execute(query)
         return result.scalar_one_or_none()
 
     async def get_multi(
         self,
         *,
+        language: str | None = None,
         skip: int = 0,
         limit: int = 100,
         cefr_level: CEFRLevel | None = None,
@@ -56,6 +67,8 @@ class GrammarTopicCRUD:
         """Get multiple topics with pagination and filters."""
         query = select(GrammarTopic)
 
+        if language:
+            query = query.where(GrammarTopic.language == language)
         if cefr_level:
             query = query.where(GrammarTopic.cefr_level == cefr_level)
 
@@ -68,10 +81,14 @@ class GrammarTopicCRUD:
         result = await self._db.execute(query)
         return result.scalars().all()
 
-    async def count(self, *, cefr_level: CEFRLevel | None = None) -> int:
+    async def count(
+        self, *, language: str | None = None, cefr_level: CEFRLevel | None = None
+    ) -> int:
         """Count topics matching filters."""
         query = select(func.count(GrammarTopic.id))
 
+        if language:
+            query = query.where(GrammarTopic.language == language)
         if cefr_level:
             query = query.where(GrammarTopic.cefr_level == cefr_level)
 
@@ -150,7 +167,11 @@ class TopicProgressCRUD:
         return progress
 
     async def get_user_progress(
-        self, user_id: int, *, cefr_level: CEFRLevel | None = None
+        self,
+        user_id: int,
+        *,
+        language: str | None = None,
+        cefr_level: CEFRLevel | None = None,
     ) -> Sequence[TopicProgress]:
         """Get all progress records for a user."""
         query = (
@@ -159,6 +180,8 @@ class TopicProgressCRUD:
             .where(TopicProgress.user_id == user_id)
         )
 
+        if language:
+            query = query.where(GrammarTopic.language == language)
         if cefr_level:
             query = query.where(GrammarTopic.cefr_level == cefr_level)
 
@@ -236,20 +259,26 @@ class TopicProgressCRUD:
         return progress
 
     async def get_weak_topics(
-        self, user_id: int, *, limit: int = 5
+        self, user_id: int, *, language: str | None = None, limit: int = 5
     ) -> Sequence[TopicProgress]:
         """Get topics with lowest mastery scores for targeted practice."""
-        result = await self._db.execute(
+        query = (
             select(TopicProgress)
+            .join(GrammarTopic)
             .where(TopicProgress.user_id == user_id)
             .where(TopicProgress.times_practiced > 0)
-            .order_by(TopicProgress.mastery_score.asc())
-            .limit(limit)
         )
+
+        if language:
+            query = query.where(GrammarTopic.language == language)
+
+        query = query.order_by(TopicProgress.mastery_score.asc()).limit(limit)
+
+        result = await self._db.execute(query)
         return result.scalars().all()
 
     async def get_unpracticed_topics(
-        self, user_id: int, *, limit: int = 5
+        self, user_id: int, *, language: str | None = None, limit: int = 5
     ) -> Sequence[GrammarTopic]:
         """Get topics the user hasn't practiced yet."""
         # Get topic IDs the user has practiced
@@ -259,33 +288,59 @@ class TopicProgressCRUD:
             .scalar_subquery()
         )
 
-        result = await self._db.execute(
+        query = (
             select(GrammarTopic)
             .where(GrammarTopic.id.not_in(practiced_subq))
-            .order_by(GrammarTopic.cefr_level.asc(), GrammarTopic.display_order.asc())
-            .limit(limit)
         )
+
+        if language:
+            query = query.where(GrammarTopic.language == language)
+
+        query = query.order_by(
+            GrammarTopic.cefr_level.asc(), GrammarTopic.display_order.asc()
+        ).limit(limit)
+
+        result = await self._db.execute(query)
         return result.scalars().all()
 
-    async def get_learnt_topic_ids(self, user_id: int) -> set[int]:
+    async def get_learnt_topic_ids(
+        self, user_id: int, *, language: str | None = None
+    ) -> set[int]:
         """Get set of topic IDs that the user has marked as learnt."""
-        result = await self._db.execute(
-            select(TopicProgress.topic_id).where(TopicProgress.user_id == user_id)
+        query = (
+            select(TopicProgress.topic_id)
+            .join(GrammarTopic)
+            .where(TopicProgress.user_id == user_id)
         )
+
+        if language:
+            query = query.where(GrammarTopic.language == language)
+
+        result = await self._db.execute(query)
         return set(result.scalars().all())
 
-    async def get_learnt_topics(self, user_id: int) -> Sequence[GrammarTopic]:
+    async def get_learnt_topics(
+        self, user_id: int, *, language: str | None = None
+    ) -> Sequence[GrammarTopic]:
         """Get all topics the user has marked as learnt."""
-        result = await self._db.execute(
+        query = (
             select(GrammarTopic)
             .join(TopicProgress, TopicProgress.topic_id == GrammarTopic.id)
             .where(TopicProgress.user_id == user_id)
-            .order_by(GrammarTopic.cefr_level.asc(), GrammarTopic.display_order.asc())
         )
+
+        if language:
+            query = query.where(GrammarTopic.language == language)
+
+        query = query.order_by(
+            GrammarTopic.cefr_level.asc(), GrammarTopic.display_order.asc()
+        )
+
+        result = await self._db.execute(query)
         return result.scalars().all()
 
     async def get_learnt_topics_with_mastery(
-        self, user_id: int
+        self, user_id: int, *, language: str | None = None
     ) -> list[dict[str, Any]]:
         """
         Get all learnt topics with their mastery scores.
@@ -293,7 +348,7 @@ class TopicProgressCRUD:
         Returns:
             List of dicts with topic_id, name, mastery_score (0-1000), times_practiced
         """
-        result = await self._db.execute(
+        query = (
             select(
                 GrammarTopic.id,
                 GrammarTopic.name,
@@ -302,8 +357,14 @@ class TopicProgressCRUD:
             )
             .join(TopicProgress, TopicProgress.topic_id == GrammarTopic.id)
             .where(TopicProgress.user_id == user_id)
-            .order_by(TopicProgress.mastery_score.asc())  # Weakest first
         )
+
+        if language:
+            query = query.where(GrammarTopic.language == language)
+
+        query = query.order_by(TopicProgress.mastery_score.asc())  # Weakest first
+
+        result = await self._db.execute(query)
         rows = result.all()
         return [
             {
@@ -319,9 +380,18 @@ class TopicProgressCRUD:
         """Mark a topic as learnt by creating a TopicProgress record."""
         return await self.get_or_create(user_id, topic_id)
 
-    async def get_progress_map(self, user_id: int) -> dict[int, TopicProgress]:
+    async def get_progress_map(
+        self, user_id: int, *, language: str | None = None
+    ) -> dict[int, TopicProgress]:
         """Get all progress records for a user as a dict keyed by topic_id."""
-        result = await self._db.execute(
-            select(TopicProgress).where(TopicProgress.user_id == user_id)
+        query = (
+            select(TopicProgress)
+            .join(GrammarTopic)
+            .where(TopicProgress.user_id == user_id)
         )
+
+        if language:
+            query = query.where(GrammarTopic.language == language)
+
+        result = await self._db.execute(query)
         return {p.topic_id: p for p in result.scalars().all()}

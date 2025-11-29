@@ -5,6 +5,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.api.dependencies import DEFAULT_USER_ID, get_current_language
 from app.crud.word import WordCRUD
 from app.database import get_db
 from app.models.enums import CEFRLevel, PartOfSpeech
@@ -21,9 +22,6 @@ from app.services.gemini_service import get_gemini_service
 
 router = APIRouter(prefix="/words", tags=["words"])
 
-# Single-user app: hardcoded user_id per design decision
-DEFAULT_USER_ID = 1
-
 
 def get_word_crud(db: Annotated[AsyncSession, Depends(get_db)]) -> WordCRUD:
     """Dependency for WordCRUD."""
@@ -33,6 +31,7 @@ def get_word_crud(db: Annotated[AsyncSession, Depends(get_db)]) -> WordCRUD:
 @router.get("", response_model=list[WordResponse])
 async def list_words(
     crud: Annotated[WordCRUD, Depends(get_word_crud)],
+    language: Annotated[str, Depends(get_current_language)],
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=500),
     part_of_speech: PartOfSpeech | None = None,
@@ -44,6 +43,7 @@ async def list_words(
     """List words with pagination, filters, and sorting."""
     words = await crud.get_multi(
         user_id=DEFAULT_USER_ID,
+        language=language,
         skip=skip,
         limit=limit,
         part_of_speech=part_of_speech,
@@ -58,6 +58,7 @@ async def list_words(
 @router.get("/count")
 async def count_words(
     crud: Annotated[WordCRUD, Depends(get_word_crud)],
+    language: Annotated[str, Depends(get_current_language)],
     part_of_speech: PartOfSpeech | None = None,
     cefr_level: CEFRLevel | None = None,
     search: str | None = Query(None, min_length=1),
@@ -65,6 +66,7 @@ async def count_words(
     """Get total count of words matching filters."""
     count = await crud.count(
         user_id=DEFAULT_USER_ID,
+        language=language,
         part_of_speech=part_of_speech,
         cefr_level=cefr_level,
         search=search,
@@ -75,19 +77,23 @@ async def count_words(
 @router.get("/due", response_model=list[WordResponse])
 async def get_due_words(
     crud: Annotated[WordCRUD, Depends(get_word_crud)],
+    language: Annotated[str, Depends(get_current_language)],
     limit: int = Query(20, ge=1, le=100),
 ) -> list[WordResponse]:
     """Get words due for review."""
-    words = await crud.get_due_words(user_id=DEFAULT_USER_ID, limit=limit)
+    words = await crud.get_due_words(
+        user_id=DEFAULT_USER_ID, language=language, limit=limit
+    )
     return [WordResponse.model_validate(w) for w in words]
 
 
 @router.get("/due/count")
 async def count_due_words(
     crud: Annotated[WordCRUD, Depends(get_word_crud)],
+    language: Annotated[str, Depends(get_current_language)],
 ) -> dict[str, int]:
     """Get count of words due for review."""
-    count = await crud.count_due_words(user_id=DEFAULT_USER_ID)
+    count = await crud.count_due_words(user_id=DEFAULT_USER_ID, language=language)
     return {"count": count}
 
 
@@ -95,17 +101,20 @@ async def count_due_words(
 async def create_word(
     word_in: WordCreate,
     crud: Annotated[WordCRUD, Depends(get_word_crud)],
+    language: Annotated[str, Depends(get_current_language)],
 ) -> WordResponse:
     """Create a new word."""
-    # Check for duplicates
-    exists = await crud.exists_for_user(DEFAULT_USER_ID, word_in.croatian)
+    # Check for duplicates within the same language
+    exists = await crud.exists_for_user(
+        DEFAULT_USER_ID, word_in.croatian, language=language
+    )
     if exists:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail=f"Word '{word_in.croatian}' already exists",
         )
 
-    word = await crud.create(user_id=DEFAULT_USER_ID, word_in=word_in)
+    word = await crud.create(user_id=DEFAULT_USER_ID, word_in=word_in, language=language)
     return WordResponse.model_validate(word)
 
 
@@ -182,9 +191,10 @@ async def review_word(
 async def bulk_import_words(
     request: WordBulkImportRequest,
     crud: Annotated[WordCRUD, Depends(get_word_crud)],
+    language: Annotated[str, Depends(get_current_language)],
 ) -> WordBulkImportResponse:
     """
-    Bulk import Croatian words with AI-powered assessment.
+    Bulk import words with AI-powered assessment.
 
     Gemini analyzes each word to determine:
     - English translation
@@ -194,14 +204,14 @@ async def bulk_import_words(
     """
     gemini = get_gemini_service()
 
-    # Filter out duplicates
+    # Filter out duplicates within the same language
     new_words = []
     skipped = 0
     for word in request.words:
         word = word.strip()
         if not word:
             continue
-        exists = await crud.exists_for_user(DEFAULT_USER_ID, word)
+        exists = await crud.exists_for_user(DEFAULT_USER_ID, word, language=language)
         if exists:
             skipped += 1
         else:
@@ -231,7 +241,9 @@ async def bulk_import_words(
             gender=assessment.get("gender"),
             cefr_level=CEFRLevel(assessment["cefr_level"]),
         )
-        word = await crud.create(user_id=DEFAULT_USER_ID, word_in=word_create)
+        word = await crud.create(
+            user_id=DEFAULT_USER_ID, word_in=word_create, language=language
+        )
         created_words.append(WordResponse.model_validate(word))
 
     return WordBulkImportResponse(

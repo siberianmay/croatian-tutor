@@ -5,6 +5,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.api.dependencies import DEFAULT_USER_ID, get_current_language
 from app.crud.grammar_topic import GrammarTopicCRUD, TopicProgressCRUD
 from app.database import get_db
 from app.models.enums import CEFRLevel
@@ -18,9 +19,6 @@ from app.services.gemini_service import get_gemini_service
 from app.services.exercise_service import ExerciseService
 
 router = APIRouter(prefix="/topics", tags=["grammar-topics"])
-
-# Single-user app: hardcoded user_id per design decision
-DEFAULT_USER_ID = 1
 
 
 def get_topic_crud(db: Annotated[AsyncSession, Depends(get_db)]) -> GrammarTopicCRUD:
@@ -42,18 +40,22 @@ def get_exercise_service(db: Annotated[AsyncSession, Depends(get_db)]) -> Exerci
 async def list_topics(
     crud: Annotated[GrammarTopicCRUD, Depends(get_topic_crud)],
     progress_crud: Annotated[TopicProgressCRUD, Depends(get_progress_crud)],
+    language: Annotated[str, Depends(get_current_language)],
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=500),
     cefr_level: CEFRLevel | None = None,
 ) -> list[GrammarTopicResponse]:
     """List grammar topics with pagination and optional CEFR level filter."""
-    topics = await crud.get_multi(skip=skip, limit=limit, cefr_level=cefr_level)
-    progress_map = await progress_crud.get_progress_map(DEFAULT_USER_ID)
+    topics = await crud.get_multi(
+        language=language, skip=skip, limit=limit, cefr_level=cefr_level
+    )
+    progress_map = await progress_crud.get_progress_map(DEFAULT_USER_ID, language=language)
 
     return [
         GrammarTopicResponse(
             id=t.id,
             name=t.name,
+            language=t.language,
             cefr_level=t.cefr_level,
             prerequisite_ids=t.prerequisite_ids,
             rule_description=t.rule_description,
@@ -69,10 +71,11 @@ async def list_topics(
 @router.get("/count")
 async def count_topics(
     crud: Annotated[GrammarTopicCRUD, Depends(get_topic_crud)],
+    language: Annotated[str, Depends(get_current_language)],
     cefr_level: CEFRLevel | None = None,
 ) -> dict[str, int]:
     """Get total count of topics."""
-    count = await crud.count(cefr_level=cefr_level)
+    count = await crud.count(language=language, cefr_level=cefr_level)
     return {"count": count}
 
 
@@ -80,11 +83,12 @@ async def count_topics(
 async def get_user_progress(
     topic_crud: Annotated[GrammarTopicCRUD, Depends(get_topic_crud)],
     progress_crud: Annotated[TopicProgressCRUD, Depends(get_progress_crud)],
+    language: Annotated[str, Depends(get_current_language)],
     cefr_level: CEFRLevel | None = None,
 ) -> list[TopicProgressResponse]:
     """Get user's progress on all practiced topics."""
     progress_records = await progress_crud.get_user_progress(
-        user_id=DEFAULT_USER_ID, cefr_level=cefr_level
+        user_id=DEFAULT_USER_ID, language=language, cefr_level=cefr_level
     )
 
     results = []
@@ -95,6 +99,7 @@ async def get_user_progress(
                 TopicProgressResponse(
                     topic_id=progress.topic_id,
                     topic_name=topic.name,
+                    language=topic.language,
                     cefr_level=topic.cefr_level,
                     mastery_score=progress.mastery_score,
                     times_practiced=progress.times_practiced,
@@ -107,17 +112,18 @@ async def get_user_progress(
 async def create_topic(
     topic_in: GrammarTopicCreate,
     crud: Annotated[GrammarTopicCRUD, Depends(get_topic_crud)],
+    language: Annotated[str, Depends(get_current_language)],
 ) -> GrammarTopicResponse:
     """Create a new grammar topic."""
-    # Check for duplicates
-    existing = await crud.get_by_name(topic_in.name)
+    # Check for duplicates within the same language
+    existing = await crud.get_by_name(topic_in.name, language=language)
     if existing:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail=f"Topic '{topic_in.name}' already exists",
         )
 
-    topic = await crud.create(topic_in)
+    topic = await crud.create(topic_in, language=language)
     return GrammarTopicResponse.model_validate(topic)
 
 
@@ -126,6 +132,7 @@ async def get_topic(
     topic_id: int,
     crud: Annotated[GrammarTopicCRUD, Depends(get_topic_crud)],
     progress_crud: Annotated[TopicProgressCRUD, Depends(get_progress_crud)],
+    language: Annotated[str, Depends(get_current_language)],
 ) -> GrammarTopicResponse:
     """Get a specific grammar topic by ID."""
     topic = await crud.get(topic_id)
@@ -134,11 +141,12 @@ async def get_topic(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Topic not found",
         )
-    progress_map = await progress_crud.get_progress_map(DEFAULT_USER_ID)
+    progress_map = await progress_crud.get_progress_map(DEFAULT_USER_ID, language=language)
     progress = progress_map.get(topic_id)
     return GrammarTopicResponse(
         id=topic.id,
         name=topic.name,
+        language=topic.language,
         cefr_level=topic.cefr_level,
         prerequisite_ids=topic.prerequisite_ids,
         rule_description=topic.rule_description,
@@ -214,6 +222,7 @@ async def generate_topic_description(
     crud: Annotated[GrammarTopicCRUD, Depends(get_topic_crud)],
     progress_crud: Annotated[TopicProgressCRUD, Depends(get_progress_crud)],
     exercise_service: Annotated[ExerciseService, Depends(get_exercise_service)],
+    language: Annotated[str, Depends(get_current_language)],
 ) -> GrammarTopicResponse:
     """Generate AI description for a grammar topic using Gemini."""
     topic = await crud.get(topic_id)
@@ -230,7 +239,7 @@ async def generate_topic_description(
             detail="Failed to generate description",
         )
 
-    progress_map = await progress_crud.get_progress_map(DEFAULT_USER_ID)
+    progress_map = await progress_crud.get_progress_map(DEFAULT_USER_ID, language=language)
     progress = progress_map.get(topic_id)
 
     # Refresh topic from DB
@@ -238,6 +247,7 @@ async def generate_topic_description(
     return GrammarTopicResponse(
         id=topic.id,
         name=topic.name,
+        language=topic.language,
         cefr_level=topic.cefr_level,
         prerequisite_ids=topic.prerequisite_ids,
         rule_description=topic.rule_description,

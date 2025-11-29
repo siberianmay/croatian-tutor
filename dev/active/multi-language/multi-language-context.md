@@ -143,10 +143,30 @@ CREATE TABLE language (
   - Relationships use `language_ref` (to avoid naming conflict with column)
   - Migration upgrade/downgrade tested successfully
 
+- ✅ Phase 2: Backend Model & Schema Updates - COMPLETE
+  - Pydantic schemas updated (WordResponse, GrammarTopicResponse, UserResponse)
+  - LanguageResponse schema created
+  - Language CRUD and API created (`/api/v1/languages`)
+
+- ✅ Phase 3: CRUD Layer Updates - COMPLETE
+  - WordCRUD: All methods updated with language filter
+  - GrammarTopicCRUD: All methods updated with language filter
+  - TopicProgressCRUD: All methods updated with language filter (via join)
+  - SessionCRUD: All methods updated with language parameter
+  - UserCRUD: Created with get_language/set_language methods
+
+- 🔄 Phase 4: API Layer Updates - IN PROGRESS
+  - ✅ Created `app/api/dependencies.py` with `get_current_language()` dependency
+  - ✅ Updated Words API with language injection
+  - ✅ Updated Topics API with language injection
+  - ✅ Updated Drills API with language injection
+  - ✅ Updated DrillService with language parameter
+  - ⏳ Exercises API, Progress API, Analytics API, Settings API still pending
+
 ### Next Steps
-1. Phase 2: Backend Model & Schema Updates (Pydantic schemas)
-2. Phase 3: CRUD Layer Updates (add language filters)
-3. Phase 4: API Layer Updates (language dependency injection)
+1. Update remaining APIs (exercises, progress, analytics, settings)
+2. Phase 5: Gemini Service Updates (language in prompts)
+3. Phase 6-7: Frontend updates
 
 ### Blockers
 None currently identified.
@@ -155,3 +175,4 @@ None currently identified.
 - Column is named `language` (not `language_code`) for simplicity
 - Relationship is named `language_ref` to avoid conflict with column name
 - User model has `language` column and `selected_language` relationship
+- `get_current_language()` dependency reads from user's saved language preference

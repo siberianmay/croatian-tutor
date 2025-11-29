@@ -38,6 +38,7 @@ class WordResponse(WordBase):
 
     id: int
     user_id: int
+    language: str  # Language code (e.g., 'hr', 'es')
     mastery_score: int
     ease_factor: float
     correct_count: int

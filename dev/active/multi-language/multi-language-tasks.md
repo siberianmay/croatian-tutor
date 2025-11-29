@@ -19,7 +19,7 @@
   - [x] Update `grammar_topic.name` unique constraint to include language
   - [x] Verify no constraint violations with existing data
 
-## Phase 2: Backend Model & Schema Updates (IN PROGRESS)
+## Phase 2: Backend Model & Schema Updates ✅ COMPLETE
 
 - [x] 2.1 Update Word model (`backend/app/models/word.py`)
   - [x] Add language column with FK
@@ -43,69 +43,80 @@
   - [x] Add language column with FK
   - [x] Add relationship to Language (`selected_language`)
 
-- [ ] 2.7 Update Pydantic schemas
-  - [ ] Update WordCreate/WordUpdate schemas
-  - [ ] Update GrammarTopicCreate schema
-  - [ ] Update UserResponse/UserUpdate schemas
-  - [ ] Create LanguageResponse schema
+- [x] 2.7 Update Pydantic schemas
+  - [x] Update WordResponse schema (added language field)
+  - [x] Update GrammarTopicResponse schema (added language field)
+  - [x] Update UserResponse/UserUpdate schemas (added language field)
+  - [x] Create LanguageResponse schema
 
-- [ ] 2.8 Add Language CRUD and API
-  - [ ] Create `backend/app/crud/language.py`
-  - [ ] Create `backend/app/api/languages.py`
-  - [ ] Register router in `backend/app/api/router.py`
+- [x] 2.8 Add Language CRUD and API
+  - [x] Create `backend/app/crud/language.py`
+  - [x] Create `backend/app/api/languages.py`
+  - [x] Register router in `backend/app/api/router.py`
 
-## Phase 3: CRUD Layer Updates
+## Phase 3: CRUD Layer Updates ✅ COMPLETE
 
-- [ ] 3.1 Update WordCRUD (`backend/app/crud/word.py`)
-  - [ ] Add language parameter to `create()`
-  - [ ] Add language filter to `get_multi()`
-  - [ ] Add language filter to `count()`
-  - [ ] Add language filter to `get_due_words()`
-  - [ ] Add language filter to `count_due_words()`
-  - [ ] Add language filter to `exists_for_user()`
-  - [ ] Add language filter to `get_low_mastery_words()`
-  - [ ] Add language filter to `get_random_words()`
+- [x] 3.1 Update WordCRUD (`backend/app/crud/word.py`)
+  - [x] Add language parameter to `create()`
+  - [x] Add language filter to `get_multi()`
+  - [x] Add language filter to `count()`
+  - [x] Add language filter to `get_due_words()`
+  - [x] Add language filter to `count_due_words()`
+  - [x] Add language filter to `exists_for_user()`
+  - [x] Add language filter to `get_low_mastery_words()`
+  - [x] Add language filter to `get_random_words()`
 
-- [ ] 3.2 Update GrammarTopicCRUD (`backend/app/crud/grammar_topic.py`)
-  - [ ] Add language parameter to `create()`
-  - [ ] Add language filter to `get_multi()`
-  - [ ] Add language filter to `count()`
-  - [ ] Add language filter to `get_by_name()`
+- [x] 3.2 Update GrammarTopicCRUD (`backend/app/crud/grammar_topic.py`)
+  - [x] Add language parameter to `create()`
+  - [x] Add language filter to `get_multi()`
+  - [x] Add language filter to `count()`
+  - [x] Add language filter to `get_by_name()`
 
-- [ ] 3.3 Update TopicProgressCRUD (`backend/app/crud/grammar_topic.py`)
-  - [ ] Update `get_user_progress()` to filter by language via join
-  - [ ] Update `get_unpracticed_topics()` to filter by language
-  - [ ] Update `get_learnt_topics()` to filter by language
-  - [ ] Update `get_learnt_topics_with_mastery()` to filter by language
+- [x] 3.3 Update TopicProgressCRUD (`backend/app/crud/grammar_topic.py`)
+  - [x] Update `get_user_progress()` to filter by language via join
+  - [x] Update `get_unpracticed_topics()` to filter by language
+  - [x] Update `get_learnt_topics()` to filter by language
+  - [x] Update `get_learnt_topics_with_mastery()` to filter by language
+  - [x] Update `get_weak_topics()` to filter by language
+  - [x] Update `get_learnt_topic_ids()` to filter by language
+  - [x] Update `get_progress_map()` to filter by language
 
-- [ ] 3.4 Update SessionCRUD (`backend/app/crud/session.py`)
-  - [ ] Add language to create operations
+- [x] 3.4 Update SessionCRUD (`backend/app/crud/session.py`)
+  - [x] Add language to create operations
+  - [x] Add language filter to get_active()
+  - [x] Add language filter to get_multi()
+  - [x] Add language filter to count()
+  - [x] Add language to get_or_create_active()
 
-- [ ] 3.5 Add user language methods
-  - [ ] Add method to get user's selected language
-  - [ ] Add method to update user's selected language
+- [x] 3.5 Add user language methods
+  - [x] Create `backend/app/crud/user.py` with UserCRUD
+  - [x] Add `get_language()` method
+  - [x] Add `set_language()` method
+  - [x] Add `update()` method
 
-## Phase 4: API Layer Updates
+## Phase 4: API Layer Updates (IN PROGRESS)
 
-- [ ] 4.1 Create language resolution dependency
-  - [ ] Create `get_current_language()` dependency
-  - [ ] Returns user's language
+- [x] 4.1 Create language resolution dependency
+  - [x] Create `backend/app/api/dependencies.py`
+  - [x] Create `get_current_language()` dependency
+  - [x] Returns user's language
 
-- [ ] 4.2 Update Words API (`backend/app/api/words.py`)
-  - [ ] Inject language dependency
-  - [ ] Pass language to CRUD methods
+- [x] 4.2 Update Words API (`backend/app/api/words.py`)
+  - [x] Inject language dependency
+  - [x] Pass language to CRUD methods
 
-- [ ] 4.3 Update Drills API (`backend/app/api/drills.py`)
-  - [ ] Inject language dependency
-  - [ ] Pass language to service/CRUD
+- [x] 4.3 Update Drills API (`backend/app/api/drills.py`)
+  - [x] Inject language dependency
+  - [x] Pass language to service/CRUD
+  - [x] Update DrillService methods with language parameter
 
 - [ ] 4.4 Update Exercises API (`backend/app/api/exercises.py`)
   - [ ] Inject language dependency
   - [ ] Pass language to ExerciseService
 
-- [ ] 4.5 Update Topics API (`backend/app/api/topics.py`)
-  - [ ] Inject language dependency
-  - [ ] Filter topics by language
+- [x] 4.5 Update Topics API (`backend/app/api/topics.py`)
+  - [x] Inject language dependency
+  - [x] Filter topics by language
 
 - [ ] 4.6 Update Progress API (`backend/app/api/progress.py`)
   - [ ] Inject language dependency

@@ -25,6 +25,8 @@ class DrillService:
         user_id: int,
         exercise_type: ExerciseType,
         count: int = 10,
+        *,
+        language: str | None = None,
     ) -> list[Word]:
         """
         Get words for a drill session.
@@ -35,7 +37,9 @@ class DrillService:
         3. Random selection if needed
         """
         # Get due words first
-        due_words = await self._word_crud.get_due_words(user_id, limit=count)
+        due_words = await self._word_crud.get_due_words(
+            user_id, language=language, limit=count
+        )
         words = list(due_words)
 
         # If we need more words, get low mastery ones
@@ -43,6 +47,7 @@ class DrillService:
             remaining = count - len(words)
             all_words = await self._word_crud.get_multi(
                 user_id,
+                language=language,
                 skip=0,
                 limit=100,
             )
@@ -60,14 +65,16 @@ class DrillService:
         self,
         user_id: int,
         count: int = 10,
+        *,
+        language: str | None = None,
     ) -> list[dict]:
         """
-        Get Croatian to English drill items.
+        Get target language to English drill items.
 
-        Returns list of {word_id, croatian, expected_answer}
+        Returns list of {word_id, prompt, expected_answer}
         """
         words = await self.get_drill_words(
-            user_id, ExerciseType.VOCABULARY_CR_EN, count
+            user_id, ExerciseType.VOCABULARY_CR_EN, count, language=language
         )
         return [
             {
@@ -84,14 +91,16 @@ class DrillService:
         self,
         user_id: int,
         count: int = 10,
+        *,
+        language: str | None = None,
     ) -> list[dict]:
         """
-        Get English to Croatian drill items.
+        Get English to target language drill items.
 
-        Returns list of {word_id, english, expected_answer}
+        Returns list of {word_id, prompt, expected_answer}
         """
         words = await self.get_drill_words(
-            user_id, ExerciseType.VOCABULARY_EN_CR, count
+            user_id, ExerciseType.VOCABULARY_EN_CR, count, language=language
         )
         return [
             {

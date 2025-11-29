@@ -1,5 +1,6 @@
 """Pydantic schemas for the Croatian Tutor application."""
 
+from app.schemas.language import LanguageBase, LanguageCreate, LanguageResponse
 from app.schemas.user import UserBase, UserUpdate, UserResponse
 from app.schemas.word import (
     WordBase,
@@ -49,6 +50,10 @@ from app.schemas.drill import (
 )
 
 __all__ = [
+    # Language
+    "LanguageBase",
+    "LanguageCreate",
+    "LanguageResponse",
     # User
     "UserBase",
     "UserUpdate",

@@ -18,3 +18,11 @@ class LanguageCreate(LanguageBase):
     """Schema for creating a language."""
 
     pass
+
+
+class LanguageResponse(LanguageBase):
+    """Schema for language response data."""
+
+    created_at: datetime
+
+    model_config = {"from_attributes": True}

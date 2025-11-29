@@ -5,9 +5,10 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.api.dependencies import DEFAULT_USER_ID, get_current_language
+from app.crud.word import WordCRUD
 from app.database import get_db
 from app.models.enums import ExerciseType
-from app.crud.word import WordCRUD
 from app.schemas.drill import (
     DrillAnswerRequest,
     DrillAnswerResponse,
@@ -22,9 +23,6 @@ from app.services.gemini_service import get_gemini_service
 
 router = APIRouter(prefix="/drills", tags=["drills"])
 
-# Single-user app: hardcoded user_id per design decision
-DEFAULT_USER_ID = 1
-
 
 def get_drill_service(db: Annotated[AsyncSession, Depends(get_db)]) -> DrillService:
     """Dependency for DrillService."""
@@ -35,6 +33,7 @@ def get_drill_service(db: Annotated[AsyncSession, Depends(get_db)]) -> DrillServ
 async def start_drill_session(
     request: DrillSessionRequest,
     service: Annotated[DrillService, Depends(get_drill_service)],
+    language: Annotated[str, Depends(get_current_language)],
 ) -> DrillSessionResponse:
     """Start a new drill session with specified exercise type."""
     if request.exercise_type not in (
@@ -49,11 +48,13 @@ async def start_drill_session(
     if request.exercise_type == ExerciseType.VOCABULARY_CR_EN:
         items_data = await service.get_cr_to_en_drill(
             user_id=DEFAULT_USER_ID,
+            language=language,
             count=request.count,
         )
     else:
         items_data = await service.get_en_to_cr_drill(
             user_id=DEFAULT_USER_ID,
+            language=language,
             count=request.count,
         )
 
@@ -90,6 +91,7 @@ async def get_fill_in_blank_exercises(
     request: FillInBlankRequest,
     service: Annotated[DrillService, Depends(get_drill_service)],
     db: Annotated[AsyncSession, Depends(get_db)],
+    language: Annotated[str, Depends(get_current_language)],
 ) -> list[FillInBlankItem]:
     """
     Generate fill-in-the-blank exercises using Gemini AI.
@@ -101,12 +103,14 @@ async def get_fill_in_blank_exercises(
     word_crud = WordCRUD(db)
 
     # Get words for the exercise
-    words = await word_crud.get_due_words(user_id=DEFAULT_USER_ID, limit=request.count)
+    words = await word_crud.get_due_words(
+        user_id=DEFAULT_USER_ID, language=language, limit=request.count
+    )
 
     if not words:
         # Fall back to any words if none due
         words = await word_crud.get_multi(
-            user_id=DEFAULT_USER_ID, skip=0, limit=request.count
+            user_id=DEFAULT_USER_ID, language=language, skip=0, limit=request.count
         )
 
     if not words:

@@ -35,6 +35,7 @@ class GrammarTopicResponse(GrammarTopicBase):
     """Schema for grammar topic response data."""
 
     id: int
+    language: str  # Language code (e.g., 'hr', 'es')
     is_learnt: bool = False
     mastery_score: int = 0
     times_practiced: int = 0
@@ -47,6 +48,7 @@ class TopicProgressResponse(BaseModel):
 
     topic_id: int
     topic_name: str
+    language: str  # Language code (e.g., 'hr', 'es')
     cefr_level: CEFRLevel
     mastery_score: int
     times_practiced: int

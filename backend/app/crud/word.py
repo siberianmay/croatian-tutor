@@ -16,10 +16,13 @@ class WordCRUD:
     def __init__(self, db: AsyncSession):
         self._db = db
 
-    async def create(self, user_id: int, word_in: WordCreate) -> Word:
+    async def create(
+        self, user_id: int, word_in: WordCreate, *, language: str = "hr"
+    ) -> Word:
         """Create a new word for a user."""
         word = Word(
             user_id=user_id,
+            language=language,
             croatian=word_in.croatian,
             english=word_in.english,
             part_of_speech=word_in.part_of_speech,
@@ -43,6 +46,7 @@ class WordCRUD:
         self,
         user_id: int,
         *,
+        language: str | None = None,
         skip: int = 0,
         limit: int = 100,
         part_of_speech: PartOfSpeech | None = None,
@@ -53,6 +57,9 @@ class WordCRUD:
     ) -> Sequence[Word]:
         """Get multiple words with pagination, filters, and sorting."""
         query = select(Word).where(Word.user_id == user_id)
+
+        if language:
+            query = query.where(Word.language == language)
 
         if part_of_speech:
             query = query.where(Word.part_of_speech == part_of_speech)
@@ -92,6 +99,7 @@ class WordCRUD:
         self,
         user_id: int,
         *,
+        language: str | None = None,
         part_of_speech: PartOfSpeech | None = None,
         cefr_level: CEFRLevel | None = None,
         search: str | None = None,
@@ -99,6 +107,8 @@ class WordCRUD:
         """Count words matching filters."""
         query = select(func.count(Word.id)).where(Word.user_id == user_id)
 
+        if language:
+            query = query.where(Word.language == language)
         if part_of_speech:
             query = query.where(Word.part_of_speech == part_of_speech)
         if cefr_level:
@@ -140,7 +150,7 @@ class WordCRUD:
         return True
 
     async def get_due_words(
-        self, user_id: int, *, limit: int = 20
+        self, user_id: int, *, language: str | None = None, limit: int = 20
     ) -> Sequence[Word]:
         """Get words due for review, ordered by priority."""
         now = datetime.now(timezone.utc)
@@ -148,16 +158,22 @@ class WordCRUD:
             select(Word)
             .where(Word.user_id == user_id)
             .where((Word.next_review_at <= now) | (Word.next_review_at.is_(None)))
-            .order_by(
-                Word.next_review_at.cast(Date).asc().nullsfirst(),
-                func.random(),
-            )
-            .limit(limit)
         )
+
+        if language:
+            query = query.where(Word.language == language)
+
+        query = query.order_by(
+            Word.next_review_at.cast(Date).asc().nullsfirst(),
+            func.random(),
+        ).limit(limit)
+
         result = await self._db.execute(query)
         return result.scalars().all()
 
-    async def count_due_words(self, user_id: int) -> int:
+    async def count_due_words(
+        self, user_id: int, *, language: str | None = None
+    ) -> int:
         """Count words due for review."""
         now = datetime.now(timezone.utc)
         query = (
@@ -165,15 +181,25 @@ class WordCRUD:
             .where(Word.user_id == user_id)
             .where((Word.next_review_at <= now) | (Word.next_review_at.is_(None)))
         )
+
+        if language:
+            query = query.where(Word.language == language)
+
         result = await self._db.execute(query)
         return result.scalar_one()
 
-    async def exists_for_user(self, user_id: int, croatian: str) -> bool:
-        """Check if a word already exists for a user."""
+    async def exists_for_user(
+        self, user_id: int, croatian: str, *, language: str | None = None
+    ) -> bool:
+        """Check if a word already exists for a user (optionally for a specific language)."""
         query = select(func.count(Word.id)).where(
             Word.user_id == user_id,
             func.lower(Word.croatian) == croatian.lower(),
         )
+
+        if language:
+            query = query.where(Word.language == language)
+
         result = await self._db.execute(query)
         return result.scalar_one() > 0
 
@@ -258,21 +284,19 @@ class WordCRUD:
         self,
         user_id: int,
         *,
+        language: str | None = None,
         limit: int = 10,
         exclude_ids: list[int] | None = None,
     ) -> Sequence[Word]:
         """Get words with low mastery scores for reinforcement practice."""
-        query = (
-            select(Word)
-            .where(Word.user_id == user_id)
-            .order_by(
-                Word.mastery_score.asc(),
-                func.random(),
-            )
-        )
+        query = select(Word).where(Word.user_id == user_id)
+
+        if language:
+            query = query.where(Word.language == language)
         if exclude_ids:
             query = query.where(Word.id.notin_(exclude_ids))
-        query = query.limit(limit)
+
+        query = query.order_by(Word.mastery_score.asc(), func.random()).limit(limit)
         result = await self._db.execute(query)
         return result.scalars().all()
 
@@ -280,13 +304,18 @@ class WordCRUD:
         self,
         user_id: int,
         *,
+        language: str | None = None,
         limit: int = 10,
         exclude_ids: list[int] | None = None,
     ) -> Sequence[Word]:
         """Get random words for variety in exercises."""
         query = select(Word).where(Word.user_id == user_id)
+
+        if language:
+            query = query.where(Word.language == language)
         if exclude_ids:
             query = query.where(Word.id.notin_(exclude_ids))
+
         query = query.order_by(func.random()).limit(limit)
         result = await self._db.execute(query)
         return result.scalars().all()
