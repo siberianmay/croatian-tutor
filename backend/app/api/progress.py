@@ -5,8 +5,9 @@ from typing import Annotated, Any
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.dependencies import DEFAULT_USER_ID, get_current_language
+from app.api.dependencies import get_current_active_user, get_current_language
 from app.database import get_db
+from app.models.user import User
 from app.services.progress_service import ProgressService
 
 router = APIRouter(prefix="/progress", tags=["progress"])
@@ -20,6 +21,7 @@ def get_progress_service(db: Annotated[AsyncSession, Depends(get_db)]) -> Progre
 @router.get("/summary")
 async def get_summary(
     service: Annotated[ProgressService, Depends(get_progress_service)],
+    current_user: Annotated[User, Depends(get_current_active_user)],
     language: Annotated[str, Depends(get_current_language)],
 ) -> dict[str, Any]:
     """
@@ -27,12 +29,13 @@ async def get_summary(
 
     Returns stats like total words, mastered words, streak days, etc.
     """
-    return await service.get_summary(DEFAULT_USER_ID, language)
+    return await service.get_summary(current_user.id, language)
 
 
 @router.get("/vocabulary")
 async def get_vocabulary_stats(
     service: Annotated[ProgressService, Depends(get_progress_service)],
+    current_user: Annotated[User, Depends(get_current_active_user)],
     language: Annotated[str, Depends(get_current_language)],
 ) -> dict[str, Any]:
     """
@@ -40,12 +43,13 @@ async def get_vocabulary_stats(
 
     Returns words by level, by mastery status, and recent additions.
     """
-    return await service.get_vocabulary_stats(DEFAULT_USER_ID, language)
+    return await service.get_vocabulary_stats(current_user.id, language)
 
 
 @router.get("/topics")
 async def get_topic_stats(
     service: Annotated[ProgressService, Depends(get_progress_service)],
+    current_user: Annotated[User, Depends(get_current_active_user)],
     language: Annotated[str, Depends(get_current_language)],
 ) -> dict[str, Any]:
     """
@@ -53,12 +57,13 @@ async def get_topic_stats(
 
     Returns topic mastery levels and practice counts.
     """
-    return await service.get_topic_stats(DEFAULT_USER_ID, language)
+    return await service.get_topic_stats(current_user.id, language)
 
 
 @router.get("/activity")
 async def get_activity(
     service: Annotated[ProgressService, Depends(get_progress_service)],
+    current_user: Annotated[User, Depends(get_current_active_user)],
     language: Annotated[str, Depends(get_current_language)],
     days: int = 14,
 ) -> dict[str, Any]:
@@ -70,12 +75,13 @@ async def get_activity(
 
     Returns daily activity and exercise type breakdown.
     """
-    return await service.get_activity(DEFAULT_USER_ID, language, days=days)
+    return await service.get_activity(current_user.id, language, days=days)
 
 
 @router.get("/errors")
 async def get_error_patterns(
     service: Annotated[ProgressService, Depends(get_progress_service)],
+    current_user: Annotated[User, Depends(get_current_active_user)],
     language: Annotated[str, Depends(get_current_language)],
 ) -> dict[str, Any]:
     """
@@ -83,12 +89,13 @@ async def get_error_patterns(
 
     Returns error distribution by category and suggestions for improvement.
     """
-    return await service.get_error_patterns(DEFAULT_USER_ID, language)
+    return await service.get_error_patterns(current_user.id, language)
 
 
 @router.get("/context")
 async def get_context_summary(
     service: Annotated[ProgressService, Depends(get_progress_service)],
+    current_user: Annotated[User, Depends(get_current_active_user)],
     language: Annotated[str, Depends(get_current_language)],
 ) -> dict[str, str]:
     """
@@ -96,5 +103,5 @@ async def get_context_summary(
 
     Returns a formatted summary suitable for Gemini prompts.
     """
-    summary = await service.generate_context_summary(DEFAULT_USER_ID, language)
+    summary = await service.generate_context_summary(current_user.id, language)
     return {"context": summary}

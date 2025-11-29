@@ -3,6 +3,7 @@
 from fastapi import APIRouter
 
 from app.api.analytics import router as analytics_router
+from app.api.auth import router as auth_router
 from app.api.drills import router as drills_router
 from app.api.exercises import router as exercises_router
 from app.api.languages import router as languages_router
@@ -13,6 +14,9 @@ from app.api.topics import router as topics_router
 from app.api.words import router as words_router
 
 api_router = APIRouter()
+
+# Auth routes (no authentication required)
+api_router.include_router(auth_router)
 
 api_router.include_router(languages_router)
 api_router.include_router(words_router)

@@ -3,13 +3,14 @@
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import DateTime, ForeignKey, Integer, String, func
+from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
 from app.models.enums import CEFRLevel
 
 if TYPE_CHECKING:
+    from app.models.app_settings import AppSettings
     from app.models.error_log import ErrorLog
     from app.models.exercise_log import ExerciseLog
     from app.models.language import Language
@@ -19,11 +20,14 @@ if TYPE_CHECKING:
 
 
 class User(Base):
-    """User model - single user for local app, extensible for future multi-user."""
+    """User model for multi-user authentication."""
 
     __tablename__ = "user"
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, default=1)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False, index=True)
+    password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     name: Mapped[str | None] = mapped_column(String(100), nullable=True)
     preferred_cefr_level: Mapped[CEFRLevel] = mapped_column(
         default=CEFRLevel.A1,
@@ -60,3 +64,6 @@ class User(Base):
         back_populates="user", lazy="selectin"
     )
     selected_language: Mapped["Language"] = relationship(back_populates="users")
+    settings: Mapped["AppSettings"] = relationship(
+        back_populates="user", uselist=False, lazy="selectin"
+    )

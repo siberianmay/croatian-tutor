@@ -20,5 +20,14 @@ class Settings(BaseSettings):
     debug: bool = True
     api_v1_prefix: str = "/api/v1"
 
+    # JWT Authentication
+    secret_key: str = "change-this-in-production-use-openssl-rand-hex-32"
+    algorithm: str = "HS256"
+    access_token_expire_minutes: int = 30
+    refresh_token_expire_days: int = 7
+
+    # Registration
+    referral_code: str = ""
+
 
 settings = Settings()

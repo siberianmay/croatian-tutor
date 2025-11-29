@@ -5,11 +5,12 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.dependencies import DEFAULT_USER_ID, get_current_language
+from app.api.dependencies import get_current_active_user, get_current_language
 from app.crud.language import LanguageCRUD
 from app.crud.word import WordCRUD
 from app.database import get_db
 from app.models.enums import ExerciseType
+from app.models.user import User
 from app.schemas.drill import (
     DrillAnswerRequest,
     DrillAnswerResponse,
@@ -34,6 +35,7 @@ def get_drill_service(db: Annotated[AsyncSession, Depends(get_db)]) -> DrillServ
 async def start_drill_session(
     request: DrillSessionRequest,
     service: Annotated[DrillService, Depends(get_drill_service)],
+    current_user: Annotated[User, Depends(get_current_active_user)],
     language: Annotated[str, Depends(get_current_language)],
 ) -> DrillSessionResponse:
     """Start a new drill session with specified exercise type."""
@@ -48,13 +50,13 @@ async def start_drill_session(
 
     if request.exercise_type == ExerciseType.VOCABULARY_CR_EN:
         items_data = await service.get_cr_to_en_drill(
-            user_id=DEFAULT_USER_ID,
+            user_id=current_user.id,
             language=language,
             count=request.count,
         )
     else:
         items_data = await service.get_en_to_cr_drill(
-            user_id=DEFAULT_USER_ID,
+            user_id=current_user.id,
             language=language,
             count=request.count,
         )
@@ -72,10 +74,11 @@ async def start_drill_session(
 async def check_drill_answer(
     request: DrillAnswerRequest,
     service: Annotated[DrillService, Depends(get_drill_service)],
+    current_user: Annotated[User, Depends(get_current_active_user)],
 ) -> DrillAnswerResponse:
     """Check if a drill answer is correct."""
     result = await service.check_answer(
-        user_id=DEFAULT_USER_ID,
+        user_id=current_user.id,
         word_id=request.word_id,
         user_answer=request.user_answer,
         exercise_type=request.exercise_type,
@@ -91,6 +94,7 @@ async def check_drill_answer(
 async def get_fill_in_blank_exercises(
     request: FillInBlankRequest,
     service: Annotated[DrillService, Depends(get_drill_service)],
+    current_user: Annotated[User, Depends(get_current_active_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
     language: Annotated[str, Depends(get_current_language)],
 ) -> list[FillInBlankItem]:
@@ -110,13 +114,13 @@ async def get_fill_in_blank_exercises(
 
     # Get words for the exercise
     words = await word_crud.get_due_words(
-        user_id=DEFAULT_USER_ID, language=language, limit=request.count
+        user_id=current_user.id, language=language, limit=request.count
     )
 
     if not words:
         # Fall back to any words if none due
         words = await word_crud.get_multi(
-            user_id=DEFAULT_USER_ID, language=language, skip=0, limit=request.count
+            user_id=current_user.id, language=language, skip=0, limit=request.count
         )
 
     if not words:

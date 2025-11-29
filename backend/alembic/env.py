@@ -11,6 +11,7 @@ from app.database import Base
 
 # Import all models here so Alembic can detect them
 from app.models import (  # noqa: F401
+    AppSettings,
     User,
     Word,
     GrammarTopic,
@@ -18,6 +19,7 @@ from app.models import (  # noqa: F401
     ExerciseLog,
     ErrorLog,
     Session,
+    Language,
 )
 
 config = context.config

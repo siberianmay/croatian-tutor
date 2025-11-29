@@ -3,7 +3,10 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.security import get_password_hash
+from app.models.app_settings import AppSettings
 from app.models.user import User
+from app.schemas.auth import UserRegister
 from app.schemas.user import UserUpdate
 
 
@@ -18,14 +21,38 @@ class UserCRUD:
         result = await self._db.execute(select(User).where(User.id == user_id))
         return result.scalar_one_or_none()
 
-    async def get_or_create(self, user_id: int = 1) -> User:
-        """Get existing user or create default user."""
+    async def get_by_email(self, email: str) -> User | None:
+        """Get a user by email address."""
+        result = await self._db.execute(select(User).where(User.email == email))
+        return result.scalar_one_or_none()
+
+    async def create(self, user_in: UserRegister) -> User:
+        """
+        Create a new user with hashed password.
+
+        Also creates default AppSettings for the user.
+        """
+        user = User(
+            email=user_in.email,
+            password_hash=get_password_hash(user_in.password),
+            name=user_in.name,
+        )
+        self._db.add(user)
+        await self._db.flush()
+        await self._db.refresh(user)
+
+        # Create default settings for the new user
+        settings = AppSettings(user_id=user.id)
+        self._db.add(settings)
+        await self._db.flush()
+
+        return user
+
+    async def get_or_create(self, user_id: int) -> User:
+        """Get existing user by ID. Raises if not found (use for authenticated users)."""
         user = await self.get(user_id)
         if not user:
-            user = User(id=user_id)
-            self._db.add(user)
-            await self._db.flush()
-            await self._db.refresh(user)
+            raise ValueError(f"User with id {user_id} not found")
         return user
 
     async def get_language(self, user_id: int) -> str:

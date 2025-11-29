@@ -28,6 +28,8 @@ class UserResponse(UserBase):
     """Schema for user response data."""
 
     id: int
+    email: str
+    is_active: bool
     language: str  # Selected language code (e.g., 'hr', 'es')
     created_at: datetime
     updated_at: datetime

@@ -1,24 +1,34 @@
 """Application settings model for the Croatian Tutor application."""
 
 from datetime import datetime
+from typing import TYPE_CHECKING
 
-from sqlalchemy import DateTime, Integer, String, func
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import DateTime, ForeignKey, Integer, String, func
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
+
+if TYPE_CHECKING:
+    from app.models.user import User
 
 
 class AppSettings(Base):
     """
-    Singleton settings table (id=1 always).
+    Per-user settings table.
 
-    Stores application-wide configuration for exercise generation
+    Each user has their own settings for exercise generation
     and AI model selection.
     """
 
     __tablename__ = "app_settings"
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, default=1)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("user.id", ondelete="CASCADE"), nullable=False, unique=True
+    )
+
+    # Relationship back to user
+    user: Mapped["User"] = relationship(back_populates="settings")
 
     # Exercise batch sizes
     grammar_batch_size: Mapped[int] = mapped_column(

@@ -6,10 +6,11 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.dependencies import DEFAULT_USER_ID, get_current_language
+from app.api.dependencies import get_current_active_user, get_current_language
 from app.crud.app_settings import AppSettingsCRUD
 from app.database import get_db
 from app.models.enums import CEFRLevel, ExerciseType
+from app.models.user import User
 from app.schemas.exercise import (
     ConversationRequest,
     ConversationResponse,
@@ -26,13 +27,16 @@ from app.services.exercise_service import ExerciseService
 router = APIRouter(prefix="/exercises", tags=["exercises"])
 
 
-async def get_exercise_service(db: Annotated[AsyncSession, Depends(get_db)]) -> ExerciseService:
+async def get_exercise_service(
+    db: Annotated[AsyncSession, Depends(get_db)],
+    current_user: Annotated[User, Depends(get_current_active_user)],
+) -> ExerciseService:
     """Dependency for ExerciseService with settings-configured Gemini."""
     gemini = get_gemini_service()
 
-    # Configure Gemini with settings
+    # Configure Gemini with user's settings
     settings_crud = AppSettingsCRUD(db)
-    settings = await settings_crud.get()
+    settings = await settings_crud.get_or_create(current_user.id)
     gemini.set_model(settings.gemini_model)
 
     return ExerciseService(db, gemini)
@@ -273,6 +277,7 @@ class AnswerCheckRequest(BaseModel):
 async def conversation_turn(
     request: ConversationRequest,
     service: Annotated[ExerciseService, Depends(get_exercise_service)],
+    current_user: Annotated[User, Depends(get_current_active_user)],
     language: Annotated[str, Depends(get_current_language)],
     cefr_level: CEFRLevel = CEFRLevel.A1,
 ) -> ConversationResponse:
@@ -285,7 +290,7 @@ async def conversation_turn(
     history = [{"role": h.role, "content": h.content} for h in request.history]
 
     result = await service.conversation_turn(
-        user_id=DEFAULT_USER_ID,
+        user_id=current_user.id,
         message=request.message,
         history=history,
         cefr_level=cefr_level,
@@ -294,7 +299,7 @@ async def conversation_turn(
 
     # Log activity
     await service.log_exercise_activity(
-        user_id=DEFAULT_USER_ID,
+        user_id=current_user.id,
         exercise_type=ExerciseType.CONVERSATION,
         exercises_completed=1,
         language=language,
@@ -316,6 +321,7 @@ async def conversation_turn(
 async def generate_grammar_exercise(
     request: GrammarExerciseRequest,
     service: Annotated[ExerciseService, Depends(get_exercise_service)],
+    current_user: Annotated[User, Depends(get_current_active_user)],
     language: Annotated[str, Depends(get_current_language)],
     cefr_level: CEFRLevel | None = None,
 ) -> GrammarExerciseResponse:
@@ -325,7 +331,7 @@ async def generate_grammar_exercise(
     If topic_id is not provided, auto-selects based on user's weak areas.
     """
     result = await service.generate_grammar_exercise(
-        user_id=DEFAULT_USER_ID,
+        user_id=current_user.id,
         topic_id=request.topic_id,
         cefr_level=cefr_level,
         language=language,
@@ -345,6 +351,7 @@ async def generate_grammar_exercise(
 async def generate_grammar_exercises_batch(
     request: GrammarBatchRequest,
     service: Annotated[ExerciseService, Depends(get_exercise_service)],
+    current_user: Annotated[User, Depends(get_current_active_user)],
     language: Annotated[str, Depends(get_current_language)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> GrammarBatchResponse:
@@ -358,11 +365,11 @@ async def generate_grammar_exercises_batch(
     count = request.count
     if count is None:
         settings_crud = AppSettingsCRUD(db)
-        settings = await settings_crud.get()
+        settings = await settings_crud.get_or_create(current_user.id)
         count = settings.grammar_batch_size
 
     results = await service.generate_grammar_exercises_batch(
-        user_id=DEFAULT_USER_ID,
+        user_id=current_user.id,
         count=count,
         cefr_level=request.cefr_level,
         language=language,
@@ -388,6 +395,7 @@ async def generate_grammar_exercises_batch(
 async def evaluate_grammar_batch(
     request: GrammarBatchEvaluateRequest,
     service: Annotated[ExerciseService, Depends(get_exercise_service)],
+    current_user: Annotated[User, Depends(get_current_active_user)],
     language: Annotated[str, Depends(get_current_language)],
 ) -> GrammarBatchEvaluateResponse:
     """
@@ -406,13 +414,13 @@ async def evaluate_grammar_batch(
     ]
 
     results = await service.evaluate_grammar_answers_batch(
-        user_id=DEFAULT_USER_ID,
+        user_id=current_user.id,
         answers=answers,
         language=language,
     )
 
     await service.log_exercise_activity(
-        user_id=DEFAULT_USER_ID,
+        user_id=current_user.id,
         exercise_type=ExerciseType.GRAMMAR,
         duration_minutes=request.duration_minutes,
         exercises_completed=len(request.answers),
@@ -442,6 +450,7 @@ async def evaluate_grammar_batch(
 async def generate_translation_exercise(
     request: TranslationRequest,
     service: Annotated[ExerciseService, Depends(get_exercise_service)],
+    current_user: Annotated[User, Depends(get_current_active_user)],
     language: Annotated[str, Depends(get_current_language)],
 ) -> TranslationResponse:
     """
@@ -452,7 +461,7 @@ async def generate_translation_exercise(
     cefr = request.cefr_level or CEFRLevel.A1
 
     result = await service.generate_translation_exercise(
-        user_id=DEFAULT_USER_ID,
+        user_id=current_user.id,
         direction=request.direction,
         cefr_level=cefr,
         recent_sentences=request.recent_sentences,
@@ -474,6 +483,7 @@ async def generate_translation_exercise(
 async def generate_translation_exercises_batch(
     request: TranslationBatchRequest,
     service: Annotated[ExerciseService, Depends(get_exercise_service)],
+    current_user: Annotated[User, Depends(get_current_active_user)],
     language: Annotated[str, Depends(get_current_language)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> TranslationBatchResponse:
@@ -488,11 +498,11 @@ async def generate_translation_exercises_batch(
     count = request.count
     if count is None:
         settings_crud = AppSettingsCRUD(db)
-        settings = await settings_crud.get()
+        settings = await settings_crud.get_or_create(current_user.id)
         count = settings.translation_batch_size
 
     results = await service.generate_translation_exercises_batch(
-        user_id=DEFAULT_USER_ID,
+        user_id=current_user.id,
         direction=request.direction,
         count=count,
         cefr_level=request.cefr_level,
@@ -523,6 +533,7 @@ async def generate_translation_exercises_batch(
 async def evaluate_translation_batch(
     request: TranslationBatchEvaluateRequest,
     service: Annotated[ExerciseService, Depends(get_exercise_service)],
+    current_user: Annotated[User, Depends(get_current_active_user)],
     language: Annotated[str, Depends(get_current_language)],
 ) -> TranslationBatchEvaluateResponse:
     """
@@ -543,14 +554,14 @@ async def evaluate_translation_batch(
     ]
 
     results = await service.evaluate_translation_answers_batch(
-        user_id=DEFAULT_USER_ID,
+        user_id=current_user.id,
         answers=answers,
         language=language,
     )
 
     # Log activity (count all as one session)
     await service.log_exercise_activity(
-        user_id=DEFAULT_USER_ID,
+        user_id=current_user.id,
         exercise_type=ExerciseType.TRANSLATION_EN_CR,  # Generic translation type
         duration_minutes=request.duration_minutes,
         exercises_completed=len(request.answers),
@@ -580,6 +591,7 @@ async def evaluate_translation_batch(
 async def generate_sentence_construction(
     request: SentenceConstructionRequest,
     service: Annotated[ExerciseService, Depends(get_exercise_service)],
+    current_user: Annotated[User, Depends(get_current_active_user)],
     language: Annotated[str, Depends(get_current_language)],
 ) -> SentenceConstructionResponse:
     """
@@ -588,7 +600,7 @@ async def generate_sentence_construction(
     Returns shuffled words that the user must arrange into a correct sentence.
     """
     result = await service.generate_sentence_construction(
-        user_id=DEFAULT_USER_ID,
+        user_id=current_user.id,
         cefr_level=request.cefr_level,
         language=language,
     )
@@ -609,6 +621,7 @@ async def generate_sentence_construction(
 async def generate_reading_exercise(
     request: ReadingExerciseRequest,
     service: Annotated[ExerciseService, Depends(get_exercise_service)],
+    current_user: Annotated[User, Depends(get_current_active_user)],
     language: Annotated[str, Depends(get_current_language)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> ReadingExerciseResponse:
@@ -620,10 +633,10 @@ async def generate_reading_exercise(
     """
     # Get passage length from settings
     settings_crud = AppSettingsCRUD(db)
-    settings = await settings_crud.get()
+    settings = await settings_crud.get_or_create(current_user.id)
 
     result = await service.generate_reading_exercise(
-        user_id=DEFAULT_USER_ID,
+        user_id=current_user.id,
         cefr_level=request.cefr_level,
         passage_length=settings.reading_passage_length,
         language=language,
@@ -640,6 +653,7 @@ async def generate_reading_exercise(
 async def evaluate_reading_answers(
     request: ReadingBatchEvaluateRequest,
     service: Annotated[ExerciseService, Depends(get_exercise_service)],
+    current_user: Annotated[User, Depends(get_current_active_user)],
     language: Annotated[str, Depends(get_current_language)],
 ) -> ReadingBatchEvaluateResponse:
     """
@@ -657,7 +671,7 @@ async def evaluate_reading_answers(
     ]
 
     results = await service.evaluate_reading_answers(
-        user_id=DEFAULT_USER_ID,
+        user_id=current_user.id,
         passage=request.passage,
         questions_and_answers=questions_and_answers,
         language=language,
@@ -665,7 +679,7 @@ async def evaluate_reading_answers(
 
     # Log activity (count all questions as one exercise session)
     await service.log_exercise_activity(
-        user_id=DEFAULT_USER_ID,
+        user_id=current_user.id,
         exercise_type=ExerciseType.READING,
         duration_minutes=request.duration_minutes,
         exercises_completed=1,
@@ -693,6 +707,7 @@ async def evaluate_reading_answers(
 async def generate_dialogue_exercise(
     request: DialogueExerciseRequest,
     service: Annotated[ExerciseService, Depends(get_exercise_service)],
+    current_user: Annotated[User, Depends(get_current_active_user)],
     language: Annotated[str, Depends(get_current_language)],
 ) -> DialogueExerciseResponse:
     """
@@ -701,7 +716,7 @@ async def generate_dialogue_exercise(
     Creates a role-play scenario for practicing real-world Croatian conversation.
     """
     result = await service.generate_dialogue_exercise(
-        user_id=DEFAULT_USER_ID,
+        user_id=current_user.id,
         cefr_level=request.cefr_level,
         scenario=request.scenario,
         language=language,
@@ -721,6 +736,7 @@ async def generate_dialogue_exercise(
 async def dialogue_turn(
     request: DialogueTurnRequest,
     service: Annotated[ExerciseService, Depends(get_exercise_service)],
+    current_user: Annotated[User, Depends(get_current_active_user)],
     language: Annotated[str, Depends(get_current_language)],
     cefr_level: CEFRLevel = CEFRLevel.A1,
 ) -> ConversationResponse:
@@ -735,7 +751,7 @@ async def dialogue_turn(
     history.extend(request.history)
 
     result = await service.conversation_turn(
-        user_id=DEFAULT_USER_ID,
+        user_id=current_user.id,
         message=request.user_message,
         history=history,
         cefr_level=cefr_level,
@@ -758,6 +774,7 @@ async def dialogue_turn(
 async def evaluate_answer(
     request: AnswerCheckRequest,
     service: Annotated[ExerciseService, Depends(get_exercise_service)],
+    current_user: Annotated[User, Depends(get_current_active_user)],
     language: Annotated[str, Depends(get_current_language)],
 ) -> ExerciseEvaluationResponse:
     """
@@ -766,7 +783,7 @@ async def evaluate_answer(
     Uses AI to assess correctness, provide feedback, and categorize errors.
     """
     result = await service.evaluate_answer(
-        user_id=DEFAULT_USER_ID,
+        user_id=current_user.id,
         exercise_type=request.exercise_type,
         user_answer=request.user_answer,
         expected_answer=request.expected_answer,
@@ -777,7 +794,7 @@ async def evaluate_answer(
 
     # Log activity
     await service.log_exercise_activity(
-        user_id=DEFAULT_USER_ID,
+        user_id=current_user.id,
         exercise_type=request.exercise_type,
         duration_minutes=request.duration_minutes,
         exercises_completed=1,
@@ -823,6 +840,7 @@ class EndSessionResponse(BaseModel):
 async def end_exercise_session(
     request: EndSessionRequest,
     service: Annotated[ExerciseService, Depends(get_exercise_service)],
+    current_user: Annotated[User, Depends(get_current_active_user)],
 ) -> EndSessionResponse:
     """
     End an exercise chat session.
@@ -831,7 +849,7 @@ async def end_exercise_session(
     the Gemini chat history. This allows fresh exercises on the next visit.
     """
     ended = service.end_exercise_chat_session(
-        user_id=DEFAULT_USER_ID,
+        user_id=current_user.id,
         exercise_type=request.exercise_type,
         variant=request.variant,
     )

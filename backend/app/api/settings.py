@@ -6,11 +6,12 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.dependencies import DEFAULT_USER_ID, get_user_crud
+from app.api.dependencies import get_current_active_user, get_user_crud
 from app.crud.language import LanguageCRUD
 from app.crud.user import UserCRUD
 from app.database import get_db
 from app.crud.app_settings import AppSettingsCRUD
+from app.models.user import User
 from app.schemas.app_settings import AppSettingsResponse, AppSettingsUpdate, VALID_GEMINI_MODELS
 from app.schemas.language import LanguageResponse
 
@@ -43,6 +44,7 @@ class LanguageSettingUpdate(BaseModel):
 @router.get("", response_model=AppSettingsResponse)
 async def get_settings(
     crud: Annotated[AppSettingsCRUD, Depends(get_settings_crud)],
+    current_user: Annotated[User, Depends(get_current_active_user)],
 ) -> AppSettingsResponse:
     """
     Get current application settings.
@@ -53,7 +55,7 @@ async def get_settings(
     - reading_passage_length: Approximate passage length in characters
     - gemini_model: AI model used for generation
     """
-    settings = await crud.get()
+    settings = await crud.get_or_create(current_user.id)
     return AppSettingsResponse.model_validate(settings)
 
 
@@ -61,6 +63,7 @@ async def get_settings(
 async def update_settings(
     settings_in: AppSettingsUpdate,
     crud: Annotated[AppSettingsCRUD, Depends(get_settings_crud)],
+    current_user: Annotated[User, Depends(get_current_active_user)],
 ) -> AppSettingsResponse:
     """
     Update application settings.
@@ -73,7 +76,7 @@ async def update_settings(
     - reading_passage_length: 100-1000
     - gemini_model: Must be a valid Gemini model name
     """
-    settings = await crud.update(settings_in)
+    settings = await crud.update(current_user.id, settings_in)
     return AppSettingsResponse.model_validate(settings)
 
 
@@ -89,7 +92,7 @@ async def get_available_models() -> list[str]:
 
 @router.get("/language", response_model=LanguageSettingResponse)
 async def get_user_language(
-    user_crud: Annotated[UserCRUD, Depends(get_user_crud)],
+    current_user: Annotated[User, Depends(get_current_active_user)],
     language_crud: Annotated[LanguageCRUD, Depends(get_language_crud)],
 ) -> LanguageSettingResponse:
     """
@@ -97,7 +100,7 @@ async def get_user_language(
 
     Returns the language code and full language details.
     """
-    language_code = await user_crud.get_language(DEFAULT_USER_ID)
+    language_code = current_user.language
     language = await language_crud.get(language_code)
 
     if not language:
@@ -115,6 +118,7 @@ async def get_user_language(
 @router.patch("/language", response_model=LanguageSettingResponse)
 async def set_user_language(
     settings_in: LanguageSettingUpdate,
+    current_user: Annotated[User, Depends(get_current_active_user)],
     user_crud: Annotated[UserCRUD, Depends(get_user_crud)],
     language_crud: Annotated[LanguageCRUD, Depends(get_language_crud)],
 ) -> LanguageSettingResponse:
@@ -137,7 +141,7 @@ async def set_user_language(
         )
 
     # Update user's language
-    await user_crud.set_language(DEFAULT_USER_ID, settings_in.language_code)
+    await user_crud.set_language(current_user.id, settings_in.language_code)
 
     return LanguageSettingResponse(
         language_code=settings_in.language_code,

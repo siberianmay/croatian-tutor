@@ -5,11 +5,12 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.dependencies import DEFAULT_USER_ID, get_current_language
+from app.api.dependencies import get_current_active_user, get_current_language
 from app.crud.language import LanguageCRUD
 from app.crud.word import WordCRUD
 from app.database import get_db
 from app.models.enums import CEFRLevel, PartOfSpeech
+from app.models.user import User
 from app.schemas.word import (
     WordBulkImportRequest,
     WordBulkImportResponse,
@@ -32,6 +33,7 @@ def get_word_crud(db: Annotated[AsyncSession, Depends(get_db)]) -> WordCRUD:
 @router.get("", response_model=list[WordResponse])
 async def list_words(
     crud: Annotated[WordCRUD, Depends(get_word_crud)],
+    current_user: Annotated[User, Depends(get_current_active_user)],
     language: Annotated[str, Depends(get_current_language)],
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=500),
@@ -43,7 +45,7 @@ async def list_words(
 ) -> list[WordResponse]:
     """List words with pagination, filters, and sorting."""
     words = await crud.get_multi(
-        user_id=DEFAULT_USER_ID,
+        user_id=current_user.id,
         language=language,
         skip=skip,
         limit=limit,
@@ -59,6 +61,7 @@ async def list_words(
 @router.get("/count")
 async def count_words(
     crud: Annotated[WordCRUD, Depends(get_word_crud)],
+    current_user: Annotated[User, Depends(get_current_active_user)],
     language: Annotated[str, Depends(get_current_language)],
     part_of_speech: PartOfSpeech | None = None,
     cefr_level: CEFRLevel | None = None,
@@ -66,7 +69,7 @@ async def count_words(
 ) -> dict[str, int]:
     """Get total count of words matching filters."""
     count = await crud.count(
-        user_id=DEFAULT_USER_ID,
+        user_id=current_user.id,
         language=language,
         part_of_speech=part_of_speech,
         cefr_level=cefr_level,
@@ -78,12 +81,13 @@ async def count_words(
 @router.get("/due", response_model=list[WordResponse])
 async def get_due_words(
     crud: Annotated[WordCRUD, Depends(get_word_crud)],
+    current_user: Annotated[User, Depends(get_current_active_user)],
     language: Annotated[str, Depends(get_current_language)],
     limit: int = Query(20, ge=1, le=100),
 ) -> list[WordResponse]:
     """Get words due for review."""
     words = await crud.get_due_words(
-        user_id=DEFAULT_USER_ID, language=language, limit=limit
+        user_id=current_user.id, language=language, limit=limit
     )
     return [WordResponse.model_validate(w) for w in words]
 
@@ -91,10 +95,11 @@ async def get_due_words(
 @router.get("/due/count")
 async def count_due_words(
     crud: Annotated[WordCRUD, Depends(get_word_crud)],
+    current_user: Annotated[User, Depends(get_current_active_user)],
     language: Annotated[str, Depends(get_current_language)],
 ) -> dict[str, int]:
     """Get count of words due for review."""
-    count = await crud.count_due_words(user_id=DEFAULT_USER_ID, language=language)
+    count = await crud.count_due_words(user_id=current_user.id, language=language)
     return {"count": count}
 
 
@@ -102,12 +107,13 @@ async def count_due_words(
 async def create_word(
     word_in: WordCreate,
     crud: Annotated[WordCRUD, Depends(get_word_crud)],
+    current_user: Annotated[User, Depends(get_current_active_user)],
     language: Annotated[str, Depends(get_current_language)],
 ) -> WordResponse:
     """Create a new word."""
     # Check for duplicates within the same language
     exists = await crud.exists_for_user(
-        DEFAULT_USER_ID, word_in.croatian, language=language
+        current_user.id, word_in.croatian, language=language
     )
     if exists:
         raise HTTPException(
@@ -115,7 +121,7 @@ async def create_word(
             detail=f"Word '{word_in.croatian}' already exists",
         )
 
-    word = await crud.create(user_id=DEFAULT_USER_ID, word_in=word_in, language=language)
+    word = await crud.create(user_id=current_user.id, word_in=word_in, language=language)
     return WordResponse.model_validate(word)
 
 
@@ -123,9 +129,10 @@ async def create_word(
 async def get_word(
     word_id: int,
     crud: Annotated[WordCRUD, Depends(get_word_crud)],
+    current_user: Annotated[User, Depends(get_current_active_user)],
 ) -> WordResponse:
     """Get a specific word by ID."""
-    word = await crud.get(word_id, user_id=DEFAULT_USER_ID)
+    word = await crud.get(word_id, user_id=current_user.id)
     if not word:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -139,9 +146,10 @@ async def update_word(
     word_id: int,
     word_in: WordUpdate,
     crud: Annotated[WordCRUD, Depends(get_word_crud)],
+    current_user: Annotated[User, Depends(get_current_active_user)],
 ) -> WordResponse:
     """Update a word."""
-    word = await crud.update(word_id, user_id=DEFAULT_USER_ID, word_in=word_in)
+    word = await crud.update(word_id, user_id=current_user.id, word_in=word_in)
     if not word:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -154,9 +162,10 @@ async def update_word(
 async def delete_word(
     word_id: int,
     crud: Annotated[WordCRUD, Depends(get_word_crud)],
+    current_user: Annotated[User, Depends(get_current_active_user)],
 ) -> None:
     """Delete a word."""
-    deleted = await crud.delete(word_id, user_id=DEFAULT_USER_ID)
+    deleted = await crud.delete(word_id, user_id=current_user.id)
     if not deleted:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -169,10 +178,11 @@ async def review_word(
     word_id: int,
     review_in: WordReviewRequest,
     crud: Annotated[WordCRUD, Depends(get_word_crud)],
+    current_user: Annotated[User, Depends(get_current_active_user)],
 ) -> WordReviewResponse:
     """Submit a drill review result and update SRS scheduling."""
     word = await crud.process_review(
-        word_id, user_id=DEFAULT_USER_ID, correct=review_in.correct
+        word_id, user_id=current_user.id, correct=review_in.correct
     )
     if not word:
         raise HTTPException(
@@ -192,6 +202,7 @@ async def review_word(
 async def bulk_import_words(
     request: WordBulkImportRequest,
     crud: Annotated[WordCRUD, Depends(get_word_crud)],
+    current_user: Annotated[User, Depends(get_current_active_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
     language: Annotated[str, Depends(get_current_language)],
 ) -> WordBulkImportResponse:
@@ -218,7 +229,7 @@ async def bulk_import_words(
         word = word.strip()
         if not word:
             continue
-        exists = await crud.exists_for_user(DEFAULT_USER_ID, word, language=language)
+        exists = await crud.exists_for_user(current_user.id, word, language=language)
         if exists:
             skipped += 1
         else:
@@ -249,7 +260,7 @@ async def bulk_import_words(
             cefr_level=CEFRLevel(assessment["cefr_level"]),
         )
         word = await crud.create(
-            user_id=DEFAULT_USER_ID, word_in=word_create, language=language
+            user_id=current_user.id, word_in=word_create, language=language
         )
         created_words.append(WordResponse.model_validate(word))
 

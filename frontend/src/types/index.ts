@@ -517,3 +517,28 @@ export interface LanguageSetting {
 export interface LanguageSettingUpdate {
   language_code: string;
 }
+
+// Auth types
+export interface AuthUser {
+  id: number;
+  email: string;
+  name: string | null;
+  is_active: boolean;
+}
+
+export interface AuthToken {
+  access_token: string;
+  refresh_token: string;
+  token_type: string;
+}
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface RegisterRequest {
+  email: string;
+  password: string;
+  name?: string;
+}
