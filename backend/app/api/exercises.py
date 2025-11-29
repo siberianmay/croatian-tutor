@@ -6,6 +6,8 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.api.dependencies import DEFAULT_USER_ID, get_current_language
+from app.crud.app_settings import AppSettingsCRUD
 from app.database import get_db
 from app.models.enums import CEFRLevel, ExerciseType
 from app.schemas.exercise import (
@@ -20,12 +22,8 @@ from app.schemas.exercise import (
 )
 from app.services.gemini_service import get_gemini_service
 from app.services.exercise_service import ExerciseService
-from app.crud.app_settings import AppSettingsCRUD
 
 router = APIRouter(prefix="/exercises", tags=["exercises"])
-
-# Single-user app: hardcoded user_id per design decision
-DEFAULT_USER_ID = 1
 
 
 async def get_exercise_service(db: Annotated[AsyncSession, Depends(get_db)]) -> ExerciseService:
@@ -275,6 +273,7 @@ class AnswerCheckRequest(BaseModel):
 async def conversation_turn(
     request: ConversationRequest,
     service: Annotated[ExerciseService, Depends(get_exercise_service)],
+    language: Annotated[str, Depends(get_current_language)],
     cefr_level: CEFRLevel = CEFRLevel.A1,
 ) -> ConversationResponse:
     """
@@ -290,6 +289,7 @@ async def conversation_turn(
         message=request.message,
         history=history,
         cefr_level=cefr_level,
+        language=language,
     )
 
     # Log activity
@@ -297,6 +297,7 @@ async def conversation_turn(
         user_id=DEFAULT_USER_ID,
         exercise_type=ExerciseType.CONVERSATION,
         exercises_completed=1,
+        language=language,
     )
 
     return ConversationResponse(
@@ -315,6 +316,7 @@ async def conversation_turn(
 async def generate_grammar_exercise(
     request: GrammarExerciseRequest,
     service: Annotated[ExerciseService, Depends(get_exercise_service)],
+    language: Annotated[str, Depends(get_current_language)],
     cefr_level: CEFRLevel | None = None,
 ) -> GrammarExerciseResponse:
     """
@@ -326,6 +328,7 @@ async def generate_grammar_exercise(
         user_id=DEFAULT_USER_ID,
         topic_id=request.topic_id,
         cefr_level=cefr_level,
+        language=language,
     )
 
     return GrammarExerciseResponse(
@@ -342,6 +345,7 @@ async def generate_grammar_exercise(
 async def generate_grammar_exercises_batch(
     request: GrammarBatchRequest,
     service: Annotated[ExerciseService, Depends(get_exercise_service)],
+    language: Annotated[str, Depends(get_current_language)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> GrammarBatchResponse:
     """
@@ -361,6 +365,7 @@ async def generate_grammar_exercises_batch(
         user_id=DEFAULT_USER_ID,
         count=count,
         cefr_level=request.cefr_level,
+        language=language,
     )
 
     exercises = [
@@ -383,6 +388,7 @@ async def generate_grammar_exercises_batch(
 async def evaluate_grammar_batch(
     request: GrammarBatchEvaluateRequest,
     service: Annotated[ExerciseService, Depends(get_exercise_service)],
+    language: Annotated[str, Depends(get_current_language)],
 ) -> GrammarBatchEvaluateResponse:
     """
     Evaluate multiple grammar answers in a single API call.
@@ -402,6 +408,7 @@ async def evaluate_grammar_batch(
     results = await service.evaluate_grammar_answers_batch(
         user_id=DEFAULT_USER_ID,
         answers=answers,
+        language=language,
     )
 
     await service.log_exercise_activity(
@@ -409,6 +416,7 @@ async def evaluate_grammar_batch(
         exercise_type=ExerciseType.GRAMMAR,
         duration_minutes=request.duration_minutes,
         exercises_completed=len(request.answers),
+        language=language,
     )
 
     return GrammarBatchEvaluateResponse(
@@ -434,6 +442,7 @@ async def evaluate_grammar_batch(
 async def generate_translation_exercise(
     request: TranslationRequest,
     service: Annotated[ExerciseService, Depends(get_exercise_service)],
+    language: Annotated[str, Depends(get_current_language)],
 ) -> TranslationResponse:
     """
     Generate a translation exercise.
@@ -447,6 +456,7 @@ async def generate_translation_exercise(
         direction=request.direction,
         cefr_level=cefr,
         recent_sentences=request.recent_sentences,
+        language=language,
     )
 
     return TranslationResponse(
@@ -464,6 +474,7 @@ async def generate_translation_exercise(
 async def generate_translation_exercises_batch(
     request: TranslationBatchRequest,
     service: Annotated[ExerciseService, Depends(get_exercise_service)],
+    language: Annotated[str, Depends(get_current_language)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> TranslationBatchResponse:
     """
@@ -485,6 +496,7 @@ async def generate_translation_exercises_batch(
         direction=request.direction,
         count=count,
         cefr_level=request.cefr_level,
+        language=language,
     )
 
     exercises = [
@@ -511,6 +523,7 @@ async def generate_translation_exercises_batch(
 async def evaluate_translation_batch(
     request: TranslationBatchEvaluateRequest,
     service: Annotated[ExerciseService, Depends(get_exercise_service)],
+    language: Annotated[str, Depends(get_current_language)],
 ) -> TranslationBatchEvaluateResponse:
     """
     Evaluate multiple translation answers in a single API call.
@@ -532,6 +545,7 @@ async def evaluate_translation_batch(
     results = await service.evaluate_translation_answers_batch(
         user_id=DEFAULT_USER_ID,
         answers=answers,
+        language=language,
     )
 
     # Log activity (count all as one session)
@@ -540,6 +554,7 @@ async def evaluate_translation_batch(
         exercise_type=ExerciseType.TRANSLATION_EN_CR,  # Generic translation type
         duration_minutes=request.duration_minutes,
         exercises_completed=len(request.answers),
+        language=language,
     )
 
     return TranslationBatchEvaluateResponse(
@@ -565,6 +580,7 @@ async def evaluate_translation_batch(
 async def generate_sentence_construction(
     request: SentenceConstructionRequest,
     service: Annotated[ExerciseService, Depends(get_exercise_service)],
+    language: Annotated[str, Depends(get_current_language)],
 ) -> SentenceConstructionResponse:
     """
     Generate a sentence construction exercise.
@@ -574,6 +590,7 @@ async def generate_sentence_construction(
     result = await service.generate_sentence_construction(
         user_id=DEFAULT_USER_ID,
         cefr_level=request.cefr_level,
+        language=language,
     )
 
     return SentenceConstructionResponse(
@@ -592,6 +609,7 @@ async def generate_sentence_construction(
 async def generate_reading_exercise(
     request: ReadingExerciseRequest,
     service: Annotated[ExerciseService, Depends(get_exercise_service)],
+    language: Annotated[str, Depends(get_current_language)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> ReadingExerciseResponse:
     """
@@ -608,6 +626,7 @@ async def generate_reading_exercise(
         user_id=DEFAULT_USER_ID,
         cefr_level=request.cefr_level,
         passage_length=settings.reading_passage_length,
+        language=language,
     )
 
     return ReadingExerciseResponse(
@@ -621,6 +640,7 @@ async def generate_reading_exercise(
 async def evaluate_reading_answers(
     request: ReadingBatchEvaluateRequest,
     service: Annotated[ExerciseService, Depends(get_exercise_service)],
+    language: Annotated[str, Depends(get_current_language)],
 ) -> ReadingBatchEvaluateResponse:
     """
     Evaluate all reading comprehension answers at once.
@@ -640,6 +660,7 @@ async def evaluate_reading_answers(
         user_id=DEFAULT_USER_ID,
         passage=request.passage,
         questions_and_answers=questions_and_answers,
+        language=language,
     )
 
     # Log activity (count all questions as one exercise session)
@@ -648,6 +669,7 @@ async def evaluate_reading_answers(
         exercise_type=ExerciseType.READING,
         duration_minutes=request.duration_minutes,
         exercises_completed=1,
+        language=language,
     )
 
     return ReadingBatchEvaluateResponse(
@@ -671,6 +693,7 @@ async def evaluate_reading_answers(
 async def generate_dialogue_exercise(
     request: DialogueExerciseRequest,
     service: Annotated[ExerciseService, Depends(get_exercise_service)],
+    language: Annotated[str, Depends(get_current_language)],
 ) -> DialogueExerciseResponse:
     """
     Generate a situational dialogue exercise.
@@ -681,6 +704,7 @@ async def generate_dialogue_exercise(
         user_id=DEFAULT_USER_ID,
         cefr_level=request.cefr_level,
         scenario=request.scenario,
+        language=language,
     )
 
     return DialogueExerciseResponse(
@@ -697,6 +721,7 @@ async def generate_dialogue_exercise(
 async def dialogue_turn(
     request: DialogueTurnRequest,
     service: Annotated[ExerciseService, Depends(get_exercise_service)],
+    language: Annotated[str, Depends(get_current_language)],
     cefr_level: CEFRLevel = CEFRLevel.A1,
 ) -> ConversationResponse:
     """
@@ -714,6 +739,7 @@ async def dialogue_turn(
         message=request.user_message,
         history=history,
         cefr_level=cefr_level,
+        language=language,
     )
 
     return ConversationResponse(
@@ -732,6 +758,7 @@ async def dialogue_turn(
 async def evaluate_answer(
     request: AnswerCheckRequest,
     service: Annotated[ExerciseService, Depends(get_exercise_service)],
+    language: Annotated[str, Depends(get_current_language)],
 ) -> ExerciseEvaluationResponse:
     """
     Evaluate a user's answer for any exercise type.
@@ -745,6 +772,7 @@ async def evaluate_answer(
         expected_answer=request.expected_answer,
         context=request.context,
         topic_id=request.topic_id,
+        language=language,
     )
 
     # Log activity
@@ -753,6 +781,7 @@ async def evaluate_answer(
         exercise_type=request.exercise_type,
         duration_minutes=request.duration_minutes,
         exercises_completed=1,
+        language=language,
     )
 
     return ExerciseEvaluationResponse(

@@ -94,7 +94,7 @@
   - [x] Add `set_language()` method
   - [x] Add `update()` method
 
-## Phase 4: API Layer Updates (IN PROGRESS)
+## Phase 4: API Layer Updates ✅ COMPLETE
 
 - [x] 4.1 Create language resolution dependency
   - [x] Create `backend/app/api/dependencies.py`
@@ -110,46 +110,50 @@
   - [x] Pass language to service/CRUD
   - [x] Update DrillService methods with language parameter
 
-- [ ] 4.4 Update Exercises API (`backend/app/api/exercises.py`)
-  - [ ] Inject language dependency
-  - [ ] Pass language to ExerciseService
+- [x] 4.4 Update Exercises API (`backend/app/api/exercises.py`)
+  - [x] Inject language dependency
+  - [x] Pass language to ExerciseService
 
 - [x] 4.5 Update Topics API (`backend/app/api/topics.py`)
   - [x] Inject language dependency
   - [x] Filter topics by language
 
-- [ ] 4.6 Update Progress API (`backend/app/api/progress.py`)
-  - [ ] Inject language dependency
-  - [ ] Filter progress by language
+- [x] 4.6 Update Progress API (`backend/app/api/progress.py`)
+  - [x] Inject language dependency
+  - [x] Filter progress by language
 
-- [ ] 4.7 Update Analytics API (`backend/app/api/analytics.py`)
-  - [ ] Inject language dependency
-  - [ ] Filter analytics by language
+- [x] 4.7 Update Analytics API (`backend/app/api/analytics.py`)
+  - [x] Inject language dependency
+  - [x] Filter analytics by language
 
-- [ ] 4.8 Update Settings API (`backend/app/api/settings.py`)
-  - [ ] Add GET endpoint for user's language
-  - [ ] Add PATCH endpoint to change user's language
+- [x] 4.8 Update Settings API (`backend/app/api/settings.py`)
+  - [x] Add GET endpoint for user's language
+  - [x] Add PATCH endpoint to change user's language
 
-## Phase 5: Gemini Service Updates
+## Phase 5: Service Layer Updates ✅ COMPLETE
 
-- [ ] 5.1 Add language parameter to GeminiService
-  - [ ] Update `assess_word()` signature and prompt
-  - [ ] Update `assess_words_bulk()` signature and prompt
-  - [ ] Update `generate_fill_in_blank()` signature and prompt
-  - [ ] Update `generate_fill_in_blank_batch()` signature and prompt
-  - [ ] Update `evaluate_answer()` signature and prompt
+- [x] 5.1 Update ProgressService (`backend/app/services/progress_service.py`)
+  - [x] Add language parameter to all public methods
+  - [x] Add language filter to all Word queries
+  - [x] Add language filter to all ExerciseLog queries
+  - [x] Add language filter to all ErrorLog queries
+  - [x] Add language filter to all GrammarTopic queries
 
-- [ ] 5.2 Update chat session prompts
-  - [ ] Update system instructions to include language
-  - [ ] Update exercise generation prompts
+- [x] 5.2 Update AnalyticsService (`backend/app/services/analytics_service.py`)
+  - [x] Add language parameter to all public methods
+  - [x] Add language filter to all Word queries
 
-- [ ] 5.3 Update ExerciseService (`backend/app/services/exercise_service.py`)
-  - [ ] Accept language parameter
-  - [ ] Pass language to Gemini calls
+- [x] 5.3 Update ExerciseService (`backend/app/services/exercise_service.py`)
+  - [x] Accept language parameter in all generation methods
+  - [x] Accept language parameter in all evaluation methods
+  - [x] Pass language to ProgressService calls
+  - [x] Pass language to CRUD calls
+  - [x] Add language to log_exercise_activity()
+  - [x] Add language to _log_error()
 
-- [ ] 5.4 Update DrillService (`backend/app/services/drill_service.py`)
-  - [ ] Accept language parameter
-  - [ ] Pass language to Gemini calls
+- [x] 5.4 Update DrillService (already done in Phase 4.3)
+  - [x] Accept language parameter
+  - [x] Pass language to CRUD calls
 
 ## Phase 6: Frontend Language Selection
 

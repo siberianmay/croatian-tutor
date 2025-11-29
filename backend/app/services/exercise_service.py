@@ -52,17 +52,17 @@ class ExerciseService:
         session_key = self._build_session_key(user_id, exercise_type, variant)
         return self._gemini.end_chat_session(session_key)
 
-    async def _get_user_context(self, user_id: int) -> str:
+    async def _get_user_context(self, user_id: int, language: str = "hr") -> str:
         """Get comprehensive user context for Gemini prompts."""
         try:
-            return await self._progress_service.build_gemini_context(user_id)
+            return await self._progress_service.build_gemini_context(user_id, language)
         except Exception as e:
             logger.warning(f"Failed to build user context: {e}")
             return ""
 
-    async def _get_learnt_grammar_context(self, user_id: int) -> str:
+    async def _get_learnt_grammar_context(self, user_id: int, language: str = "hr") -> str:
         """Get a string describing the grammar topics the user has learned with mastery levels."""
-        topics_with_mastery = await self._progress_crud.get_learnt_topics_with_mastery(user_id)
+        topics_with_mastery = await self._progress_crud.get_learnt_topics_with_mastery(user_id, language)
         if not topics_with_mastery:
             return ""
 
@@ -89,14 +89,14 @@ class ExerciseService:
 USER'S GRAMMAR KNOWLEDGE (use ONLY these patterns, prioritize WEAK topics):
 {chr(10).join(topic_lines)}"""
 
-    async def _get_grammar_topics_for_exercise(self, user_id: int) -> tuple[str, dict[int, str]]:
+    async def _get_grammar_topics_for_exercise(self, user_id: int, language: str = "hr") -> tuple[str, dict[int, str]]:
         """
         Get grammar topics formatted for exercise generation.
 
         Returns:
             Tuple of (formatted context string, dict mapping topic_id -> topic_name)
         """
-        topics_with_mastery = await self._progress_crud.get_learnt_topics_with_mastery(user_id)
+        topics_with_mastery = await self._progress_crud.get_learnt_topics_with_mastery(user_id, language)
         if not topics_with_mastery:
             return "", {}
 
@@ -128,6 +128,7 @@ AVAILABLE GRAMMAR TOPICS (prioritize WEAK topics for practice):
     async def _get_vocabulary_for_exercise(
         self,
         user_id: int,
+        language: str = "hr",
         count: int = 15,
     ) -> str:
         """
@@ -145,7 +146,7 @@ AVAILABLE GRAMMAR TOPICS (prioritize WEAK topics for practice):
 
         # 1. Words due for review (highest priority)
         due_limit = count // 3
-        due_words = await self._word_crud.get_due_words(user_id, limit=due_limit)
+        due_words = await self._word_crud.get_due_words(user_id, language=language, limit=due_limit)
         for w in due_words:
             collected_ids.append(w.id)
             collected_words.append(f"{w.croatian} ({w.english})")
@@ -153,7 +154,7 @@ AVAILABLE GRAMMAR TOPICS (prioritize WEAK topics for practice):
         # 2. Low mastery words (reinforcement)
         low_mastery_limit = count // 3
         low_mastery_words = await self._word_crud.get_low_mastery_words(
-            user_id, limit=low_mastery_limit, exclude_ids=collected_ids
+            user_id, language=language, limit=low_mastery_limit, exclude_ids=collected_ids
         )
         for w in low_mastery_words:
             collected_ids.append(w.id)
@@ -163,7 +164,7 @@ AVAILABLE GRAMMAR TOPICS (prioritize WEAK topics for practice):
         remaining = count - len(collected_words)
         if remaining > 0:
             random_words = await self._word_crud.get_random_words(
-                user_id, limit=remaining, exclude_ids=collected_ids
+                user_id, language=language, limit=remaining, exclude_ids=collected_ids
             )
             for w in random_words:
                 collected_words.append(f"{w.croatian} ({w.english})")
@@ -186,6 +187,7 @@ USER'S VOCABULARY TO PRACTICE (try to use some of these words in sentences):
         message: str,
         history: list[dict[str, str]],
         cefr_level: CEFRLevel = CEFRLevel.A1,
+        language: str = "hr",
     ) -> dict[str, Any]:
         """
         Process a conversation turn with the Croatian tutor.
@@ -203,8 +205,8 @@ USER'S VOCABULARY TO PRACTICE (try to use some of these words in sentences):
             for h in history[-10:]  # Last 10 turns for context
         )
 
-        grammar_context = await self._get_learnt_grammar_context(user_id)
-        user_context = await self._get_user_context(user_id)
+        grammar_context = await self._get_learnt_grammar_context(user_id, language)
+        user_context = await self._get_user_context(user_id, language)
 
         prompt = f"""You are a friendly Croatian language tutor.
 
@@ -245,6 +247,7 @@ Respond with ONLY valid JSON:
                         category=ErrorCategory.OTHER,  # Could be smarter categorization
                         details=correction.get("original"),
                         correction=correction.get("corrected"),
+                        language=language,
                     )
 
             return {
@@ -269,6 +272,7 @@ Respond with ONLY valid JSON:
         user_id: int,
         topic_id: int | None = None,
         cefr_level: CEFRLevel | None = None,
+        language: str = "hr",
     ) -> dict[str, Any]:
         """
         Generate a grammar exercise.
@@ -288,8 +292,8 @@ Respond with ONLY valid JSON:
             }
         """
         # Get all learnt topics with their IDs and mastery
-        grammar_context, topic_map = await self._get_grammar_topics_for_exercise(user_id)
-        vocab_context = await self._get_vocabulary_for_exercise(user_id, count=5)
+        grammar_context, topic_map = await self._get_grammar_topics_for_exercise(user_id, language)
+        vocab_context = await self._get_vocabulary_for_exercise(user_id, language, count=5)
 
         if not topic_map:
             return {
@@ -302,7 +306,7 @@ Respond with ONLY valid JSON:
                 "expected_answer": "",
             }
 
-        user_context = await self._get_user_context(user_id)
+        user_context = await self._get_user_context(user_id, language)
         session_key = self._build_session_key(user_id, "grammar")
 
         # System instruction
@@ -375,6 +379,7 @@ Respond with ONLY valid JSON:
         user_id: int,
         count: int = 10,
         cefr_level: CEFRLevel | None = None,
+        language: str = "hr",
     ) -> list[dict[str, Any]]:
         """
         Generate multiple grammar exercises in a single API call.
@@ -383,17 +388,18 @@ Respond with ONLY valid JSON:
             user_id: User ID
             count: Number of exercises to generate (default 10)
             cefr_level: Optional CEFR level filter
+            language: Language code for the exercises
 
         Returns:
             List of exercise dicts with topic_id, instruction, question, hints, expected_answer
         """
-        grammar_context, topic_map = await self._get_grammar_topics_for_exercise(user_id)
-        vocab_context = await self._get_vocabulary_for_exercise(user_id, count=15)
+        grammar_context, topic_map = await self._get_grammar_topics_for_exercise(user_id, language)
+        vocab_context = await self._get_vocabulary_for_exercise(user_id, language, count=15)
 
         if not topic_map:
             return []
 
-        user_context = await self._get_user_context(user_id)
+        user_context = await self._get_user_context(user_id, language)
         topic_ids_str = ", ".join(str(tid) for tid in topic_map.keys())
 
         prompt = f"""Generate {count} unique grammar exercises for Croatian language learning.
@@ -465,6 +471,7 @@ Return exactly {count} objects."""
         self,
         user_id: int,
         answers: list[dict[str, Any]],
+        language: str = "hr",
     ) -> list[dict[str, Any]]:
         """
         Evaluate multiple grammar answers in a single API call.
@@ -472,6 +479,7 @@ Return exactly {count} objects."""
         Args:
             user_id: User ID
             answers: List of dicts with user_answer, expected_answer, question, topic_id
+            language: Language code for error logging
 
         Returns:
             List of evaluation results with correct, score, feedback, error_category, topic_id
@@ -479,7 +487,7 @@ Return exactly {count} objects."""
         if not answers:
             return []
 
-        user_context = await self._get_user_context(user_id)
+        user_context = await self._get_user_context(user_id, language)
 
         answers_text = "\n".join(
             f"{i+1}. Question: {a['question']}\n"
@@ -543,6 +551,7 @@ Return exactly {len(answers)} objects in the same order."""
                             topic_id=topic_id,
                             details=answer["user_answer"],
                             correction=answer["expected_answer"],
+                            language=language,
                         )
 
                     if topic_id:
@@ -593,6 +602,7 @@ Return exactly {len(answers)} objects in the same order."""
         direction: str,  # "cr_en" or "en_cr"
         cefr_level: CEFRLevel = CEFRLevel.A1,
         recent_sentences: list[str] | None = None,  # Kept for API compatibility, but chat handles history
+        language: str = "hr",
     ) -> dict[str, Any]:
         """
         Generate a translation exercise.
@@ -616,9 +626,9 @@ Return exactly {len(answers)} objects in the same order."""
             target_lang = "Croatian"
 
         # Get grammar topics for progress tracking
-        grammar_context, topic_map = await self._get_grammar_topics_for_exercise(user_id)
-        user_context = await self._get_user_context(user_id)
-        vocab_context = await self._get_vocabulary_for_exercise(user_id, count=6)
+        grammar_context, topic_map = await self._get_grammar_topics_for_exercise(user_id, language)
+        user_context = await self._get_user_context(user_id, language)
+        vocab_context = await self._get_vocabulary_for_exercise(user_id, language, count=6)
 
         # Build session key - separate sessions for each direction
         session_key = self._build_session_key(user_id, "translation", direction)
@@ -693,6 +703,7 @@ Respond with ONLY valid JSON:
         direction: str,
         count: int = 10,
         cefr_level: CEFRLevel = CEFRLevel.A1,
+        language: str = "hr",
     ) -> list[dict[str, Any]]:
         """
         Generate multiple translation exercises in a single API call.
@@ -702,6 +713,7 @@ Respond with ONLY valid JSON:
             direction: "cr_en" or "en_cr"
             count: Number of exercises to generate (default 10)
             cefr_level: CEFR level for the exercises
+            language: Language code for the exercises
 
         Returns:
             List of exercise dicts with:
@@ -720,9 +732,9 @@ Respond with ONLY valid JSON:
             target_lang = "Croatian"
 
         # Get grammar topics for progress tracking
-        grammar_context, topic_map = await self._get_grammar_topics_for_exercise(user_id)
-        user_context = await self._get_user_context(user_id)
-        vocab_context = await self._get_vocabulary_for_exercise(user_id, count=15)
+        grammar_context, topic_map = await self._get_grammar_topics_for_exercise(user_id, language)
+        user_context = await self._get_user_context(user_id, language)
+        vocab_context = await self._get_vocabulary_for_exercise(user_id, language, count=15)
 
         # Format topic IDs for the prompt
         topic_ids_str = ", ".join(str(tid) for tid in topic_map.keys()) if topic_map else "none"
@@ -797,6 +809,7 @@ Return exactly {count} objects."""
         self,
         user_id: int,
         answers: list[dict[str, Any]],
+        language: str = "hr",
     ) -> list[dict[str, Any]]:
         """
         Evaluate multiple translation answers in a single API call.
@@ -808,6 +821,7 @@ Return exactly {count} objects."""
                 - expected_answer: str
                 - source_text: str
                 - topic_id: int | None
+            language: Language code for error logging
 
         Returns:
             List of evaluation results with:
@@ -820,7 +834,7 @@ Return exactly {count} objects."""
         if not answers:
             return []
 
-        user_context = await self._get_user_context(user_id)
+        user_context = await self._get_user_context(user_id, language)
 
         # Build answers list for prompt
         answers_text = "\n".join(
@@ -886,6 +900,7 @@ Return exactly {len(answers)} objects in the same order."""
                             topic_id=topic_id,
                             details=answer["user_answer"],
                             correction=answer["expected_answer"],
+                            language=language,
                         )
 
                     # Update topic progress
@@ -937,6 +952,7 @@ Return exactly {len(answers)} objects in the same order."""
         self,
         user_id: int,
         cefr_level: CEFRLevel = CEFRLevel.A1,
+        language: str = "hr",
     ) -> dict[str, Any]:
         """
         Generate a sentence construction exercise.
@@ -949,9 +965,9 @@ Return exactly {len(answers)} objects in the same order."""
                 "expected_answer": str
             }
         """
-        grammar_context = await self._get_learnt_grammar_context(user_id)
-        user_context = await self._get_user_context(user_id)
-        vocab_context = await self._get_vocabulary_for_exercise(user_id, count=12)
+        grammar_context = await self._get_learnt_grammar_context(user_id, language)
+        user_context = await self._get_user_context(user_id, language)
+        vocab_context = await self._get_vocabulary_for_exercise(user_id, language, count=12)
 
         # Build session key for chat context
         session_key = self._build_session_key(user_id, "sentence_construction")
@@ -1012,6 +1028,7 @@ Respond with ONLY valid JSON:
         user_id: int,
         cefr_level: CEFRLevel = CEFRLevel.A1,
         passage_length: int = 350,
+        language: str = "hr",
     ) -> dict[str, Any]:
         """
         Generate a reading comprehension exercise.
@@ -1020,6 +1037,7 @@ Respond with ONLY valid JSON:
             user_id: User ID
             cefr_level: CEFR level for the exercise
             passage_length: Approximate passage length in characters (default 350)
+            language: Language code for the exercise
 
         Returns:
             {
@@ -1028,9 +1046,9 @@ Respond with ONLY valid JSON:
                 "questions": [{"question": str, "expected_answer": str}]
             }
         """
-        grammar_context = await self._get_learnt_grammar_context(user_id)
-        user_context = await self._get_user_context(user_id)
-        vocab_context = await self._get_vocabulary_for_exercise(user_id, count=30)
+        grammar_context = await self._get_learnt_grammar_context(user_id, language)
+        user_context = await self._get_user_context(user_id, language)
+        vocab_context = await self._get_vocabulary_for_exercise(user_id, language, count=30)
 
         # Build session key for chat context
         session_key = self._build_session_key(user_id, "reading")
@@ -1097,6 +1115,7 @@ Respond with ONLY valid JSON:
         user_id: int,
         cefr_level: CEFRLevel = CEFRLevel.A1,
         scenario: str | None = None,
+        language: str = "hr",
     ) -> dict[str, Any]:
         """
         Generate a situational dialogue exercise.
@@ -1112,8 +1131,8 @@ Respond with ONLY valid JSON:
             }
         """
         scenario_prompt = f"Scenario: {scenario}" if scenario else "Choose a common everyday scenario (different from previous ones)"
-        grammar_context = await self._get_learnt_grammar_context(user_id)
-        user_context = await self._get_user_context(user_id)
+        grammar_context = await self._get_learnt_grammar_context(user_id, language)
+        user_context = await self._get_user_context(user_id, language)
 
         # Build session key for chat context
         session_key = self._build_session_key(user_id, "dialogue")
@@ -1182,6 +1201,7 @@ Respond with ONLY valid JSON:
         expected_answer: str,
         context: str = "",
         topic_id: int | None = None,
+        language: str = "hr",
     ) -> dict[str, Any]:
         """
         Evaluate a user's answer with AI assistance.
@@ -1196,7 +1216,7 @@ Respond with ONLY valid JSON:
                 "explanation": str | None
             }
         """
-        user_context = await self._get_user_context(user_id)
+        user_context = await self._get_user_context(user_id, language)
 
         prompt = f"""Evaluate this Croatian language exercise answer.
 
@@ -1244,6 +1264,7 @@ Respond with ONLY valid JSON:
                     topic_id=topic_id,
                     details=user_answer,
                     correction=expected_answer,
+                    language=language,
                 )
 
             # Update topic progress if applicable
@@ -1280,6 +1301,7 @@ Respond with ONLY valid JSON:
         user_id: int,
         passage: str,
         questions_and_answers: list[dict[str, str]],
+        language: str = "hr",
     ) -> list[dict[str, Any]]:
         """
         Evaluate all reading comprehension answers at once.
@@ -1288,11 +1310,12 @@ Respond with ONLY valid JSON:
             user_id: User ID
             passage: The reading passage
             questions_and_answers: List of dicts with 'question', 'expected_answer', 'user_answer'
+            language: Language code
 
         Returns:
             List of evaluation results for each question
         """
-        user_context = await self._get_user_context(user_id)
+        user_context = await self._get_user_context(user_id, language)
 
         # Build Q&A list for the prompt
         qa_text = "\n".join(
@@ -1417,6 +1440,7 @@ Use Croatian examples with English translations."""
         exercise_type: ExerciseType,
         duration_minutes: int = 0,
         exercises_completed: int = 1,
+        language: str = "hr",
     ) -> None:
         """Log exercise activity for progress tracking."""
         today = date.today()
@@ -1427,6 +1451,7 @@ Use Croatian examples with English translations."""
         result = await self._db.execute(
             select(ExerciseLog).where(
                 ExerciseLog.user_id == user_id,
+                ExerciseLog.language == language,
                 ExerciseLog.date == today,
                 ExerciseLog.exercise_type == exercise_type,
             )
@@ -1439,6 +1464,7 @@ Use Croatian examples with English translations."""
         else:
             log = ExerciseLog(
                 user_id=user_id,
+                language=language,
                 date=today,
                 exercise_type=exercise_type,
                 duration_minutes=duration_minutes,
@@ -1480,10 +1506,12 @@ Use Croatian examples with English translations."""
         topic_id: int | None = None,
         details: str | None = None,
         correction: str | None = None,
+        language: str = "hr",
     ) -> None:
         """Log an error for pattern analysis."""
         error_log = ErrorLog(
             user_id=user_id,
+            language=language,
             date=date.today(),
             error_category=category,
             topic_id=topic_id,

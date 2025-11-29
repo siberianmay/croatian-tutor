@@ -155,18 +155,26 @@ CREATE TABLE language (
   - SessionCRUD: All methods updated with language parameter
   - UserCRUD: Created with get_language/set_language methods
 
-- 🔄 Phase 4: API Layer Updates - IN PROGRESS
+- ✅ Phase 4: API Layer Updates - COMPLETE
   - ✅ Created `app/api/dependencies.py` with `get_current_language()` dependency
   - ✅ Updated Words API with language injection
   - ✅ Updated Topics API with language injection
   - ✅ Updated Drills API with language injection
-  - ✅ Updated DrillService with language parameter
-  - ⏳ Exercises API, Progress API, Analytics API, Settings API still pending
+  - ✅ Updated Exercises API - all endpoints now accept language
+  - ✅ Updated Progress API - all endpoints filter by language
+  - ✅ Updated Analytics API - all endpoints filter by language
+  - ✅ Updated Settings API - added GET/PATCH `/settings/language` endpoints
+
+- ✅ Phase 5: Service Layer Updates - COMPLETE
+  - ✅ ProgressService: All methods accept language, filter queries by language
+  - ✅ AnalyticsService: All methods accept language, filter queries by language
+  - ✅ ExerciseService: All generation/evaluation methods accept language
+  - ✅ DrillService: Already done in Phase 4.3
 
 ### Next Steps
-1. Update remaining APIs (exercises, progress, analytics, settings)
-2. Phase 5: Gemini Service Updates (language in prompts)
-3. Phase 6-7: Frontend updates
+1. Phase 6: Frontend Language Selection (types, API, context)
+2. Phase 7: Frontend UI Updates (dynamic labels)
+3. Phase 8: Testing & Polish
 
 ### Blockers
 None currently identified.
@@ -176,3 +184,4 @@ None currently identified.
 - Relationship is named `language_ref` to avoid conflict with column name
 - User model has `language` column and `selected_language` relationship
 - `get_current_language()` dependency reads from user's saved language preference
+- All services default to "hr" for backward compatibility

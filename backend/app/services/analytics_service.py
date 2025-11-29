@@ -20,7 +20,7 @@ class AnalyticsService:
     def __init__(self, db: AsyncSession):
         self._db = db
 
-    async def get_leeches(self, user_id: int, limit: int = 20) -> dict[str, Any]:
+    async def get_leeches(self, user_id: int, language: str = "hr", limit: int = 20) -> dict[str, Any]:
         """
         Detect leech words - words with high failure rates that waste review time.
 
@@ -56,6 +56,7 @@ class AnalyticsService:
         result = await self._db.execute(
             select(Word)
             .where(Word.user_id == user_id)
+            .where(Word.language == language)
             .where(total_attempts >= self.LEECH_MIN_ATTEMPTS)
             .where(failure_rate >= self.LEECH_FAILURE_RATE)
             .order_by((Word.wrong_count * 1.0 / total_attempts).desc())
@@ -81,6 +82,7 @@ class AnalyticsService:
         count_result = await self._db.execute(
             select(func.count(Word.id))
             .where(Word.user_id == user_id)
+            .where(Word.language == language)
             .where(total_attempts >= self.LEECH_MIN_ATTEMPTS)
             .where(failure_rate >= self.LEECH_FAILURE_RATE)
         )
@@ -95,7 +97,7 @@ class AnalyticsService:
             },
         }
 
-    async def get_review_forecast(self, user_id: int, days: int = 7) -> dict[str, Any]:
+    async def get_review_forecast(self, user_id: int, language: str = "hr", days: int = 7) -> dict[str, Any]:
         """
         Forecast upcoming reviews by day.
 
@@ -115,6 +117,7 @@ class AnalyticsService:
         overdue_result = await self._db.execute(
             select(func.count(Word.id))
             .where(Word.user_id == user_id)
+            .where(Word.language == language)
             .where(
                 (Word.next_review_at < now) | (Word.next_review_at.is_(None))
             )
@@ -133,6 +136,7 @@ class AnalyticsService:
             count_result = await self._db.execute(
                 select(func.count(Word.id))
                 .where(Word.user_id == user_id)
+                .where(Word.language == language)
                 .where(Word.next_review_at >= start_of_day)
                 .where(Word.next_review_at <= end_of_day)
             )
@@ -151,7 +155,7 @@ class AnalyticsService:
             "overdue": overdue,
         }
 
-    async def get_learning_velocity(self, user_id: int) -> dict[str, Any]:
+    async def get_learning_velocity(self, user_id: int, language: str = "hr") -> dict[str, Any]:
         """
         Calculate learning velocity metrics.
 
@@ -178,6 +182,7 @@ class AnalyticsService:
         added_this_week = await self._db.execute(
             select(func.count(Word.id))
             .where(Word.user_id == user_id)
+            .where(Word.language == language)
             .where(Word.created_at >= this_week_start_dt)
         )
         words_added_this_week = added_this_week.scalar_one()
@@ -185,6 +190,7 @@ class AnalyticsService:
         added_last_week = await self._db.execute(
             select(func.count(Word.id))
             .where(Word.user_id == user_id)
+            .where(Word.language == language)
             .where(Word.created_at >= last_week_start_dt)
             .where(Word.created_at < this_week_start_dt)
         )
@@ -194,6 +200,7 @@ class AnalyticsService:
         mastered_this_week = await self._db.execute(
             select(func.count(Word.id))
             .where(Word.user_id == user_id)
+            .where(Word.language == language)
             .where(Word.mastery_score >= 7)
             .where(Word.last_reviewed_at >= this_week_start_dt)
         )
@@ -203,6 +210,7 @@ class AnalyticsService:
         mastered_total = await self._db.execute(
             select(func.count(Word.id))
             .where(Word.user_id == user_id)
+            .where(Word.language == language)
             .where(Word.mastery_score >= 7)
         )
         words_mastered_total = mastered_total.scalar_one()
@@ -214,6 +222,7 @@ class AnalyticsService:
                 func.sum(Word.wrong_count).label("wrong"),
             )
             .where(Word.user_id == user_id)
+            .where(Word.language == language)
         )
         row = totals.one()
         correct = row.correct or 0
@@ -224,6 +233,7 @@ class AnalyticsService:
         avg_ef = await self._db.execute(
             select(func.avg(Word.ease_factor))
             .where(Word.user_id == user_id)
+            .where(Word.language == language)
             .where(Word.correct_count + Word.wrong_count > 0)  # Only reviewed words
         )
         avg_ease_factor = round(avg_ef.scalar_one() or 2.5, 2)
@@ -246,7 +256,7 @@ class AnalyticsService:
             "velocity_trend": velocity_trend,
         }
 
-    async def get_difficulty_breakdown(self, user_id: int) -> dict[str, Any]:
+    async def get_difficulty_breakdown(self, user_id: int, language: str = "hr") -> dict[str, Any]:
         """
         Analyze performance by word characteristics.
 
@@ -277,6 +287,7 @@ class AnalyticsService:
                     func.sum(Word.wrong_count).label("wrong"),
                 )
                 .where(Word.user_id == user_id)
+                .where(Word.language == language)
                 .where(Word.part_of_speech == pos)
             )
             row = result.one()
@@ -300,6 +311,7 @@ class AnalyticsService:
                     func.sum(Word.wrong_count).label("wrong"),
                 )
                 .where(Word.user_id == user_id)
+                .where(Word.language == language)
                 .where(Word.cefr_level == level)
             )
             row = result.one()
@@ -335,12 +347,12 @@ class AnalyticsService:
             "hardest_level": hardest_level,
         }
 
-    async def get_full_analytics(self, user_id: int) -> dict[str, Any]:
+    async def get_full_analytics(self, user_id: int, language: str = "hr") -> dict[str, Any]:
         """Get all analytics in one call."""
-        leeches = await self.get_leeches(user_id)
-        forecast = await self.get_review_forecast(user_id)
-        velocity = await self.get_learning_velocity(user_id)
-        difficulty = await self.get_difficulty_breakdown(user_id)
+        leeches = await self.get_leeches(user_id, language)
+        forecast = await self.get_review_forecast(user_id, language)
+        velocity = await self.get_learning_velocity(user_id, language)
+        difficulty = await self.get_difficulty_breakdown(user_id, language)
 
         return {
             "leeches": leeches,

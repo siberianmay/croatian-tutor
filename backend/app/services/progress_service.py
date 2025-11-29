@@ -20,7 +20,7 @@ class ProgressService:
     def __init__(self, db: AsyncSession):
         self._db = db
 
-    async def get_summary(self, user_id: int) -> dict[str, Any]:
+    async def get_summary(self, user_id: int, language: str = "hr") -> dict[str, Any]:
         """
         Get overall learning summary.
 
@@ -38,19 +38,19 @@ class ProgressService:
         now = date.today()
 
         # Word counts
-        total_words = await self._count_words(user_id)
-        mastered_words = await self._count_mastered_words(user_id)
-        due_words = await self._count_due_words(user_id)
+        total_words = await self._count_words(user_id, language)
+        mastered_words = await self._count_mastered_words(user_id, language)
+        due_words = await self._count_due_words(user_id, language)
 
         # Exercise totals
-        total_exercises = await self._count_total_exercises(user_id)
-        total_errors = await self._count_total_errors(user_id)
+        total_exercises = await self._count_total_exercises(user_id, language)
+        total_errors = await self._count_total_errors(user_id, language)
 
         # Streak calculation
-        streak_days = await self._calculate_streak(user_id)
+        streak_days = await self._calculate_streak(user_id, language)
 
         # Determine current level based on progress
-        current_level = await self._determine_level(user_id)
+        current_level = await self._determine_level(user_id, language)
 
         return {
             "total_words": total_words,
@@ -62,7 +62,7 @@ class ProgressService:
             "current_level": current_level,
         }
 
-    async def get_vocabulary_stats(self, user_id: int) -> dict[str, Any]:
+    async def get_vocabulary_stats(self, user_id: int, language: str = "hr") -> dict[str, Any]:
         """
         Get vocabulary breakdown by level and mastery.
 
@@ -79,6 +79,7 @@ class ProgressService:
             result = await self._db.execute(
                 select(func.count(Word.id))
                 .where(Word.user_id == user_id)
+                .where(Word.language == language)
                 .where(Word.cefr_level == level)
             )
             count = result.scalar_one()
@@ -90,17 +91,20 @@ class ProgressService:
         new_count = await self._db.execute(
             select(func.count(Word.id))
             .where(Word.user_id == user_id)
+            .where(Word.language == language)
             .where(Word.mastery_score == 0)
         )
         learning_count = await self._db.execute(
             select(func.count(Word.id))
             .where(Word.user_id == user_id)
+            .where(Word.language == language)
             .where(Word.mastery_score > 0)
             .where(Word.mastery_score < 7)
         )
         mastered_count = await self._db.execute(
             select(func.count(Word.id))
             .where(Word.user_id == user_id)
+            .where(Word.language == language)
             .where(Word.mastery_score >= 7)
         )
 
@@ -114,6 +118,7 @@ class ProgressService:
         recent_result = await self._db.execute(
             select(Word)
             .where(Word.user_id == user_id)
+            .where(Word.language == language)
             .order_by(desc(Word.created_at))
             .limit(10)
         )
@@ -132,7 +137,7 @@ class ProgressService:
             "recent_words": recent_words,
         }
 
-    async def get_topic_stats(self, user_id: int) -> dict[str, Any]:
+    async def get_topic_stats(self, user_id: int, language: str = "hr") -> dict[str, Any]:
         """
         Get grammar topic progress overview.
 
@@ -144,11 +149,14 @@ class ProgressService:
                 "topics": [{"id": int, "name": str, "level": str, "mastery": int, "attempts": int}]
             }
         """
-        # Count all topics
-        total_result = await self._db.execute(select(func.count(GrammarTopic.id)))
+        # Count all topics for this language
+        total_result = await self._db.execute(
+            select(func.count(GrammarTopic.id))
+            .where(GrammarTopic.language == language)
+        )
         total_topics = total_result.scalar_one()
 
-        # Get all topics with progress
+        # Get all topics with progress for this language
         topics_result = await self._db.execute(
             select(GrammarTopic, TopicProgress)
             .outerjoin(
@@ -156,6 +164,7 @@ class ProgressService:
                 (TopicProgress.topic_id == GrammarTopic.id)
                 & (TopicProgress.user_id == user_id),
             )
+            .where(GrammarTopic.language == language)
             .order_by(GrammarTopic.cefr_level, GrammarTopic.name)
         )
 
@@ -187,7 +196,7 @@ class ProgressService:
             "topics": topics,
         }
 
-    async def get_activity(self, user_id: int, days: int = 14) -> dict[str, Any]:
+    async def get_activity(self, user_id: int, language: str = "hr", days: int = 14) -> dict[str, Any]:
         """
         Get recent activity timeline.
 
@@ -207,6 +216,7 @@ class ProgressService:
                 func.sum(ExerciseLog.duration_minutes).label("duration"),
             )
             .where(ExerciseLog.user_id == user_id)
+            .where(ExerciseLog.language == language)
             .where(ExerciseLog.date >= start_date)
             .group_by(ExerciseLog.date)
             .order_by(ExerciseLog.date)
@@ -221,13 +231,14 @@ class ProgressService:
             for row in daily_result.all()
         ]
 
-        # Exercise type breakdown (all time)
+        # Exercise type breakdown (all time for this language)
         type_result = await self._db.execute(
             select(
                 ExerciseLog.exercise_type,
                 func.sum(ExerciseLog.exercises_completed).label("count"),
             )
             .where(ExerciseLog.user_id == user_id)
+            .where(ExerciseLog.language == language)
             .group_by(ExerciseLog.exercise_type)
         )
 
@@ -240,7 +251,7 @@ class ProgressService:
             "exercise_breakdown": exercise_breakdown,
         }
 
-    async def get_error_patterns(self, user_id: int) -> dict[str, Any]:
+    async def get_error_patterns(self, user_id: int, language: str = "hr") -> dict[str, Any]:
         """
         Get error patterns for targeted practice.
 
@@ -258,6 +269,7 @@ class ProgressService:
                 func.count(ErrorLog.id).label("count"),
             )
             .where(ErrorLog.user_id == user_id)
+            .where(ErrorLog.language == language)
             .group_by(ErrorLog.error_category)
             .order_by(desc("count"))
         )
@@ -270,6 +282,7 @@ class ProgressService:
         recent_result = await self._db.execute(
             select(ErrorLog)
             .where(ErrorLog.user_id == user_id)
+            .where(ErrorLog.language == language)
             .order_by(desc(ErrorLog.date), desc(ErrorLog.id))
             .limit(10)
         )
@@ -315,15 +328,15 @@ class ProgressService:
             "weak_areas": weak_areas,
         }
 
-    async def generate_context_summary(self, user_id: int) -> str:
+    async def generate_context_summary(self, user_id: int, language: str = "hr") -> str:
         """
         Generate a text summary for Gemini context.
 
         This provides the AI tutor with user context for personalized responses.
         """
-        summary = await self.get_summary(user_id)
-        vocab_stats = await self.get_vocabulary_stats(user_id)
-        error_stats = await self.get_error_patterns(user_id)
+        summary = await self.get_summary(user_id, language)
+        vocab_stats = await self.get_vocabulary_stats(user_id, language)
+        error_stats = await self.get_error_patterns(user_id, language)
 
         parts = [
             f"Student Level: {summary['current_level']}",
@@ -344,18 +357,18 @@ class ProgressService:
 
         return "\n".join(parts)
 
-    async def build_gemini_context(self, user_id: int) -> str:
+    async def build_gemini_context(self, user_id: int, language: str = "hr") -> str:
         """
         Build a comprehensive context block for Gemini prompts.
 
         This generates a structured context that follows the prompt template
         from the design docs, providing the AI with full learner context.
         """
-        summary = await self.get_summary(user_id)
-        vocab_stats = await self.get_vocabulary_stats(user_id)
-        topic_stats = await self.get_topic_stats(user_id)
-        activity = await self.get_activity(user_id, days=7)
-        error_stats = await self.get_error_patterns(user_id)
+        summary = await self.get_summary(user_id, language)
+        vocab_stats = await self.get_vocabulary_stats(user_id, language)
+        topic_stats = await self.get_topic_stats(user_id, language)
+        activity = await self.get_activity(user_id, language, days=7)
+        error_stats = await self.get_error_patterns(user_id, language)
 
         # Build vocabulary summary
         vocab_section = f"""[VOCABULARY SUMMARY]
@@ -414,46 +427,52 @@ Student's current CEFR level: {summary['current_level']}"""
     # Private helpers
     # -------------------------------------------------------------------------
 
-    async def _count_words(self, user_id: int) -> int:
-        result = await self._db.execute(
-            select(func.count(Word.id)).where(Word.user_id == user_id)
-        )
-        return result.scalar_one()
-
-    async def _count_mastered_words(self, user_id: int) -> int:
+    async def _count_words(self, user_id: int, language: str) -> int:
         result = await self._db.execute(
             select(func.count(Word.id))
             .where(Word.user_id == user_id)
+            .where(Word.language == language)
+        )
+        return result.scalar_one()
+
+    async def _count_mastered_words(self, user_id: int, language: str) -> int:
+        result = await self._db.execute(
+            select(func.count(Word.id))
+            .where(Word.user_id == user_id)
+            .where(Word.language == language)
             .where(Word.mastery_score >= 7)
         )
         return result.scalar_one()
 
-    async def _count_due_words(self, user_id: int) -> int:
+    async def _count_due_words(self, user_id: int, language: str) -> int:
         from datetime import datetime, timezone
 
         now = datetime.now(timezone.utc)
         result = await self._db.execute(
             select(func.count(Word.id))
             .where(Word.user_id == user_id)
+            .where(Word.language == language)
             .where((Word.next_review_at <= now) | (Word.next_review_at.is_(None)))
         )
         return result.scalar_one()
 
-    async def _count_total_exercises(self, user_id: int) -> int:
+    async def _count_total_exercises(self, user_id: int, language: str) -> int:
         result = await self._db.execute(
-            select(func.sum(ExerciseLog.exercises_completed)).where(
-                ExerciseLog.user_id == user_id
-            )
+            select(func.sum(ExerciseLog.exercises_completed))
+            .where(ExerciseLog.user_id == user_id)
+            .where(ExerciseLog.language == language)
         )
         return result.scalar_one() or 0
 
-    async def _count_total_errors(self, user_id: int) -> int:
+    async def _count_total_errors(self, user_id: int, language: str) -> int:
         result = await self._db.execute(
-            select(func.count(ErrorLog.id)).where(ErrorLog.user_id == user_id)
+            select(func.count(ErrorLog.id))
+            .where(ErrorLog.user_id == user_id)
+            .where(ErrorLog.language == language)
         )
         return result.scalar_one()
 
-    async def _calculate_streak(self, user_id: int) -> int:
+    async def _calculate_streak(self, user_id: int, language: str) -> int:
         """Calculate consecutive days of activity."""
         today = date.today()
 
@@ -461,6 +480,7 @@ Student's current CEFR level: {summary['current_level']}"""
         result = await self._db.execute(
             select(ExerciseLog.date)
             .where(ExerciseLog.user_id == user_id)
+            .where(ExerciseLog.language == language)
             .distinct()
             .order_by(desc(ExerciseLog.date))
         )
@@ -482,7 +502,7 @@ Student's current CEFR level: {summary['current_level']}"""
 
         return streak
 
-    async def _determine_level(self, user_id: int) -> str:
+    async def _determine_level(self, user_id: int, language: str) -> str:
         """Determine user's current level based on mastered content."""
         # Count mastered words by level
         level_mastery = {}
@@ -490,6 +510,7 @@ Student's current CEFR level: {summary['current_level']}"""
             result = await self._db.execute(
                 select(func.count(Word.id))
                 .where(Word.user_id == user_id)
+                .where(Word.language == language)
                 .where(Word.cefr_level == level)
                 .where(Word.mastery_score >= 7)
             )
