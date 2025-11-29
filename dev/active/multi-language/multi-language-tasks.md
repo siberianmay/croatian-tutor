@@ -2,46 +2,46 @@
 
 **Last Updated:** 2025-11-29
 
-## Phase 1: Database Schema Updates
+## Phase 1: Database Schema Updates ✅ COMPLETE
 
-- [ ] 1.1 Create migration for adding language_code columns
-  - [ ] Add language_code FK to `word` table (default 'hr')
-  - [ ] Add language_code FK to `grammar_topic` table (default 'hr')
-  - [ ] Add language_code FK to `session` table (default 'hr')
-  - [ ] Add language_code FK to `exercise_log` table (default 'hr')
-  - [ ] Add language_code FK to `error_log` table (default 'hr')
-  - [ ] Add selected_language_code FK to `user` table (default 'hr')
-  - [ ] Test migration upgrade
-  - [ ] Test migration downgrade
+- [x] 1.1 Create migration for adding language columns
+  - [x] Add language FK to `word` table (default 'hr')
+  - [x] Add language FK to `grammar_topic` table (default 'hr')
+  - [x] Add language FK to `session` table (default 'hr')
+  - [x] Add language FK to `exercise_log` table (default 'hr')
+  - [x] Add language FK to `error_log` table (default 'hr')
+  - [x] Add language FK to `user` table (default 'hr')
+  - [x] Test migration upgrade
+  - [x] Test migration downgrade
 
-- [ ] 1.2 Update unique constraints
-  - [ ] Update `exercise_log` unique constraint to include language_code
-  - [ ] Update `grammar_topic.name` unique constraint to include language_code
-  - [ ] Verify no constraint violations with existing data
+- [x] 1.2 Update unique constraints
+  - [x] Update `exercise_log` unique constraint to include language
+  - [x] Update `grammar_topic.name` unique constraint to include language
+  - [x] Verify no constraint violations with existing data
 
-## Phase 2: Backend Model & Schema Updates
+## Phase 2: Backend Model & Schema Updates (IN PROGRESS)
 
-- [ ] 2.1 Update Word model (`backend/app/models/word.py`)
-  - [ ] Add language_code column with FK
-  - [ ] Add relationship to Language
+- [x] 2.1 Update Word model (`backend/app/models/word.py`)
+  - [x] Add language column with FK
+  - [x] Add relationship to Language (`language_ref`)
 
-- [ ] 2.2 Update GrammarTopic model (`backend/app/models/grammar_topic.py`)
-  - [ ] Add language_code column with FK
-  - [ ] Add relationship to Language
+- [x] 2.2 Update GrammarTopic model (`backend/app/models/grammar_topic.py`)
+  - [x] Add language column with FK
+  - [x] Add relationship to Language (`language_ref`)
 
-- [ ] 2.3 Update Session model (`backend/app/models/session.py`)
-  - [ ] Add language_code column with FK
+- [x] 2.3 Update Session model (`backend/app/models/session.py`)
+  - [x] Add language column with FK
 
-- [ ] 2.4 Update ExerciseLog model (`backend/app/models/exercise_log.py`)
-  - [ ] Add language_code column with FK
-  - [ ] Update __table_args__ for new unique constraint
+- [x] 2.4 Update ExerciseLog model (`backend/app/models/exercise_log.py`)
+  - [x] Add language column with FK
+  - [x] Update __table_args__ for new unique constraint
 
-- [ ] 2.5 Update ErrorLog model (`backend/app/models/error_log.py`)
-  - [ ] Add language_code column with FK
+- [x] 2.5 Update ErrorLog model (`backend/app/models/error_log.py`)
+  - [x] Add language column with FK
 
-- [ ] 2.6 Update User model (`backend/app/models/user.py`)
-  - [ ] Add selected_language_code column with FK
-  - [ ] Add relationship to Language
+- [x] 2.6 Update User model (`backend/app/models/user.py`)
+  - [x] Add language column with FK
+  - [x] Add relationship to Language (`selected_language`)
 
 - [ ] 2.7 Update Pydantic schemas
   - [ ] Update WordCreate/WordUpdate schemas
@@ -57,20 +57,20 @@
 ## Phase 3: CRUD Layer Updates
 
 - [ ] 3.1 Update WordCRUD (`backend/app/crud/word.py`)
-  - [ ] Add language_code parameter to `create()`
-  - [ ] Add language_code filter to `get_multi()`
-  - [ ] Add language_code filter to `count()`
-  - [ ] Add language_code filter to `get_due_words()`
-  - [ ] Add language_code filter to `count_due_words()`
-  - [ ] Add language_code filter to `exists_for_user()`
-  - [ ] Add language_code filter to `get_low_mastery_words()`
-  - [ ] Add language_code filter to `get_random_words()`
+  - [ ] Add language parameter to `create()`
+  - [ ] Add language filter to `get_multi()`
+  - [ ] Add language filter to `count()`
+  - [ ] Add language filter to `get_due_words()`
+  - [ ] Add language filter to `count_due_words()`
+  - [ ] Add language filter to `exists_for_user()`
+  - [ ] Add language filter to `get_low_mastery_words()`
+  - [ ] Add language filter to `get_random_words()`
 
 - [ ] 3.2 Update GrammarTopicCRUD (`backend/app/crud/grammar_topic.py`)
-  - [ ] Add language_code parameter to `create()`
-  - [ ] Add language_code filter to `get_multi()`
-  - [ ] Add language_code filter to `count()`
-  - [ ] Add language_code filter to `get_by_name()`
+  - [ ] Add language parameter to `create()`
+  - [ ] Add language filter to `get_multi()`
+  - [ ] Add language filter to `count()`
+  - [ ] Add language filter to `get_by_name()`
 
 - [ ] 3.3 Update TopicProgressCRUD (`backend/app/crud/grammar_topic.py`)
   - [ ] Update `get_user_progress()` to filter by language via join
@@ -79,7 +79,7 @@
   - [ ] Update `get_learnt_topics_with_mastery()` to filter by language
 
 - [ ] 3.4 Update SessionCRUD (`backend/app/crud/session.py`)
-  - [ ] Add language_code to create operations
+  - [ ] Add language to create operations
 
 - [ ] 3.5 Add user language methods
   - [ ] Add method to get user's selected language
@@ -89,7 +89,7 @@
 
 - [ ] 4.1 Create language resolution dependency
   - [ ] Create `get_current_language()` dependency
-  - [ ] Returns user's selected_language_code
+  - [ ] Returns user's language
 
 - [ ] 4.2 Update Words API (`backend/app/api/words.py`)
   - [ ] Inject language dependency
@@ -144,7 +144,7 @@
 
 - [ ] 6.1 Add Language types (`frontend/src/types/index.ts`)
   - [ ] Add Language interface
-  - [ ] Update Word interface (add language_code)
+  - [ ] Update Word interface (add language)
   - [ ] Update relevant request/response types
 
 - [ ] 6.2 Create languageApi service
@@ -213,7 +213,7 @@
 ### Files to Create
 - `backend/app/crud/language.py`
 - `backend/app/api/languages.py`
-- `backend/alembic/versions/xxx_add_language_code_to_tables.py`
+- `backend/alembic/versions/xxx_add_language_to_tables.py`
 - `frontend/src/services/languageApi.ts`
 - `frontend/src/contexts/LanguageContext.tsx`
 

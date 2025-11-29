@@ -10,6 +10,7 @@ from app.database import Base
 from app.models.enums import ExerciseType
 
 if TYPE_CHECKING:
+    from app.models.language import Language
     from app.models.user import User
 
 
@@ -21,6 +22,9 @@ class Session(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     user_id: Mapped[int] = mapped_column(
         Integer, ForeignKey("user.id"), nullable=False, index=True
+    )
+    language: Mapped[str] = mapped_column(
+        String(8), ForeignKey("language.code"), nullable=False, index=True, server_default="hr"
     )
     started_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
@@ -38,3 +42,4 @@ class Session(Base):
 
     # Relationships
     user: Mapped["User"] = relationship(back_populates="sessions")
+    language_ref: Mapped["Language"] = relationship(back_populates="sessions")

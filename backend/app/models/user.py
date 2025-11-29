@@ -3,18 +3,19 @@
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import DateTime, Integer, String, func
+from sqlalchemy import DateTime, ForeignKey, Integer, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
 from app.models.enums import CEFRLevel
 
 if TYPE_CHECKING:
-    from app.models.word import Word
-    from app.models.topic_progress import TopicProgress
-    from app.models.exercise_log import ExerciseLog
     from app.models.error_log import ErrorLog
+    from app.models.exercise_log import ExerciseLog
+    from app.models.language import Language
     from app.models.session import Session
+    from app.models.topic_progress import TopicProgress
+    from app.models.word import Word
 
 
 class User(Base):
@@ -29,6 +30,9 @@ class User(Base):
         nullable=False,
     )
     daily_goal_minutes: Mapped[int] = mapped_column(Integer, default=30, nullable=False)
+    language: Mapped[str] = mapped_column(
+        String(8), ForeignKey("language.code"), nullable=False, server_default="hr"
+    )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),
@@ -55,3 +59,4 @@ class User(Base):
     sessions: Mapped[list["Session"]] = relationship(
         back_populates="user", lazy="selectin"
     )
+    selected_language: Mapped["Language"] = relationship(back_populates="users")

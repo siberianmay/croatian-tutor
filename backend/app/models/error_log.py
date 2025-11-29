@@ -3,15 +3,16 @@
 from datetime import date
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Date, ForeignKey, Integer, Text
+from sqlalchemy import Date, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
 from app.models.enums import ErrorCategory
 
 if TYPE_CHECKING:
-    from app.models.user import User
     from app.models.grammar_topic import GrammarTopic
+    from app.models.language import Language
+    from app.models.user import User
 
 
 class ErrorLog(Base):
@@ -22,6 +23,9 @@ class ErrorLog(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     user_id: Mapped[int] = mapped_column(
         Integer, ForeignKey("user.id"), nullable=False, index=True
+    )
+    language: Mapped[str] = mapped_column(
+        String(8), ForeignKey("language.code"), nullable=False, index=True, server_default="hr"
     )
     date: Mapped[date] = mapped_column(Date, nullable=False, index=True)
     error_category: Mapped[ErrorCategory] = mapped_column(nullable=False)
@@ -34,3 +38,4 @@ class ErrorLog(Base):
     # Relationships
     user: Mapped["User"] = relationship(back_populates="error_logs")
     topic: Mapped["GrammarTopic | None"] = relationship(back_populates="error_logs")
+    language_ref: Mapped["Language"] = relationship(back_populates="error_logs")

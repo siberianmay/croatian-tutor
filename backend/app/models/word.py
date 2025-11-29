@@ -9,6 +9,7 @@ from sqlalchemy import DateTime, Float, ForeignKey, Integer, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 if TYPE_CHECKING:
+    from app.models.language import Language
     from app.models.user import User
 
 
@@ -19,6 +20,9 @@ class Word(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("user.id"), nullable=False, index=True)
+    language: Mapped[str] = mapped_column(
+        String(8), ForeignKey("language.code"), nullable=False, index=True, server_default="hr"
+    )
 
     # Word content
     croatian: Mapped[str] = mapped_column(String(200), nullable=False, index=True)
@@ -47,6 +51,7 @@ class Word(Base):
 
     # Relationships
     user: Mapped["User"] = relationship(back_populates="words")
+    language_ref: Mapped["Language"] = relationship(back_populates="words")
 
     def __str__(self):
         return self.croatian

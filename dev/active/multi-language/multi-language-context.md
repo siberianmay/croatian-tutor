@@ -5,30 +5,30 @@
 ## Key Files
 
 ### Backend Models
-| File | Purpose | Changes Needed |
-|------|---------|----------------|
-| `backend/app/models/language.py` | Language model | Already exists |
-| `backend/app/models/word.py` | Vocabulary | Add language_code FK |
-| `backend/app/models/grammar_topic.py` | Grammar rules | Add language_code FK |
-| `backend/app/models/session.py` | Exercise sessions | Add language_code FK |
-| `backend/app/models/exercise_log.py` | Daily activity | Add language_code FK |
-| `backend/app/models/error_log.py` | Error tracking | Add language_code FK |
-| `backend/app/models/user.py` | User profile | Add selected_language_code FK |
+| File | Purpose | Changes Needed  |
+|------|---------|-----------------|
+| `backend/app/models/language.py` | Language model | Already exists  |
+| `backend/app/models/word.py` | Vocabulary | Add language FK |
+| `backend/app/models/grammar_topic.py` | Grammar rules | Add language FK |
+| `backend/app/models/session.py` | Exercise sessions | Add language FK |
+| `backend/app/models/exercise_log.py` | Daily activity | Add language FK |
+| `backend/app/models/error_log.py` | Error tracking | Add language FK |
+| `backend/app/models/user.py` | User profile | Add language FK |
 
 ### Backend Schemas
 | File | Purpose | Changes Needed |
-|------|---------|----------------|
+|------|---------|--------------|
 | `backend/app/schemas/language.py` | Language schemas | Add LanguageResponse |
-| `backend/app/schemas/word.py` | Word schemas | Add language_code to create/update |
-| `backend/app/schemas/grammar_topic.py` | Topic schemas | Add language_code |
-| `backend/app/schemas/user.py` | User schemas | Add selected_language_code |
+| `backend/app/schemas/word.py` | Word schemas | Add language to create/update |
+| `backend/app/schemas/grammar_topic.py` | Topic schemas | Add language |
+| `backend/app/schemas/user.py` | User schemas | Add language |
 
 ### Backend CRUD
 | File | Purpose | Changes Needed |
-|------|---------|----------------|
-| `backend/app/crud/word.py` | Word operations | Add language_code filter |
-| `backend/app/crud/grammar_topic.py` | Topic operations | Add language_code filter |
-| `backend/app/crud/session.py` | Session operations | Add language_code |
+|------|---------|--------------|
+| `backend/app/crud/word.py` | Word operations | Add language filter |
+| `backend/app/crud/grammar_topic.py` | Topic operations | Add language filter |
+| `backend/app/crud/session.py` | Session operations | Add language |
 | NEW: `backend/app/crud/language.py` | Language operations | Create |
 
 ### Backend API
@@ -74,8 +74,8 @@
 ### Migrations
 | File | Purpose | Status |
 |------|---------|--------|
-| `c1d1e1f1a1b1_add_language_table.py` | Language table | ✅ Exists |
-| NEW: `xxx_add_language_code_to_tables.py` | Add FKs to tables | To create |
+| `c1d1e1f1a1b1_add_language_table.py` | Language table | ✅ Applied |
+| `d2e2f2a2b2c2_add_language_to_tables.py` | Add FKs to tables | ✅ Applied |
 
 ---
 
@@ -93,14 +93,14 @@ CREATE TABLE language (
 -- Seeded: ('hr', 'Croatian', 'Hrvatski', true)
 ```
 
-### Tables Needing language_code
+### Tables With language Column (✅ All Applied)
 
-1. **word** - currently has no language field
-2. **grammar_topic** - currently has no language field
-3. **session** - currently has no language field
-4. **exercise_log** - currently has no language field, has unique(user_id, date, exercise_type)
-5. **error_log** - currently has no language field
-6. **user** - needs selected_language_code
+1. **word** - `language` VARCHAR(8) FK, default 'hr'
+2. **grammar_topic** - `language` VARCHAR(8) FK, default 'hr', unique(name, language)
+3. **session** - `language` VARCHAR(8) FK, default 'hr'
+4. **exercise_log** - `language` VARCHAR(8) FK, default 'hr', unique(user_id, date, exercise_type, language)
+5. **error_log** - `language` VARCHAR(8) FK, default 'hr'
+6. **user** - `language` VARCHAR(8) FK, default 'hr'
 
 ---
 
@@ -124,7 +124,7 @@ CREATE TABLE language (
 
 ### Migration Order
 1. Language table exists (already done)
-2. Add language_code to all tables in single migration
+2. Add language code to all tables in single migration
 3. All existing data defaults to 'hr'
 
 ### Code Deployment Order
@@ -136,18 +136,22 @@ CREATE TABLE language (
 
 ## SESSION PROGRESS
 
-### Current State
-- Plan document created
-- Context document created
-- Task list pending
+### Current State (2025-11-29)
+- ✅ Phase 1: Database Schema Updates - COMPLETE
+  - Migration `d2e2f2a2b2c2_add_language_to_tables.py` applied
+  - All models updated with `language` column
+  - Relationships use `language_ref` (to avoid naming conflict with column)
+  - Migration upgrade/downgrade tested successfully
 
 ### Next Steps
-1. Create task checklist file
-2. Begin Phase 1 implementation (migration)
+1. Phase 2: Backend Model & Schema Updates (Pydantic schemas)
+2. Phase 3: CRUD Layer Updates (add language filters)
+3. Phase 4: API Layer Updates (language dependency injection)
 
 ### Blockers
 None currently identified.
 
 ### Notes
-- Existing migration `c1d1e1f1a1b1_add_language_table.py` is staged but may not be applied yet
-- Need to verify migration state before creating new migration
+- Column is named `language` (not `language_code`) for simplicity
+- Relationship is named `language_ref` to avoid conflict with column name
+- User model has `language` column and `selected_language` relationship

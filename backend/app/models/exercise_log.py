@@ -3,13 +3,14 @@
 from datetime import date
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Date, ForeignKey, Integer, UniqueConstraint
+from sqlalchemy import Date, ForeignKey, Integer, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
 from app.models.enums import ExerciseType
 
 if TYPE_CHECKING:
+    from app.models.language import Language
     from app.models.user import User
 
 
@@ -18,12 +19,15 @@ class ExerciseLog(Base):
 
     __tablename__ = "exercise_log"
     __table_args__ = (
-        UniqueConstraint("user_id", "date", "exercise_type", name="uq_user_date_type"),
+        UniqueConstraint("user_id", "date", "exercise_type", "language", name="uq_user_date_type_language"),
     )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     user_id: Mapped[int] = mapped_column(
         Integer, ForeignKey("user.id"), nullable=False, index=True
+    )
+    language: Mapped[str] = mapped_column(
+        String(8), ForeignKey("language.code"), nullable=False, index=True, server_default="hr"
     )
     date: Mapped[date] = mapped_column(Date, nullable=False, index=True)
     exercise_type: Mapped[ExerciseType] = mapped_column(nullable=False)
@@ -32,3 +36,4 @@ class ExerciseLog(Base):
 
     # Relationships
     user: Mapped["User"] = relationship(back_populates="exercise_logs")
+    language_ref: Mapped["Language"] = relationship(back_populates="exercise_logs")

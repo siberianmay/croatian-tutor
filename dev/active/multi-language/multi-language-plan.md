@@ -22,7 +22,7 @@ Transform the Croatian language tutor application into a multi-language learning
 - **Schema** exists (`backend/app/schemas/language.py`): `LanguageBase`, `LanguageCreate`
 
 ### User Settings
-- **User** model: Has `preferred_cefr_level`, `daily_goal_minutes` - needs `selected_language_code`
+- **User** model: Has `preferred_cefr_level`, `daily_goal_minutes` - needs `language`
 - **AppSettings** model: Singleton for app-wide settings - not suitable for language (user-level)
 
 ### Frontend
@@ -38,12 +38,12 @@ Transform the Croatian language tutor application into a multi-language learning
 ## Proposed Future State
 
 ### 1. Database Schema
-- Add `language_code` FK to: `word`, `grammar_topic`, `session`, `exercise_log`, `error_log`
-- Add `selected_language_code` to `user` model (default: 'hr')
+- Add `language` FK to: `word`, `grammar_topic`, `session`, `exercise_log`, `error_log`
+- Add `language` to `user` model (default: 'hr')
 - All queries filter by user's selected language
 
 ### 2. Backend
-- All CRUD operations accept `language_code` parameter
+- All CRUD operations accept `language` parameter
 - All API endpoints derive language from user's setting or explicit parameter
 - Gemini prompts dynamically include target language name
 
@@ -58,13 +58,13 @@ Transform the Croatian language tutor application into a multi-language learning
 ## Implementation Phases
 
 ### Phase 1: Database Schema Updates
-Add `language_code` foreign key to required tables with migration.
+Add `language` foreign key to required tables with migration.
 
 ### Phase 2: Backend Model & Schema Updates
-Update SQLAlchemy models and Pydantic schemas to include language_code.
+Update SQLAlchemy models and Pydantic schemas to include language.
 
 ### Phase 3: CRUD Layer Updates
-Modify all CRUD operations to filter by language_code.
+Modify all CRUD operations to filter by language.
 
 ### Phase 4: API Layer Updates
 Update all API endpoints to use user's selected language.
@@ -87,54 +87,54 @@ Verify all flows work with language switching, seed additional languages.
 
 ### Phase 1: Database Schema Updates (Effort: M)
 
-**1.1 Create migration for adding language_code columns**
-- File: `backend/alembic/versions/[new]_add_language_code_to_tables.py`
-- Add `language_code` FK to: `word`, `grammar_topic`, `session`, `exercise_log`, `error_log`
-- Add `selected_language_code` to `user` table
+**1.1 Create migration for adding language columns**
+- File: `backend/alembic/versions/[new]_add_language_to_tables.py`
+- Add `language` FK to: `word`, `grammar_topic`, `session`, `exercise_log`, `error_log`
+- Add `language` to `user` table
 - Default all existing records to 'hr' (Croatian)
 - Acceptance: Migration runs without errors, existing data preserved
 
 **1.2 Update unique constraints**
-- `exercise_log` has unique constraint `(user_id, date, exercise_type)` - needs `language_code`
+- `exercise_log` has unique constraint `(user_id, date, exercise_type)` - needs `language`
 - `grammar_topic.name` is unique - needs to be unique per language
 - Acceptance: Constraints updated without data loss
 
 ### Phase 2: Backend Model & Schema Updates (Effort: M)
 
 **2.1 Update Word model**
-- Add `language_code: Mapped[str]` with FK to `language.code`
+- Add `language: Mapped[str]` with FK to `language.code`
 - Add relationship to Language
 - Acceptance: Model changes, app starts without errors
 
 **2.2 Update GrammarTopic model**
-- Add `language_code: Mapped[str]` with FK
-- Update unique constraint on `name` to include `language_code`
+- Add `language: Mapped[str]` with FK
+- Update unique constraint on `name` to include `language`
 - Acceptance: Model changes, app starts without errors
 
 **2.3 Update Session model**
-- Add `language_code: Mapped[str]` with FK
+- Add `language: Mapped[str]` with FK
 - Acceptance: Model changes
 
 **2.4 Update ExerciseLog model**
-- Add `language_code: Mapped[str]` with FK
+- Add `language: Mapped[str]` with FK
 - Update unique constraint
 - Acceptance: Model changes
 
 **2.5 Update ErrorLog model**
-- Add `language_code: Mapped[str]` with FK
+- Add `language: Mapped[str]` with FK
 - Acceptance: Model changes
 
 **2.6 Update User model**
-- Add `selected_language_code: Mapped[str]` with FK (default 'hr')
+- Add `language: Mapped[str]` with FK (default 'hr')
 - Add relationship to Language
 - Acceptance: Model changes
 
 **2.7 Update Pydantic schemas**
-- WordCreate/WordUpdate: Add optional `language_code`
-- GrammarTopicCreate: Add `language_code`
-- SessionCreate: Add `language_code`
-- UserResponse: Add `selected_language_code`
-- UserUpdate: Add `selected_language_code`
+- WordCreate/WordUpdate: Add optional `language`
+- GrammarTopicCreate: Add `language`
+- SessionCreate: Add `language`
+- UserResponse: Add `language`
+- UserUpdate: Add `language`
 - Acceptance: Schemas validate correctly
 
 **2.8 Add Language CRUD and API**
@@ -145,13 +145,13 @@ Verify all flows work with language switching, seed additional languages.
 ### Phase 3: CRUD Layer Updates (Effort: M)
 
 **3.1 Update WordCRUD**
-- All methods accept `language_code` parameter
-- Queries filter by `language_code`
+- All methods accept `language` parameter
+- Queries filter by `language`
 - Files: `backend/app/crud/word.py`
 - Acceptance: All word queries are language-scoped
 
 **3.2 Update GrammarTopicCRUD**
-- `get_multi`, `get_by_name` filter by `language_code`
+- `get_multi`, `get_by_name` filter by `language`
 - Files: `backend/app/crud/grammar_topic.py`
 - Acceptance: Topics filtered by language
 
@@ -160,7 +160,7 @@ Verify all flows work with language switching, seed additional languages.
 - Acceptance: Progress scoped to language
 
 **3.4 Update SessionCRUD**
-- Add `language_code` to create method
+- Add `language` to create method
 - Filter sessions by language
 - Files: `backend/app/crud/session.py`
 - Acceptance: Sessions are language-scoped
@@ -176,7 +176,7 @@ Verify all flows work with language switching, seed additional languages.
 - FastAPI dependency that gets user's selected language
 - Used across all exercise endpoints
 - File: `backend/app/dependencies.py` or similar
-- Acceptance: Dependency returns language_code
+- Acceptance: Dependency returns language
 
 **4.2 Update Words API**
 - `/words` endpoints use user's language
@@ -318,13 +318,13 @@ Verify all flows work with language switching, seed additional languages.
 
 ## Risk Assessment
 
-| Risk | Likelihood | Impact | Mitigation |
-|------|------------|--------|------------|
-| Data migration breaks existing records | Low | High | Use server_default, NOT NULL with default |
+| Risk | Likelihood | Impact | Mitigation                                   |
+|------|------------|--------|----------------------------------------------|
+| Data migration breaks existing records | Low | High | Use server_default, NOT NULL with default    |
 | Gemini prompts fail with new language | Medium | Medium | Test with multiple languages, add validation |
 | Foreign key constraints fail | Low | High | Ensure 'hr' language exists before migration |
-| Frontend breaks due to missing context | Medium | Medium | Add LanguageContext provider at root |
-| Performance degradation from extra joins | Low | Low | Indexes on language_code columns |
+| Frontend breaks due to missing context | Medium | Medium | Add LanguageContext provider at root         |
+| Performance degradation from extra joins | Low | Low | Indexes on language columns                  |
 
 ## Success Metrics
 
