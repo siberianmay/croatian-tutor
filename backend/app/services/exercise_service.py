@@ -8,6 +8,7 @@ from typing import Any
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.crud.grammar_topic import GrammarTopicCRUD, TopicProgressCRUD
+from app.crud.language import LanguageCRUD
 from app.crud.session import SessionCRUD
 from app.crud.word import WordCRUD
 from app.models.enums import CEFRLevel, ErrorCategory, ExerciseType
@@ -35,7 +36,20 @@ class ExerciseService:
         self._progress_crud = TopicProgressCRUD(db)
         self._word_crud = WordCRUD(db)
         self._session_crud = SessionCRUD(db)
+        self._language_crud = LanguageCRUD(db)
         self._progress_service = ProgressService(db)
+        # Cache for language names to avoid repeated DB lookups
+        self._language_name_cache: dict[str, str] = {}
+
+    async def _get_language_name(self, language_code: str) -> str:
+        """Get the display name for a language code (e.g., 'hr' -> 'Croatian')."""
+        if language_code in self._language_name_cache:
+            return self._language_name_cache[language_code]
+
+        lang = await self._language_crud.get(language_code)
+        name = lang.name if lang else "Croatian"
+        self._language_name_cache[language_code] = name
+        return name
 
     def _build_session_key(self, user_id: int, exercise_type: str, variant: str = "") -> str:
         """Build a unique session key for chat context."""
@@ -62,7 +76,7 @@ class ExerciseService:
 
     async def _get_learnt_grammar_context(self, user_id: int, language: str = "hr") -> str:
         """Get a string describing the grammar topics the user has learned with mastery levels."""
-        topics_with_mastery = await self._progress_crud.get_learnt_topics_with_mastery(user_id, language)
+        topics_with_mastery = await self._progress_crud.get_learnt_topics_with_mastery(user_id, language=language)
         if not topics_with_mastery:
             return ""
 
@@ -96,7 +110,7 @@ USER'S GRAMMAR KNOWLEDGE (use ONLY these patterns, prioritize WEAK topics):
         Returns:
             Tuple of (formatted context string, dict mapping topic_id -> topic_name)
         """
-        topics_with_mastery = await self._progress_crud.get_learnt_topics_with_mastery(user_id, language)
+        topics_with_mastery = await self._progress_crud.get_learnt_topics_with_mastery(user_id, language=language)
         if not topics_with_mastery:
             return "", {}
 
@@ -190,7 +204,7 @@ USER'S VOCABULARY TO PRACTICE (try to use some of these words in sentences):
         language: str = "hr",
     ) -> dict[str, Any]:
         """
-        Process a conversation turn with the Croatian tutor.
+        Process a conversation turn with the language tutor.
 
         Returns:
             {
@@ -199,6 +213,8 @@ USER'S VOCABULARY TO PRACTICE (try to use some of these words in sentences):
                 "new_vocabulary": [str] | None
             }
         """
+        language_name = await self._get_language_name(language)
+
         # Build conversation context
         history_text = "\n".join(
             f"{'User' if h['role'] == 'user' else 'Tutor'}: {h['content']}"
@@ -208,7 +224,7 @@ USER'S VOCABULARY TO PRACTICE (try to use some of these words in sentences):
         grammar_context = await self._get_learnt_grammar_context(user_id, language)
         user_context = await self._get_user_context(user_id, language)
 
-        prompt = f"""You are a friendly Croatian language tutor.
+        prompt = f"""You are a friendly {language_name} language tutor.
 
 {user_context}
 {grammar_context}
@@ -218,21 +234,21 @@ Conversation so far:
 
 User: {message}
 
-Respond in a helpful, encouraging way. If the user writes in Croatian:
+Respond in a helpful, encouraging way. If the user writes in {language_name}:
 1. Correct any grammar or spelling mistakes
 2. Provide the natural way to express their thought
 3. Introduce new vocabulary when appropriate
 
-If the user writes in English, respond primarily in Croatian with English explanations as needed.
+If the user writes in English, respond primarily in {language_name} with English explanations as needed.
 Tailor your responses to the student's level and focus on their weak areas when appropriate.
 
 Respond with ONLY valid JSON:
 {{
-    "response": "Your response to the user (mix Croatian and English as appropriate for their level)",
+    "response": "Your response to the user (mix {language_name} and English as appropriate for their level)",
     "corrections": [
         {{"original": "what they wrote", "corrected": "correct form", "explanation": "brief explanation"}}
     ] or null if no corrections needed,
-    "new_vocabulary": ["croatian_word1", "croatian_word2"] or null if no new words introduced
+    "new_vocabulary": ["{language_name}_word1", "{language_name}_word2"] or null if no new words introduced
 }}"""
 
         try:
@@ -291,6 +307,8 @@ Respond with ONLY valid JSON:
                 "expected_answer": str
             }
         """
+        language_name = await self._get_language_name(language)
+
         # Get all learnt topics with their IDs and mastery
         grammar_context, topic_map = await self._get_grammar_topics_for_exercise(user_id, language)
         vocab_context = await self._get_vocabulary_for_exercise(user_id, language, count=5)
@@ -310,7 +328,7 @@ Respond with ONLY valid JSON:
         session_key = self._build_session_key(user_id, "grammar")
 
         # System instruction
-        system_instruction = f"""You are a Croatian grammar exercise generator.
+        system_instruction = f"""You are a {language_name} grammar exercise generator.
 {user_context}
 {grammar_context}
 {vocab_context}
@@ -331,7 +349,7 @@ Respond with ONLY valid JSON:
 {{
     "topic_id": <number from the topic list>,
     "instruction": "Clear instruction in English",
-    "question": "The exercise question in Croatian",
+    "question": "The exercise question in {language_name}",
     "hints": ["hint1", "hint2"] or null,
     "expected_answer": "The correct answer"
 }}"""
@@ -393,6 +411,7 @@ Respond with ONLY valid JSON:
         Returns:
             List of exercise dicts with topic_id, instruction, question, hints, expected_answer
         """
+        language_name = await self._get_language_name(language)
         grammar_context, topic_map = await self._get_grammar_topics_for_exercise(user_id, language)
         vocab_context = await self._get_vocabulary_for_exercise(user_id, language, count=15)
 
@@ -402,7 +421,7 @@ Respond with ONLY valid JSON:
         user_context = await self._get_user_context(user_id, language)
         topic_ids_str = ", ".join(str(tid) for tid in topic_map.keys())
 
-        prompt = f"""Generate {count} unique grammar exercises for Croatian language learning.
+        prompt = f"""Generate {count} unique grammar exercises for {language_name} language learning.
 
 {user_context}
 {grammar_context}
@@ -422,7 +441,7 @@ Respond with ONLY a valid JSON array (no markdown):
     {{
         "topic_id": <number from available IDs>,
         "instruction": "Clear instruction in English",
-        "question": "The exercise question in Croatian",
+        "question": "The exercise question in {language_name}",
         "hints": ["hint1", "hint2"] or null,
         "expected_answer": "The correct answer"
     }}
@@ -487,6 +506,7 @@ Return exactly {count} objects."""
         if not answers:
             return []
 
+        language_name = await self._get_language_name(language)
         user_context = await self._get_user_context(user_id, language)
 
         answers_text = "\n".join(
@@ -496,7 +516,7 @@ Return exactly {count} objects."""
             for i, a in enumerate(answers)
         )
 
-        prompt = f"""Evaluate these Croatian grammar exercise answers.
+        prompt = f"""Evaluate these {language_name} grammar exercise answers.
 
 {user_context}
 
@@ -505,7 +525,7 @@ ANSWERS TO EVALUATE:
 
 Consider for each:
 - Grammar accuracy (cases, conjugations, agreements)
-- Spelling (including Croatian diacritics: č, ć, š, ž, đ)
+- Spelling (including any special characters or diacritics used in {language_name})
 - Alternative valid forms
 - Partial credit for mostly correct answers
 
@@ -618,12 +638,14 @@ Return exactly {len(answers)} objects in the same order."""
                 "expected_answer": str
             }
         """
+        language_name = await self._get_language_name(language)
+
         if direction == "cr_en":
-            source_lang = "Croatian"
+            source_lang = language_name
             target_lang = "English"
         else:
             source_lang = "English"
-            target_lang = "Croatian"
+            target_lang = language_name
 
         # Get grammar topics for progress tracking
         grammar_context, topic_map = await self._get_grammar_topics_for_exercise(user_id, language)
@@ -634,7 +656,7 @@ Return exactly {len(answers)} objects in the same order."""
         session_key = self._build_session_key(user_id, "translation", direction)
 
         # System instruction for translation exercise generation
-        system_instruction = f"""You are a Croatian translation exercise generator.
+        system_instruction = f"""You are a {language_name} translation exercise generator.
 {user_context}
 {grammar_context}
 {vocab_context}
@@ -724,12 +746,14 @@ Respond with ONLY valid JSON:
             - target_language: str
             - expected_answer: str
         """
+        language_name = await self._get_language_name(language)
+
         if direction == "cr_en":
-            source_lang = "Croatian"
+            source_lang = language_name
             target_lang = "English"
         else:
             source_lang = "English"
-            target_lang = "Croatian"
+            target_lang = language_name
 
         # Get grammar topics for progress tracking
         grammar_context, topic_map = await self._get_grammar_topics_for_exercise(user_id, language)
@@ -739,7 +763,7 @@ Respond with ONLY valid JSON:
         # Format topic IDs for the prompt
         topic_ids_str = ", ".join(str(tid) for tid in topic_map.keys()) if topic_map else "none"
 
-        prompt = f"""Generate {count} unique translation exercises for Croatian language learning.
+        prompt = f"""Generate {count} unique translation exercises for {language_name} language learning.
 
 {user_context}
 {grammar_context}
@@ -834,6 +858,7 @@ Return exactly {count} objects."""
         if not answers:
             return []
 
+        language_name = await self._get_language_name(language)
         user_context = await self._get_user_context(user_id, language)
 
         # Build answers list for prompt
@@ -844,7 +869,7 @@ Return exactly {count} objects."""
             for i, a in enumerate(answers)
         )
 
-        prompt = f"""Evaluate these Croatian translation exercise answers.
+        prompt = f"""Evaluate these {language_name} translation exercise answers.
 
 {user_context}
 
@@ -852,7 +877,7 @@ ANSWERS TO EVALUATE:
 {answers_text}
 
 Consider for each:
-- Spelling (including Croatian diacritics: č, ć, š, ž, đ)
+- Spelling (including any special characters or diacritics used in {language_name})
 - Grammar accuracy
 - Alternative valid phrasings
 - Partial credit for mostly correct answers
@@ -965,6 +990,7 @@ Return exactly {len(answers)} objects in the same order."""
                 "expected_answer": str
             }
         """
+        language_name = await self._get_language_name(language)
         grammar_context = await self._get_learnt_grammar_context(user_id, language)
         user_context = await self._get_user_context(user_id, language)
         vocab_context = await self._get_vocabulary_for_exercise(user_id, language, count=12)
@@ -973,7 +999,7 @@ Return exactly {len(answers)} objects in the same order."""
         session_key = self._build_session_key(user_id, "sentence_construction")
 
         # System instruction
-        system_instruction = f"""You are a Croatian sentence construction exercise generator.
+        system_instruction = f"""You are a {language_name} sentence construction exercise generator.
 {user_context}
 {grammar_context}
 {vocab_context}
@@ -987,13 +1013,13 @@ CRITICAL RULES:
 
 CEFR Level: {cefr_level.value}
 
-Create a Croatian sentence, then provide its words in shuffled order for the learner to arrange.
+Create a {language_name} sentence, then provide its words in shuffled order for the learner to arrange.
 
 Respond with ONLY valid JSON:
 {{
     "words": ["shuffled", "words", "in", "random", "order"],
     "hint": "English translation or context hint",
-    "expected_answer": "Correct Croatian sentence with proper word order"
+    "expected_answer": "Correct {language_name} sentence with proper word order"
 }}"""
 
         try:
@@ -1046,6 +1072,7 @@ Respond with ONLY valid JSON:
                 "questions": [{"question": str, "expected_answer": str}]
             }
         """
+        language_name = await self._get_language_name(language)
         grammar_context = await self._get_learnt_grammar_context(user_id, language)
         user_context = await self._get_user_context(user_id, language)
         vocab_context = await self._get_vocabulary_for_exercise(user_id, language, count=30)
@@ -1058,7 +1085,7 @@ Respond with ONLY valid JSON:
         max_length = min(1500, int(passage_length * 1.3))
 
         # System instruction
-        system_instruction = f"""You are a Croatian reading comprehension exercise generator.
+        system_instruction = f"""You are a {language_name} reading comprehension exercise generator.
 {user_context}
 {grammar_context}
 {vocab_context}
@@ -1073,14 +1100,14 @@ CRITICAL RULES:
 
 CEFR Level: {cefr_level.value}
 
-Create a passage in Croatian ({min_length}-{max_length} characters) followed by 5-10 comprehension questions.
+Create a passage in {language_name} ({min_length}-{max_length} characters) followed by 5-10 comprehension questions.
 Questions should test understanding of the passage content - facts, details, and inferences.
 
 Respond with ONLY valid JSON:
 {{
-    "passage": "Croatian text passage ({min_length}-{max_length} characters)",
+    "passage": "{language_name} text passage ({min_length}-{max_length} characters)",
     "questions": [
-        {{"question": "Comprehension question in English or Croatian", "expected_answer": "Expected answer"}}
+        {{"question": "Comprehension question in English or {language_name}", "expected_answer": "Expected answer"}}
     ]
 }}"""
 
@@ -1130,6 +1157,7 @@ Respond with ONLY valid JSON:
                 "suggested_phrases": [str]
             }
         """
+        language_name = await self._get_language_name(language)
         scenario_prompt = f"Scenario: {scenario}" if scenario else "Choose a common everyday scenario (different from previous ones)"
         grammar_context = await self._get_learnt_grammar_context(user_id, language)
         user_context = await self._get_user_context(user_id, language)
@@ -1138,7 +1166,7 @@ Respond with ONLY valid JSON:
         session_key = self._build_session_key(user_id, "dialogue")
 
         # System instruction
-        system_instruction = f"""You are a Croatian dialogue/role-play exercise generator.
+        system_instruction = f"""You are a {language_name} dialogue/role-play exercise generator.
 {user_context}
 {grammar_context}
 
@@ -1153,15 +1181,15 @@ CRITICAL RULES:
 CEFR Level: {cefr_level.value}
 {scenario_prompt}
 
-Create a role-play scenario where the learner practices real-world Croatian conversation.
+Create a role-play scenario where the learner practices real-world {language_name} conversation.
 
 Respond with ONLY valid JSON:
 {{
     "scenario": "Description of the situation (e.g., 'Ordering food at a restaurant')",
-    "dialogue_start": "The opening line of dialogue in Croatian (AI speaks first)",
+    "dialogue_start": "The opening line of dialogue in {language_name} (AI speaks first)",
     "user_role": "The role the user plays (e.g., 'Customer')",
     "ai_role": "The role the AI plays (e.g., 'Waiter')",
-    "suggested_phrases": ["Helpful Croatian phrases the user might need"]
+    "suggested_phrases": ["Helpful {language_name} phrases the user might need"]
 }}"""
 
         try:
@@ -1216,9 +1244,10 @@ Respond with ONLY valid JSON:
                 "explanation": str | None
             }
         """
+        language_name = await self._get_language_name(language)
         user_context = await self._get_user_context(user_id, language)
 
-        prompt = f"""Evaluate this Croatian language exercise answer.
+        prompt = f"""Evaluate this {language_name} language exercise answer.
 
 {user_context}
 
@@ -1228,7 +1257,7 @@ User's answer: {user_answer}
 Context: {context if context else "language exercise"}
 
 Consider:
-- Spelling (including Croatian diacritics: č, ć, š, ž, đ)
+- Spelling (including any special characters or diacritics used in {language_name})
 - Grammar accuracy
 - Alternative valid phrasings
 - Partial credit for mostly correct answers
@@ -1315,6 +1344,7 @@ Respond with ONLY valid JSON:
         Returns:
             List of evaluation results for each question
         """
+        language_name = await self._get_language_name(language)
         user_context = await self._get_user_context(user_id, language)
 
         # Build Q&A list for the prompt
@@ -1337,7 +1367,7 @@ QUESTIONS AND ANSWERS:
 
 Consider:
 - Whether the answer demonstrates understanding of the passage
-- Spelling (including Croatian diacritics: č, ć, š, ž, đ)
+- Spelling (including any special characters or diacritics used in {language_name})
 - Grammar accuracy
 - Alternative valid phrasings
 - Partial credit for mostly correct answers
@@ -1400,13 +1430,16 @@ Return exactly {len(questions_and_answers)} evaluation objects in the same order
     async def generate_topic_description(
         self,
         topic_id: int,
+        language: str = "hr",
     ) -> str | None:
         """Generate a rule description for a grammar topic using Gemini."""
         topic = await self._topic_crud.get(topic_id)
         if not topic:
             return None
 
-        prompt = f"""Create a clear, educational explanation of this Croatian grammar topic.
+        language_name = await self._get_language_name(language)
+
+        prompt = f"""Create a clear, educational explanation of this {language_name} grammar topic.
 
 Topic: {topic.name}
 CEFR Level: {topic.cefr_level.value}
@@ -1419,7 +1452,7 @@ Write a comprehensive but accessible explanation in Markdown format that include
 5. Practice tips
 
 Target the explanation at {topic.cefr_level.value} level learners.
-Use Croatian examples with English translations."""
+Use {language_name} examples with English translations."""
 
         try:
             description = await self._gemini._generate(prompt)

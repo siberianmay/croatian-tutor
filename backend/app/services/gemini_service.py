@@ -1,4 +1,4 @@
-"""Gemini AI service for Croatian language learning."""
+"""Gemini AI service for multi-language learning."""
 
 import asyncio
 import json
@@ -73,9 +73,13 @@ class GeminiService:
         """Get the default model instance."""
         return self._get_model()
 
-    async def assess_word(self, croatian_word: str) -> dict[str, Any]:
+    async def assess_word(self, word: str, language_name: str = "Croatian") -> dict[str, Any]:
         """
-        Assess a Croatian word and return translation + metadata.
+        Assess a word in the target language and return translation + metadata.
+
+        Args:
+            word: The word to assess in the target language
+            language_name: Name of the language (e.g., "Croatian", "Italian")
 
         Returns:
             {
@@ -86,9 +90,9 @@ class GeminiService:
                 "notes": str | None
             }
         """
-        prompt = f"""Analyze this Croatian word and provide information in JSON format.
+        prompt = f"""Analyze this {language_name} word and provide information in JSON format.
 
-Word: {croatian_word}
+Word: {word}
 
 Respond with ONLY valid JSON (no markdown, no explanation):
 {{
@@ -105,14 +109,14 @@ Respond with ONLY valid JSON (no markdown, no explanation):
 
             # Validate and normalize
             return {
-                "english": data.get("english", croatian_word),
+                "english": data.get("english", word),
                 "part_of_speech": self._validate_pos(data.get("part_of_speech", "noun")),
                 "gender": self._validate_gender(data.get("gender")),
                 "cefr_level": self._validate_cefr(data.get("cefr_level", "A1")),
                 "notes": data.get("notes"),
             }
         except Exception as e:
-            logger.error(f"Failed to assess word '{croatian_word}': {e}")
+            logger.error(f"Failed to assess word '{word}' ({language_name}): {e}")
             # Return defaults on failure
             return {
                 "english": "",
@@ -122,31 +126,41 @@ Respond with ONLY valid JSON (no markdown, no explanation):
                 "notes": None,
             }
 
-    async def assess_words_bulk(self, croatian_words: list[str], chunk_size: int = 10) -> list[dict[str, Any]]:
+    async def assess_words_bulk(
+        self,
+        words: list[str],
+        language_name: str = "Croatian",
+        chunk_size: int = 10,
+    ) -> list[dict[str, Any]]:
         """
-        Assess multiple Croatian words, processing in chunks to avoid API limits.
+        Assess multiple words in the target language, processing in chunks.
 
         Args:
-            croatian_words: List of Croatian words to assess
+            words: List of words to assess in the target language
+            language_name: Name of the language (e.g., "Croatian", "Italian")
             chunk_size: Number of words per Gemini API call (default: 10)
         """
-        if not croatian_words:
+        if not words:
             return []
 
         # Process words in chunks
         results: list[dict[str, Any]] = []
-        for i in range(0, len(croatian_words), chunk_size):
-            chunk = croatian_words[i : i + chunk_size]
-            chunk_results = await self._assess_words_chunk(chunk)
+        for i in range(0, len(words), chunk_size):
+            chunk = words[i : i + chunk_size]
+            chunk_results = await self._assess_words_chunk(chunk, language_name)
             results.extend(chunk_results)
-            logger.info(f"Processed chunk {i // chunk_size + 1}: {len(chunk)} words")
+            logger.info(f"Processed chunk {i // chunk_size + 1}: {len(chunk)} words ({language_name})")
 
         return results
 
-    async def _assess_words_chunk(self, croatian_words: list[str]) -> list[dict[str, Any]]:
-        """Assess a chunk of Croatian words in a single Gemini request."""
-        words_list = "\n".join(f"- {w}" for w in croatian_words)
-        prompt = f"""Analyze these Croatian words and provide information for each.
+    async def _assess_words_chunk(
+        self,
+        words: list[str],
+        language_name: str = "Croatian",
+    ) -> list[dict[str, Any]]:
+        """Assess a chunk of words in a single Gemini request."""
+        words_list = "\n".join(f"- {w}" for w in words)
+        prompt = f"""Analyze these {language_name} words and provide information for each.
 
 Words:
 {words_list}
@@ -154,7 +168,7 @@ Words:
 Respond with ONLY a valid JSON array (no markdown, no explanation):
 [
     {{
-        "croatian": "original word",
+        "word": "original word",
         "english": "English translation",
         "part_of_speech": "noun|verb|adjective|adverb|pronoun|preposition|conjunction|interjection|numeral|particle|phrase",
         "gender": "masculine|feminine|neuter|null",
@@ -165,7 +179,7 @@ Respond with ONLY a valid JSON array (no markdown, no explanation):
 Important:
 - Return one object per word in the same order
 - gender is only for nouns, use null for other parts of speech
-- cefr_level indicates difficulty for Croatian learners"""
+- cefr_level indicates difficulty for {language_name} learners"""
 
         try:
             response = await self._generate_bulk(prompt)
@@ -178,7 +192,7 @@ Important:
             for i, item in enumerate(data):
                 results.append(
                     {
-                        "croatian": item.get("croatian", croatian_words[i] if i < len(croatian_words) else ""),
+                        "word": item.get("word", words[i] if i < len(words) else ""),
                         "english": item.get("english", ""),
                         "part_of_speech": self._validate_pos(item.get("part_of_speech", "noun")),
                         "gender": self._validate_gender(item.get("gender")),
@@ -187,17 +201,17 @@ Important:
                 )
             return results
         except Exception as e:
-            logger.error(f"Failed to assess chunk of {len(croatian_words)} words: {e}")
+            logger.error(f"Failed to assess chunk of {len(words)} {language_name} words: {e}")
             # Return empty assessments on failure
             return [
                 {
-                    "croatian": w,
+                    "word": w,
                     "english": "",
                     "part_of_speech": "noun",
                     "gender": None,
                     "cefr_level": "A1",
                 }
-                for w in croatian_words
+                for w in words
             ]
 
     async def generate_fill_in_blank(
@@ -205,9 +219,16 @@ Important:
         word: str,
         english: str,
         cefr_level: str,
+        language_name: str = "Croatian",
     ) -> dict[str, str]:
         """
         Generate a fill-in-the-blank sentence for vocabulary practice.
+
+        Args:
+            word: The target word in the learning language
+            english: English translation of the word
+            cefr_level: CEFR difficulty level
+            language_name: Name of the language (e.g., "Croatian", "Italian")
 
         Returns:
             {
@@ -216,17 +237,17 @@ Important:
                 "hint": "books"
             }
         """
-        prompt = f"""Create a fill-in-the-blank exercise for learning Croatian vocabulary.
+        prompt = f"""Create a fill-in-the-blank exercise for learning {language_name} vocabulary.
 
 Target word: {word} (English: {english})
 Difficulty level: {cefr_level}
 
-Create a natural Croatian sentence using this word, then replace the target word with "___".
+Create a natural {language_name} sentence using this word, then replace the target word with "___".
 The sentence should be appropriate for the {cefr_level} level.
 
 Respond with ONLY valid JSON (no markdown):
 {{
-    "sentence": "Croatian sentence with ___ where the word goes",
+    "sentence": "{language_name} sentence with ___ where the word goes",
     "answer": "{word}",
     "hint": "Brief English hint to help the learner"
 }}"""
@@ -235,14 +256,14 @@ Respond with ONLY valid JSON (no markdown):
             response = await self._generate(prompt)
             data = self._parse_json(response)
             return {
-                "sentence": data.get("sentence", f"___ je riječ."),
+                "sentence": data.get("sentence", "___ ..."),
                 "answer": data.get("answer", word),
                 "hint": data.get("hint", english),
             }
         except Exception as e:
-            logger.error(f"Failed to generate fill-in-blank for '{word}': {e}")
+            logger.error(f"Failed to generate fill-in-blank for '{word}' ({language_name}): {e}")
             return {
-                "sentence": f"___ je hrvatska riječ.",
+                "sentence": "___ ...",
                 "answer": word,
                 "hint": english,
             }
@@ -250,12 +271,14 @@ Respond with ONLY valid JSON (no markdown):
     async def generate_fill_in_blank_batch(
         self,
         words: list[dict[str, str]],
+        language_name: str = "Croatian",
     ) -> list[dict[str, str]]:
         """
         Generate fill-in-the-blank sentences for multiple words in a single API call.
 
         Args:
-            words: List of dicts with 'word_id', 'croatian', 'english', 'cefr_level'
+            words: List of dicts with 'word_id', 'word', 'english', 'cefr_level'
+            language_name: Name of the language (e.g., "Croatian", "Italian")
 
         Returns:
             List of {word_id, sentence, answer, hint} for each word
@@ -264,23 +287,23 @@ Respond with ONLY valid JSON (no markdown):
             return []
 
         words_list = "\n".join(
-            f"- ID:{w['word_id']} | {w['croatian']} ({w['english']}) | Level: {w['cefr_level']}" for w in words
+            f"- ID:{w['word_id']} | {w['word']} ({w['english']}) | Level: {w['cefr_level']}" for w in words
         )
 
-        prompt = f"""Create fill-in-the-blank exercises for these Croatian vocabulary words.
+        prompt = f"""Create fill-in-the-blank exercises for these {language_name} vocabulary words.
 
 Words:
 {words_list}
 
-For each word, create a natural Croatian sentence using that word, then replace it with "___".
+For each word, create a natural {language_name} sentence using that word, then replace it with "___".
 Sentences should be appropriate for the word's CEFR level.
 
 Respond with ONLY a valid JSON array (no markdown, no explanation):
 [
     {{
         "word_id": <ID from the list>,
-        "sentence": "Croatian sentence with ___ where the word goes",
-        "answer": "the Croatian word",
+        "sentence": "{language_name} sentence with ___ where the word goes",
+        "answer": "the {language_name} word",
         "hint": "Brief English hint"
     }}
 ]
@@ -299,24 +322,24 @@ Important:
 
             results = []
             for i, item in enumerate(data):
-                word = words[i] if i < len(words) else {}
+                word_data = words[i] if i < len(words) else {}
                 results.append(
                     {
-                        "word_id": item.get("word_id", word.get("word_id", 0)),
-                        "sentence": item.get("sentence", "___ je hrvatska riječ."),
-                        "answer": item.get("answer", word.get("croatian", "")),
-                        "hint": item.get("hint", word.get("english", "")),
+                        "word_id": item.get("word_id", word_data.get("word_id", 0)),
+                        "sentence": item.get("sentence", "___ ..."),
+                        "answer": item.get("answer", word_data.get("word", "")),
+                        "hint": item.get("hint", word_data.get("english", "")),
                     }
                 )
             return results
         except Exception as e:
-            logger.error(f"Failed to generate fill-in-blank batch for {len(words)} words: {e}")
+            logger.error(f"Failed to generate fill-in-blank batch for {len(words)} {language_name} words: {e}")
             # Return fallback for all words
             return [
                 {
                     "word_id": w["word_id"],
-                    "sentence": "___ je hrvatska riječ.",
-                    "answer": w["croatian"],
+                    "sentence": "___ ...",
+                    "answer": w["word"],
                     "hint": w["english"],
                 }
                 for w in words
@@ -327,9 +350,16 @@ Important:
         expected: str,
         user_answer: str,
         context: str = "",
+        language_name: str = "Croatian",
     ) -> dict[str, Any]:
         """
         Evaluate a user's answer with AI assistance.
+
+        Args:
+            expected: The expected correct answer
+            user_answer: The user's submitted answer
+            context: Additional context about the exercise
+            language_name: Name of the language (e.g., "Croatian", "Italian")
 
         Returns:
             {
@@ -338,14 +368,14 @@ Important:
                 "corrections": list[str]
             }
         """
-        prompt = f"""Evaluate this Croatian language answer.
+        prompt = f"""Evaluate this {language_name} language answer.
 
 Expected answer: {expected}
 User's answer: {user_answer}
 Context: {context if context else "vocabulary exercise"}
 
 Consider:
-- Spelling (including Croatian diacritics: č, ć, š, ž, đ)
+- Spelling (including any special characters or diacritics used in {language_name})
 - Minor typos vs incorrect answers
 - Alternative valid forms
 
@@ -365,7 +395,7 @@ Respond with ONLY valid JSON:
                 "corrections": data.get("corrections", []),
             }
         except Exception as e:
-            logger.error(f"Failed to evaluate answer: {e}")
+            logger.error(f"Failed to evaluate answer ({language_name}): {e}")
             # Fall back to exact match
             is_correct = expected.lower().strip() == user_answer.lower().strip()
             return {
@@ -394,7 +424,28 @@ Respond with ONLY valid JSON:
                     prompt,
                     generation_config=config,
                 )
+                # Check for blocked/empty responses before accessing .text
+                if not response.candidates:
+                    raise GeminiServiceError(
+                        message="AI response was empty or blocked",
+                        details={"prompt_preview": prompt[:200]},
+                    )
+
+                candidate = response.candidates[0]
+                # finish_reason: 1=STOP (normal), 2=SAFETY, 3=RECITATION, 4=OTHER
+                if candidate.finish_reason != 1:
+                    reason_names = {2: "SAFETY", 3: "RECITATION", 4: "OTHER"}
+                    reason = reason_names.get(candidate.finish_reason, f"UNKNOWN({candidate.finish_reason})")
+                    logger.warning(f"Gemini response blocked: finish_reason={reason}")
+                    raise GeminiServiceError(
+                        message=f"AI response blocked due to {reason} filter",
+                        details={"finish_reason": candidate.finish_reason},
+                    )
+
                 return response.text
+            except GeminiServiceError:
+                # Don't retry our own errors
+                raise
             except google_exceptions.ResourceExhausted as e:
                 logger.warning(f"Gemini rate limit hit (attempt {attempt + 1})")
                 raise GeminiRateLimitError() from e
@@ -482,7 +533,28 @@ Respond with ONLY valid JSON:
                     prompt,
                     generation_config=config,
                 )
+                # Check for blocked/empty responses before accessing .text
+                if not response.candidates:
+                    raise GeminiServiceError(
+                        message="AI chat response was empty or blocked",
+                        details={"session_key": session_key},
+                    )
+
+                candidate = response.candidates[0]
+                # finish_reason: 1=STOP (normal), 2=SAFETY, 3=RECITATION, 4=OTHER
+                if candidate.finish_reason != 1:
+                    reason_names = {2: "SAFETY", 3: "RECITATION", 4: "OTHER"}
+                    reason = reason_names.get(candidate.finish_reason, f"UNKNOWN({candidate.finish_reason})")
+                    logger.warning(f"Gemini chat response blocked: finish_reason={reason}")
+                    raise GeminiServiceError(
+                        message=f"AI chat response blocked due to {reason} filter",
+                        details={"finish_reason": candidate.finish_reason},
+                    )
+
                 return response.text
+            except GeminiServiceError:
+                # Don't retry our own errors
+                raise
             except google_exceptions.ResourceExhausted as e:
                 logger.warning(f"Gemini rate limit hit in chat (attempt {attempt + 1})")
                 raise GeminiRateLimitError() from e

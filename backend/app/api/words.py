@@ -6,6 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.dependencies import DEFAULT_USER_ID, get_current_language
+from app.crud.language import LanguageCRUD
 from app.crud.word import WordCRUD
 from app.database import get_db
 from app.models.enums import CEFRLevel, PartOfSpeech
@@ -191,6 +192,7 @@ async def review_word(
 async def bulk_import_words(
     request: WordBulkImportRequest,
     crud: Annotated[WordCRUD, Depends(get_word_crud)],
+    db: Annotated[AsyncSession, Depends(get_db)],
     language: Annotated[str, Depends(get_current_language)],
 ) -> WordBulkImportResponse:
     """
@@ -203,6 +205,11 @@ async def bulk_import_words(
     - CEFR difficulty level
     """
     gemini = get_gemini_service()
+    language_crud = LanguageCRUD(db)
+
+    # Get language name for Gemini prompts
+    lang = await language_crud.get(language)
+    language_name = lang.name if lang else "Croatian"
 
     # Filter out duplicates within the same language
     new_words = []
@@ -225,7 +232,7 @@ async def bulk_import_words(
         )
 
     # Assess words with Gemini
-    assessments = await gemini.assess_words_bulk(new_words)
+    assessments = await gemini.assess_words_bulk(new_words, language_name)
 
     # Create words in database
     created_words = []
@@ -235,7 +242,7 @@ async def bulk_import_words(
             continue
 
         word_create = WordCreate(
-            croatian=assessment["croatian"],
+            croatian=assessment["word"],
             english=assessment["english"],
             part_of_speech=PartOfSpeech(assessment["part_of_speech"]),
             gender=assessment.get("gender"),

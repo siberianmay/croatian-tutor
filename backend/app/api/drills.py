@@ -6,6 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.dependencies import DEFAULT_USER_ID, get_current_language
+from app.crud.language import LanguageCRUD
 from app.crud.word import WordCRUD
 from app.database import get_db
 from app.models.enums import ExerciseType
@@ -101,6 +102,11 @@ async def get_fill_in_blank_exercises(
     """
     gemini = get_gemini_service()
     word_crud = WordCRUD(db)
+    language_crud = LanguageCRUD(db)
+
+    # Get language name for Gemini prompts
+    lang = await language_crud.get(language)
+    language_name = lang.name if lang else "Croatian"
 
     # Get words for the exercise
     words = await word_crud.get_due_words(
@@ -120,7 +126,7 @@ async def get_fill_in_blank_exercises(
     batch_input = [
         {
             "word_id": word.id,
-            "croatian": word.croatian,
+            "word": word.croatian,
             "english": word.english,
             "cefr_level": word.cefr_level.value,
         }
@@ -128,7 +134,7 @@ async def get_fill_in_blank_exercises(
     ]
 
     # Generate all fill-in-blank exercises in a single API call
-    results = await gemini.generate_fill_in_blank_batch(batch_input)
+    results = await gemini.generate_fill_in_blank_batch(batch_input, language_name)
 
     # Convert to response model
     items = [

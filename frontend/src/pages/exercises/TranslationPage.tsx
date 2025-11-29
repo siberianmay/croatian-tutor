@@ -22,6 +22,7 @@ import { IconArrowLeft, IconCheck, IconX, IconRefresh, IconArrowRight, IconPlaye
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { exerciseApi } from '~services/exerciseApi';
+import { useLanguage } from '~contexts/LanguageContext';
 import type { CEFRLevel, TranslationBatchItem, TranslationEvaluationResult, TranslationAnswerItem } from '~types';
 
 type Direction = 'cr_en' | 'en_cr';
@@ -33,6 +34,9 @@ interface UserAnswer {
 
 const TranslationPage: React.FC = () => {
   const navigate = useNavigate();
+  const { language } = useLanguage();
+  const languageName = language?.name ?? 'Target Language';
+
   const [cefrLevel, setCefrLevel] = useState<CEFRLevel>('A1');
   const [direction, setDirection] = useState<Direction>('en_cr');
 
@@ -207,8 +211,8 @@ const TranslationPage: React.FC = () => {
               value={direction}
               onChange={(v) => setDirection(v as Direction)}
               data={[
-                { label: 'Croatian → English', value: 'cr_en' },
-                { label: 'English → Croatian', value: 'en_cr' },
+                { label: `${languageName} → English`, value: 'cr_en' },
+                { label: `English → ${languageName}`, value: 'en_cr' },
               ]}
               size="md"
             />

@@ -27,6 +27,7 @@ import {
   IconMinus,
 } from '@tabler/icons-react';
 import { analyticsApi } from '~services/analyticsApi';
+import { useLanguage } from '~contexts/LanguageContext';
 import type {
   LeechesResponse,
   ForecastResponse,
@@ -40,6 +41,9 @@ interface AnalyticsModalProps {
 }
 
 const AnalyticsModal: React.FC<AnalyticsModalProps> = ({ opened, onClose }) => {
+  const { language } = useLanguage();
+  const languageName = language?.name ?? 'Word';
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -418,7 +422,7 @@ const AnalyticsModal: React.FC<AnalyticsModalProps> = ({ opened, onClose }) => {
                   <Table highlightOnHover>
                     <Table.Thead>
                       <Table.Tr>
-                        <Table.Th>Croatian</Table.Th>
+                        <Table.Th>{languageName}</Table.Th>
                         <Table.Th>English</Table.Th>
                         <Table.Th>Stats</Table.Th>
                         <Table.Th>Failure Rate</Table.Th>

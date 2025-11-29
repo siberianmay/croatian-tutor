@@ -21,6 +21,7 @@ import { useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { exerciseApi } from '~services/exerciseApi';
+import { useLanguage } from '~contexts/LanguageContext';
 import type { CEFRLevel, ConversationTurn } from '~types';
 
 interface ChatMessage extends ConversationTurn {
@@ -34,6 +35,9 @@ interface ChatMessage extends ConversationTurn {
 
 const ConversationPage: React.FC = () => {
   const navigate = useNavigate();
+  const { language } = useLanguage();
+  const languageName = language?.name ?? 'Target Language';
+
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [cefrLevel, setCefrLevel] = useState<CEFRLevel>('A1');
@@ -92,9 +96,9 @@ const ConversationPage: React.FC = () => {
             <IconArrowLeft size={20} />
           </ActionIcon>
           <div>
-            <Title order={2}>Croatian Tutor</Title>
+            <Title order={2}>{languageName} Tutor</Title>
             <Text c="dimmed" size="sm">
-              Practice conversational Croatian with AI
+              Practice conversational {languageName} with AI
             </Text>
           </div>
         </Group>
@@ -110,8 +114,8 @@ const ConversationPage: React.FC = () => {
       {messages.length === 0 && (
         <Alert icon={<IconInfoCircle size={20} />} color="blue">
           <Text size="sm">
-            Start a conversation in Croatian or English. The tutor will respond and correct
-            any mistakes. Try: "Bok! Kako si?" or "Hello, I want to practice Croatian."
+            Start a conversation in {languageName} or English. The tutor will respond and correct
+            any mistakes. Try greeting in {languageName} or say "Hello, I want to practice {languageName}."
           </Text>
         </Alert>
       )}
@@ -196,7 +200,7 @@ const ConversationPage: React.FC = () => {
 
       <Group>
         <TextInput
-          placeholder="Type your message in Croatian or English..."
+          placeholder={`Type your message in ${languageName} or English...`}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyPress={handleKeyPress}
