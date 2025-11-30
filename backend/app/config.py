@@ -11,23 +11,34 @@ class Settings(BaseSettings):
     )
 
     # Database
-    database_url: str = "postgresql+asyncpg://croatian:tutor_local@localhost:5432/croatian_tutor"
+    POSTGRES_USER: str = ""
+    POSTGRES_PASSWORD: str = ""
+    POSTGRES_DB: str = ""
 
     # Gemini API
-    gemini_api_key: str = ""
+    GEMINI_API_KEY: str = ""
 
     # Application
-    debug: bool = True
-    api_v1_prefix: str = "/api/v1"
+    DEBUG: bool = False
+    API_V1_PREFIX: str = "/api/v1"
+
+    # CORS - comma-separated list of allowed origins
+    CORS_ORIGINS: str = "http://localhost:3000,http://127.0.0.1:3000"
 
     # JWT Authentication
-    secret_key: str = "change-this-in-production-use-openssl-rand-hex-32"
-    algorithm: str = "HS256"
-    access_token_expire_minutes: int = 30
-    refresh_token_expire_days: int = 7
+    SECRET_KEY: str = "change-this-in-production-use-openssl-rand-hex-32"
+    ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    REFRESH_TOKEN_EXPIRE_DAYS: int = 7
 
     # Registration
-    referral_code: str = ""
+    REFERRAL_CODE: str = ""
+
+    @property
+    def database_url(self):
+        url = f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@db:5432/{self.POSTGRES_DB}"
+        print(f"\nURL: {url}\n\n")
+        return url
 
 
 settings = Settings()

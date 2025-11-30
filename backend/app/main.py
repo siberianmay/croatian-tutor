@@ -15,13 +15,10 @@ app = FastAPI(
     version="0.1.0",
 )
 
-# CORS configuration for local frontend
+# CORS configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-    ],
+    allow_origins=[origin.strip() for origin in settings.CORS_ORIGINS.split(",")],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -75,7 +72,7 @@ async def generic_exception_handler(
         content={
             "error": "InternalServerError",
             "message": "An unexpected error occurred",
-            "details": {"type": exc.__class__.__name__} if settings.debug else {},
+            "details": {"type": exc.__class__.__name__} if settings.DEBUG else {},
         },
     )
 
@@ -102,4 +99,4 @@ async def root():
 # API routes
 from app.api.router import api_router
 
-app.include_router(api_router, prefix=settings.api_v1_prefix)
+app.include_router(api_router, prefix=settings.API_V1_PREFIX)

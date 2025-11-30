@@ -41,10 +41,10 @@ class GeminiService:
     DEFAULT_MODEL = GeminiModel.gemini_2_5_fl
 
     def __init__(self):
-        if not settings.gemini_api_key:
+        if not settings.GEMINI_API_KEY:
             raise ValueError("GEMINI_API_KEY not configured")
 
-        genai.configure(api_key=settings.gemini_api_key)
+        genai.configure(api_key=settings.GEMINI_API_KEY)
         # Chat sessions keyed by session_key (e.g., "user_1_translation_cr_en")
         self._chat_sessions: dict[str, Any] = {}
         # Configured model name (can be set via set_model)

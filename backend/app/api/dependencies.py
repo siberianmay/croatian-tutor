@@ -13,7 +13,7 @@ from app.database import get_db
 from app.models.user import User
 
 # OAuth2 scheme for Bearer token authentication
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.api_v1_prefix}/auth/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1_PREFIX}/auth/login")
 
 
 def get_user_crud(db: Annotated[AsyncSession, Depends(get_db)]) -> UserCRUD:

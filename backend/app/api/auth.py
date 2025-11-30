@@ -38,7 +38,7 @@ async def register(
     Requires valid referral code. Creates the user and returns access/refresh tokens.
     """
     # Validate referral code
-    if not settings.referral_code or user_in.referral_code != settings.referral_code:
+    if not settings.REFERRAL_CODE or user_in.referral_code != settings.REFERRAL_CODE:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Invalid referral code",
