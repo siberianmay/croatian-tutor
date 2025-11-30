@@ -366,7 +366,7 @@ async def generate_grammar_exercises_batch(
     if count is None:
         settings_crud = AppSettingsCRUD(db)
         settings = await settings_crud.get_or_create(current_user.id)
-        count = settings.GRAMMAR_BATCH_SIZE
+        count = settings.grammar_batch_size
 
     results = await service.generate_grammar_exercises_batch(
         user_id=current_user.id,
