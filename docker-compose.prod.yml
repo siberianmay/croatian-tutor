@@ -3,10 +3,7 @@ services:
     image: postgres:16-alpine
     container_name: croatian-tutor-db
     restart: unless-stopped
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+    env_file: .env
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
@@ -24,6 +21,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: croatian-tutor-backend
+    env_file: .env
     restart: unless-stopped
     ports:
       - "8000:8000"
@@ -40,6 +38,7 @@ services:
       args:
         VITE_API_URL: ${VITE_API_URL}
     container_name: croatian-tutor-frontend
+    env_file: .env
     restart: unless-stopped
     ports:
       - "80:80"
