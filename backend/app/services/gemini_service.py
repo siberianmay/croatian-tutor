@@ -11,13 +11,22 @@ from app.config import settings
 from app.exceptions import GeminiParseError, GeminiRateLimitError, GeminiServiceError
 from app.models.enums import CEFRLevel, Gender, PartOfSpeech
 from google.api_core import exceptions as google_exceptions
-from google.generativeai.types import GenerationConfig
+from google.generativeai.types import GenerationConfig, HarmBlockThreshold, HarmCategory
 
 logger = logging.getLogger(__name__)
 
 # Retry configuration
 MAX_RETRIES = 3
 RETRY_DELAY_SECONDS = 1.0
+
+# Safety settings - relaxed for educational language learning content
+# Some languages (e.g., Italian) trigger false positives on standard settings
+SAFETY_SETTINGS = {
+    HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_ONLY_HIGH,
+    HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.BLOCK_ONLY_HIGH,
+    HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_ONLY_HIGH,
+    HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_ONLY_HIGH,
+}
 
 
 class GeminiModel(str, Enum):
@@ -423,6 +432,7 @@ Respond with ONLY valid JSON:
                 response = await self._model.generate_content_async(
                     prompt,
                     generation_config=config,
+                    safety_settings=SAFETY_SETTINGS,
                 )
                 # Check for blocked/empty responses before accessing .text
                 if not response.candidates:
@@ -532,6 +542,7 @@ Respond with ONLY valid JSON:
                 response = await chat.send_message_async(
                     prompt,
                     generation_config=config,
+                    safety_settings=SAFETY_SETTINGS,
                 )
                 # Check for blocked/empty responses before accessing .text
                 if not response.candidates:
