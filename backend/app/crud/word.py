@@ -210,7 +210,7 @@ class WordCRUD:
         Process a drill review result using SM-2 algorithm.
 
         SM-2 Algorithm:
-        - Quality rating: 0-5 (we map correct=True to 4, correct=False to 1)
+        - Quality rating: 0-5 (we map correct=True to 5, correct=False to 1)
         - EF' = EF + (0.1 - (5 - q) * (0.08 + (5 - q) * 0.02))
         - EF minimum = 1.3
         - Interval: rep 1 = 1 day, rep 2 = 6 days, rep n = interval(n-1) * EF
@@ -225,7 +225,7 @@ class WordCRUD:
         if correct:
             word.correct_count += 1
             word.correct_streak += 1
-            quality = 4  # Good response
+            quality = 5  # Perfect response
         else:
             word.wrong_count += 1
             word.correct_streak = 0  # Reset streak on wrong answer
