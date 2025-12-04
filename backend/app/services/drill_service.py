@@ -50,6 +50,7 @@ class DrillService:
                 language=language,
                 skip=0,
                 limit=100,
+                sort_by=Word.next_review_at,
             )
             # Filter out words already selected and sort by mastery
             existing_ids = {w.id for w in words}

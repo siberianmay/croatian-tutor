@@ -8,6 +8,7 @@ from app.models.word import Word
 from app.schemas.word import WordCreate, WordUpdate
 from sqlalchemy import Date, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import InstrumentedAttribute
 
 
 class WordCRUD:
@@ -52,7 +53,7 @@ class WordCRUD:
         part_of_speech: PartOfSpeech | None = None,
         cefr_level: CEFRLevel | None = None,
         search: str | None = None,
-        sort_by: str | None = None,
+        sort_by: str | InstrumentedAttribute | None = None,
         sort_dir: str = "asc",
     ) -> Sequence[Word]:
         """Get multiple words with pagination, filters, and sorting."""
@@ -73,27 +74,17 @@ class WordCRUD:
             )
 
         # Apply sorting
-        sort_column = self._get_sort_column(sort_by)
-        if sort_dir == "desc":
-            query = query.order_by(sort_column.desc())
-        else:
-            query = query.order_by(sort_column.asc())
+        if sort_by:
+            if isinstance(sort_by, str):
+                sort_by = getattr(Word, sort_by)
+            if sort_dir == "desc":
+                query = query.order_by(sort_by.desc())
+            else:
+                query = query.order_by(sort_by.asc())
 
         query = query.offset(skip).limit(limit)
         result = await self._db.execute(query)
         return result.scalars().all()
-
-    def _get_sort_column(self, sort_by: str | None):
-        """Map sort field name to SQLAlchemy column."""
-        sort_map = {
-            "croatian": Word.croatian,
-            "english": Word.english,
-            "part_of_speech": Word.part_of_speech,
-            "cefr_level": Word.cefr_level,
-            "mastery_score": Word.mastery_score,
-            "created_at": Word.created_at,
-        }
-        return sort_map.get(sort_by, Word.created_at)
 
     async def count(
         self,
