@@ -431,7 +431,7 @@ Available topic IDs: [{topic_ids_str}]
 
 CRITICAL RULES:
 1. Generate EXACTLY {count} unique exercises - NO REPETITION
-2. Each exercise should test a DIFFERENT grammar concept
+2. Each exercise should consist of one unit (ONE sentence to compose or to fill in gaps, or ONE phrase, etc.)  
 3. Prioritize WEAK topics from the list above
 4. Include the topic_id for each exercise
 5. Vary the exercise types (fill-in-blank, transformation, correction, etc.)
