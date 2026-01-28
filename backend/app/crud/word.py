@@ -209,6 +209,7 @@ class WordCRUD:
         word = await self.get(word_id, user_id)
         if not word:
             return None
+        print(f"\n{word=}, {correct=}")
 
         now = datetime.now(timezone.utc)
         word.last_reviewed_at = now
@@ -225,6 +226,7 @@ class WordCRUD:
         # Update ease factor using SM-2 formula
         new_ef = word.ease_factor + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02))
         word.ease_factor = max(1.3, new_ef)
+        print(f"{quality=}, {new_ef=}, {word.ease_factor=}")
 
         # Calculate mastery score (0-10) based on success rate weighted by experience
         # Requires ~10 reviews to reach maximum potential mastery
@@ -233,6 +235,7 @@ class WordCRUD:
             success_rate = word.correct_count / total_reviews
             experience_factor = min(1.0, total_reviews / 10)
             word.mastery_score = min(10, int(success_rate * 10 * experience_factor))
+            print(f"{total_reviews=}, {success_rate=}, {experience_factor=}, {word.mastery_score=}")
 
         # Calculate next review interval
         if correct:
