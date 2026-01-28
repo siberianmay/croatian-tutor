@@ -1,5 +1,5 @@
 """CRUD operations for Word model with SM-2 SRS algorithm."""
-
+import logging
 from datetime import datetime, timedelta, timezone
 from typing import Sequence
 
@@ -10,6 +10,7 @@ from sqlalchemy import Date, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import InstrumentedAttribute
 
+logger = logging.getLogger(__name__)
 
 class WordCRUD:
     """CRUD operations for vocabulary words with SRS scheduling."""
@@ -209,7 +210,7 @@ class WordCRUD:
         word = await self.get(word_id, user_id)
         if not word:
             return None
-        print(f"\n{word=}, {correct=}")
+        logger.info(f"\n{word=}, {correct=}")
 
         now = datetime.now(timezone.utc)
         word.last_reviewed_at = now
@@ -226,7 +227,7 @@ class WordCRUD:
         # Update ease factor using SM-2 formula
         new_ef = word.ease_factor + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02))
         word.ease_factor = max(1.3, new_ef)
-        print(f"{quality=}, {new_ef=}, {word.ease_factor=}")
+        logger.info(f"{quality=}, {new_ef=}, {word.ease_factor=}")
 
         # Calculate mastery score (0-10) based on success rate weighted by experience
         # Requires ~10 reviews to reach maximum potential mastery
@@ -235,7 +236,7 @@ class WordCRUD:
             success_rate = word.correct_count / total_reviews
             experience_factor = min(1.0, total_reviews / 10)
             word.mastery_score = min(10, int(success_rate * 10 * experience_factor))
-            print(f"{total_reviews=}, {success_rate=}, {experience_factor=}, {word.mastery_score=}")
+            logger.info(f"{total_reviews=}, {success_rate=}, {experience_factor=}, {word.mastery_score=}")
 
         # Calculate next review interval
         if correct:
